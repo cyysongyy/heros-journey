@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>英雄旅程 · 坎伯的十二階段</title>
+<style>
+  :root{
+    --bg:#f4efe6; --card:#fbf8f2; --ink:#2c2822; --muted:#7a7266; --line:#e2d9c8;
+    --blue:#4a6fa5; --amber:#c08a2e; --green:#4f7a52;
+    --maxw:1080px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#1c1a17; --card:#26231e; --ink:#ece6da; --muted:#a49b8b; --line:#3a352d;
+      --blue:#7ea1d6; --amber:#e0b25f; --green:#82b085; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Segoe UI","Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+    line-height:1.7;padding:0 20px 80px}
+  .wrap{max-width:var(--maxw);margin:0 auto}
+  header{text-align:center;padding:64px 0 36px}
+  h1{font-size:2.4rem;margin:0 0 8px;letter-spacing:.04em}
+  .sub{color:var(--muted);font-size:1.05rem;margin:0}
+  .map{margin:8px auto 12px;max-width:560px}
+  .map img{width:100%;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.18)}
+  .lede{max-width:680px;margin:0 auto 8px;text-align:center;color:var(--muted)}
+  .act{margin:56px 0 8px;display:flex;align-items:baseline;gap:14px;
+    border-bottom:1px solid var(--line);padding-bottom:12px}
+  .act .dot{width:14px;height:14px;border-radius:50%;flex:0 0 auto}
+  .act h2{font-size:1.5rem;margin:0}
+  .act .en{color:var(--muted);font-size:.95rem;font-weight:400}
+  .act .rng{margin-left:auto;color:var(--muted);font-size:.9rem}
+  .a1 .dot{background:var(--blue)} .a2 .dot{background:var(--amber)} .a3 .dot{background:var(--green)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px;margin-top:24px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    display:flex;flex-direction:column;transition:transform .18s ease,box-shadow .18s ease}
+  .card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,.16)}
+  .card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
+  .card .body{padding:16px 18px 20px}
+  .num{display:inline-block;font-size:.8rem;font-weight:600;color:#fff;
+    width:26px;height:26px;line-height:26px;text-align:center;border-radius:50%;margin-bottom:8px}
+  .a1 .num{background:var(--blue)} .a2 .num{background:var(--amber)} .a3 .num{background:var(--green)}
+  .card h3{margin:0 0 2px;font-size:1.15rem}
+  .card .en{color:var(--muted);font-size:.85rem;margin:0 0 8px}
+  .card p{margin:0;font-size:.95rem}
+  footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:64px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>英雄旅程</h1>
+    <p class="sub">約瑟夫·坎伯的十二階段 · The Hero's Journey</p>
+  </header>
+
+  <div class="map"><img src="images/00_map.png" alt="英雄旅程圓環地圖"></div>
+  <p class="lede">英雄離開日常世界、跨越門檻進入未知，歷經考驗與蛻變，最終帶著能造福眾人的禮物回到起點——
+    一個看似回到原點、實則脫胎換骨的圓。</p>
+
+  <section class="a1">
+    <div class="act a1"><span class="dot"></span><h2>第一幕 · 啟程 <span class="en">Departure</span></h2><span class="rng">階段 1–5</span></div>
+    <div class="grid">
+      <div class="card"><img src="images/01_ordinary_world.png" alt="平凡世界"><div class="body"><span class="num">1</span><h3>平凡世界</h3><p class="en">Ordinary World</p><p>英雄身處熟悉的日常，尚未察覺即將到來的召喚。</p></div></div>
+      <div class="card"><img src="images/02_call_to_adventure.png" alt="冒險召喚"><div class="body"><span class="num">2</span><h3>冒險召喚</h3><p class="en">Call to Adventure</p><p>一則訊息、一樁事件，把冒險的邀請擺到英雄面前。</p></div></div>
+      <div class="card"><img src="images/03_refusal.png" alt="拒絕召喚"><div class="body"><span class="num">3</span><h3>拒絕召喚</h3><p class="en">Refusal of the Call</p><p>出於恐懼或責任，英雄猶豫、抗拒踏出第一步。</p></div></div>
+      <div class="card"><img src="images/04_meeting_mentor.png" alt="遇見導師"><div class="body"><span class="num">4</span><h3>遇見導師</h3><p class="en">Meeting the Mentor</p><p>智者現身，給予忠告、訓練，或一件關鍵法寶。</p></div></div>
+      <div class="card"><img src="images/05_crossing_threshold.png" alt="跨越門檻"><div class="body"><span class="num">5</span><h3>跨越門檻</h3><p class="en">Crossing the Threshold</p><p>英雄下定決心，離開已知世界，正式踏入未知。</p></div></div>
+    </div>
+  </section>
+
+  <section class="a2">
+    <div class="act a2"><span class="dot"></span><h2>第二幕 · 啟蒙 <span class="en">Initiation</span></h2><span class="rng">階段 6–9</span></div>
+    <div class="grid">
+      <div class="card"><img src="images/06_tests_allies_enemies.png" alt="考驗、盟友、敵人"><div class="body"><span class="num">6</span><h3>考驗 · 盟友 · 敵人</h3><p class="en">Tests, Allies, Enemies</p><p>在新世界歷經試煉，結識盟友、辨明敵人。</p></div></div>
+      <div class="card"><img src="images/07_inmost_cave.png" alt="深入洞穴"><div class="body"><span class="num">7</span><h3>深入洞穴</h3><p class="en">Approach the Inmost Cave</p><p>逼近最危險的核心，準備面對最深的恐懼。</p></div></div>
+      <div class="card"><img src="images/08_the_ordeal.png" alt="重大考驗"><div class="body"><span class="num">8</span><h3>重大考驗</h3><p class="en">The Ordeal</p><p>生死交關的關鍵一戰，象徵一次死亡與重生。</p></div></div>
+      <div class="card"><img src="images/09_reward.png" alt="獲得寶藏"><div class="body"><span class="num">9</span><h3>獲得寶藏</h3><p class="en">Reward</p><p>戰勝試煉，奪得寶藏、知識或全新的力量。</p></div></div>
+    </div>
+  </section>
+
+  <section class="a3">
+    <div class="act a3"><span class="dot"></span><h2>第三幕 · 回歸 <span class="en">Return</span></h2><span class="rng">階段 10–12</span></div>
+    <div class="grid">
+      <div class="card"><img src="images/10_road_back.png" alt="歸途"><div class="body"><span class="num">10</span><h3>歸途</h3><p class="en">The Road Back</p><p>帶著寶藏踏上返鄉之路，往往仍有追兵與抉擇。</p></div></div>
+      <div class="card"><img src="images/11_resurrection.png" alt="重生"><div class="body"><span class="num">11</span><h3>重生</h3><p class="en">Resurrection</p><p>最後的淨化與蛻變，英雄徹底獲得新生。</p></div></div>
+      <div class="card"><img src="images/12_return_elixir.png" alt="帶著禮物回來"><div class="body"><span class="num">12</span><h3>帶著禮物回來</h3><p class="en">Return with the Elixir</p><p>帶著能造福眾人的禮物回到起點，圓環閉合。</p></div></div>
+    </div>
+  </section>
+
+  <footer>圖像由 gpt-image-1 生成 · 架構依循 Joseph Campbell《千面英雄》與 Christopher Vogler 的十二階段</footer>
+</div>
+</body>
+</html>

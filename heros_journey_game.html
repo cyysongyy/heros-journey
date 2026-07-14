@@ -48,6 +48,21 @@
   .begin.ghost{background:transparent;color:var(--gold);border:1px solid var(--gold-dim);
     box-shadow:none;font-weight:normal;font-size:.98rem;padding:12px 34px}
   .begin.ghost:hover{border-color:var(--gold)}
+  .reflect{margin-top:22px;border-top:1px dashed #3a3226;padding-top:18px}
+  .reflect-q{color:var(--gold);font-size:1.02rem;margin-bottom:10px;line-height:1.7}
+  .reflect-in{width:100%;background:#161209;border:1px solid #3a3226;border-radius:10px;
+    color:var(--ink);font-family:inherit;font-size:1rem;line-height:1.7;padding:12px 14px;
+    resize:vertical;transition:border-color .15s}
+  .reflect-in:focus{outline:none;border-color:var(--gold)}
+  .reflect-in::placeholder{color:#6b604a}
+  .journal{margin-top:30px;text-align:left;border:1px solid #3a3226;border-radius:14px;
+    padding:20px 22px;background:#161209}
+  .jtitle{color:var(--gold);font-size:1.2rem;letter-spacing:.12em;text-align:center;margin-bottom:16px}
+  .jitem{padding:13px 0;border-bottom:1px solid #241f16}
+  .jitem:last-child{border-bottom:none}
+  .jname{color:#e8dfcd;font-size:1.04rem;margin-bottom:4px}
+  .jq{color:var(--muted);font-size:.85rem;margin-bottom:6px;line-height:1.5}
+  .ja{color:#d9cdb4;font-size:1rem;line-height:1.75;white-space:pre-wrap}
 
   /* hud */
   .hud{padding:6px 0 18px}
@@ -143,7 +158,10 @@ const T = {
   endTitle:{zh:"旅程完成",en:"The Journey Complete"},
   resume:{zh:"繼續上次的旅程",en:"Resume Your Journey"},
   newgame:{zh:"重新啟程",en:"Begin Anew"},
-  share:{zh:"分享成績卡",en:"Share Result Card"}
+  share:{zh:"分享成績卡",en:"Share Result Card"},
+  reflectPh:{zh:"寫下你的答案…（可留白）",en:"Write your answer… (optional)"},
+  journalTitle:{zh:"你的英雄旅程",en:"Your Hero's Journey"},
+  download:{zh:"下載我的旅程",en:"Download My Journey"}
 };
 const EP = {
   c:{zh:"無畏者",en:"The Fearless",d:{zh:"你以勇氣穿越了所有不可能。",en:"By courage you crossed the impossible."}},
@@ -231,7 +249,21 @@ const ICON=[
  '<circle cx="12" cy="12" r="3.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',
  '<rect x="5" y="10" width="14" height="10" rx="1"/><path d="M5 14h14M12 10v10"/><path d="M12 10c-.6-2.6-4.4-2.6-4.4-.4 0 1.3 2.4 1.2 4.4.4zM12 10c.6-2.6 4.4-2.6 4.4-.4 0 1.3-2.4 1.2-4.4.4z"/>'
 ];
-let lang="zh", i=0, stats={c:0,w:0,h:0}, chosen=false;
+const PROMPTS=[
+ {zh:"你現在的「平凡世界」是什麼？有什麼你習以為常、卻隱隱想改變？",en:"What is your \"ordinary world\" right now? What have you grown used to, yet quietly wish to change?"},
+ {zh:"最近有什麼「召喚」在敲你的門？一個機會、一個念頭、一份不安？",en:"What \"call\" has been knocking lately — an opportunity, an idea, a restlessness?"},
+ {zh:"你一直在抗拒、拖延、找藉口不去做的那件事是什麼？",en:"What is the thing you keep resisting, delaying, or making excuses to avoid?"},
+ {zh:"誰是你的導師？（人、書、或一句話都算）他們給了你什麼？",en:"Who is your mentor — a person, a book, a single sentence? What did they give you?"},
+ {zh:"如果今天就要跨出那一步，你需要放下什麼、又要帶走什麼？",en:"If you had to take the step today, what must you leave behind, and what will you carry?"},
+ {zh:"誰會與你並肩？誰或什麼，是你路上的阻力？",en:"Who stands beside you? Who — or what — is the resistance on your road?"},
+ {zh:"你最深處、最不敢面對的恐懼是什麼？",en:"What is the deepest fear you least dare to face?"},
+ {zh:"你曾經歷過的一次「死亡與重生」是什麼？你失去了、又獲得了什麼？",en:"What \"death and rebirth\" have you lived through? What did you lose, and what did you gain?"},
+ {zh:"穿越那一切之後，你得到的「寶藏」是什麼？（能力、領悟、自由…）",en:"After passing through it all, what \"treasure\" did you win — a skill, an insight, a freedom?"},
+ {zh:"你要把這份收穫，帶回哪裡、帶給誰？",en:"Where — and to whom — will you carry what you've gained?"},
+ {zh:"經過這一切，你和出發時的自己，有什麼不同？",en:"After all this, how are you different from the one who set out?"},
+ {zh:"你想留給這個世界的「禮物」是什麼？",en:"What is the gift you want to leave to the world?"}
+];
+let lang="zh", i=0, stats={c:0,w:0,h:0}, chosen=false, journal={};
 
 const SFX = {
   ctx:null, on:true, master:null, amb:null,
@@ -332,6 +364,10 @@ function render(){
     const c=s.c[chosen.x];
     const last=i===S.length-1;
     ch=`<div class="outcome">${tr(c.o)}</div>
+      <div class="reflect">
+        <div class="reflect-q">${tr(PROMPTS[i])}</div>
+        <textarea class="reflect-in" rows="3" placeholder="${tr(T.reflectPh)}" oninput="journal[${i}]=this.value">${esc(journal[i])}</textarea>
+      </div>
       <button class="next" onclick="advance()">${last?tr(T.finish):tr(T.cont)} →</button>`;
   }
   el.className='';el.innerHTML=`
@@ -354,6 +390,10 @@ function saveState(){try{localStorage.setItem('hj_save',JSON.stringify({i,stats}
 function loadSave(){try{return JSON.parse(localStorage.getItem('hj_save')||'null');}catch(e){return null;}}
 function clearSave(){try{localStorage.removeItem('hj_save');}catch(e){}}
 function computeTop(){const {c,w,h}=stats;if(c>w&&c>h)return 'c';if(w>c&&w>h)return 'w';if(h>c&&h>w)return 'h';return 'x';}
+function esc(t){return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function saveJournal(){try{localStorage.setItem('hj_journal',JSON.stringify(journal));}catch(e){}}
+function loadJournal(){try{return JSON.parse(localStorage.getItem('hj_journal')||'{}');}catch(e){return {};}}
+function clearJournal(){journal={};try{localStorage.removeItem('hj_journal');}catch(e){}}
 function choose(x){SFX.choose();const s=S[i];const e=s.c[x].e;
   stats.c+=e.c||0;stats.w+=e.w||0;stats.h+=e.h||0;chosen={x};render();}
 function advance(){i++;chosen=false;window.scrollTo({top:0,behavior:'smooth'});
@@ -362,12 +402,14 @@ function advance(){i++;chosen=false;window.scrollTo({top:0,behavior:'smooth'});
   else if(i===8)SFX.reward();
   else if(i===10)SFX.resurrection();
   else SFX.advance();
+  saveJournal();
   if(i<S.length)saveState();
   render();}
 function startGame(){SFX.init();SFX.resume();SFX.begin();SFX.ambientStart();
-  i=0;stats={c:0,w:0,h:0};chosen=false;clearSave();saveState();render();}
+  i=0;stats={c:0,w:0,h:0};chosen=false;clearSave();clearJournal();saveState();render();}
 function continueGame(){SFX.init();SFX.resume();SFX.ambientStart();
-  const s=loadSave();if(s&&typeof s.i==='number'){i=s.i;stats=s.stats||{c:0,w:0,h:0};}chosen=false;render();}
+  const s=loadSave();if(s&&typeof s.i==='number'){i=s.i;stats=s.stats||{c:0,w:0,h:0};}
+  journal=loadJournal();chosen=false;render();}
 
 function renderTitle(el){
   const sv=loadSave();
@@ -394,11 +436,42 @@ function renderEnd(el){
     <div class="epi-en">${lang==='zh'?ep.en:ep.zh}</div>
     <div class="fstats"><span>⚔ ${tr(T.cour)} ${c}</span><span>✦ ${tr(T.wis)} ${w}</span><span>♥ ${tr(T.heart)} ${h}</span></div>
     <div class="close">${tr(ep.d)}<br><br>${tr(CLOSE).replace(/\n/g,'<br>')}</div>
+    ${journalHtml()}
     <div class="titlebtns">
-      <button class="begin" onclick="shareResult()">${tr(T.share)}</button>
+      <button class="begin" onclick="downloadJournal()">${tr(T.download)}</button>
+      <button class="begin ghost" onclick="shareResult()">${tr(T.share)}</button>
       <button class="begin ghost" onclick="i=-1;render()">${tr(T.again)}</button>
     </div>
   </div>`;
+}
+function journalHtml(){
+  const items=[];
+  for(let k=0;k<S.length;k++){const a=(journal[k]||'').trim();if(a)items.push(k);}
+  if(!items.length) return '';
+  const rows=items.map(k=>`<div class="jitem">
+    <div class="jname">${k+1}. ${S[k][lang==='zh'?'zh':'en']}</div>
+    <div class="jq">${tr(PROMPTS[k])}</div>
+    <div class="ja">${esc((journal[k]||'').trim())}</div>
+  </div>`).join('');
+  return `<div class="journal"><div class="jtitle">${tr(T.journalTitle)}</div>${rows}</div>`;
+}
+function downloadJournal(){
+  const ep=EP[computeTop()];
+  let t=(lang==='zh'?'英雄的旅程 · 我的旅程':"The Hero's Journey · My Journey")+'\n';
+  t+=(lang==='zh'?'稱號':'Epithet')+': '+tr(ep)+' ('+(lang==='zh'?ep.en:ep.zh)+')\n';
+  t+=tr(T.cour)+' '+stats.c+'  '+tr(T.wis)+' '+stats.w+'  '+tr(T.heart)+' '+stats.h+'\n';
+  t+='='.repeat(46)+'\n\n';
+  for(let k=0;k<S.length;k++){
+    t+=(k+1)+'. '+S[k][lang==='zh'?'zh':'en']+' / '+(lang==='zh'?S[k].en:S[k].zh)+'\n';
+    t+='Q: '+tr(PROMPTS[k])+'\n';
+    const a=(journal[k]||'').trim();
+    t+=(a||(lang==='zh'?'（未填寫）':'(blank)'))+'\n\n';
+  }
+  t+=tr(CLOSE)+'\n';
+  const blob=new Blob([t],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download='my-hero-journey.txt';document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
 }
 function roundRectPath(x,rx,ry,w,h,r){x.beginPath();x.moveTo(rx+r,ry);
   x.arcTo(rx+w,ry,rx+w,ry+h,r);x.arcTo(rx+w,ry+h,rx,ry+h,r);
@@ -441,6 +514,7 @@ function shareResult(){
 }
 (function(){try{const p=JSON.parse(localStorage.getItem('hj_prefs')||'null');
   if(p){if(p.lang)lang=p.lang;if(typeof p.on==='boolean')SFX.on=p.on;}}catch(e){}
+  journal=loadJournal();
   document.getElementById('lz').classList.toggle('on',lang==='zh');
   document.getElementById('le').classList.toggle('on',lang==='en');
   const b=document.getElementById('sfx');if(b){b.textContent=SFX.on?'🔊':'🔇';b.classList.toggle('off',!SFX.on);}

@@ -51,15 +51,16 @@
 
   /* hud */
   .hud{padding:6px 0 18px}
-  .dots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
-  .dot{width:22px;height:22px;border-radius:50%;border:1.5px solid #3a322663;display:flex;
-    align-items:center;justify-content:center;font-size:11px;color:#6b604a;background:#191410}
-  .dot.done{color:#1a140c;border-color:transparent}
-  .dot.cur{transform:scale(1.22);box-shadow:0 0 12px rgba(217,179,102,.5)}
-  .dot.act1.done,.dot.act1.cur{background:var(--blue);border-color:var(--blue)}
-  .dot.act2.done,.dot.act2.cur{background:var(--amber);border-color:var(--amber)}
-  .dot.act3.done,.dot.act3.cur{background:var(--green);border-color:var(--green)}
-  .dot.cur{color:#fff}
+  .track{display:flex;gap:4px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+  .ico{width:23px;height:23px;display:flex;align-items:center;justify-content:center;
+    color:#4c4535;transition:transform .25s,color .25s,opacity .25s;flex:0 0 auto}
+  .ico svg{width:19px;height:19px}
+  .ico.up{opacity:.55}
+  .ico.act1.done{color:var(--blue)} .ico.act2.done{color:var(--amber)} .ico.act3.done{color:var(--green)}
+  .ico.cur{transform:scale(1.55);filter:drop-shadow(0 0 5px currentColor)}
+  .ico.act1.cur{color:var(--blue)} .ico.act2.cur{color:var(--amber)} .ico.act3.cur{color:var(--green)}
+  .track-label{text-align:center;letter-spacing:.14em;font-size:.8rem;color:var(--muted);
+    margin-bottom:16px;font-variant-numeric:tabular-nums}
   .stats{display:flex;gap:20px;justify-content:center;font-size:.9rem;color:var(--muted)}
   .stat{display:flex;align-items:center;gap:7px}
   .stat .ic{font-size:1.05rem}
@@ -211,6 +212,20 @@ const S=[
  c:[{l:{zh:"把禮物獻給這片土地與人們",en:"Give the gift to your land and its people"},e:{h:1},o:{zh:"你曾為自己出發，如今為眾人歸來。",en:"You set out for yourself; you return for everyone."}}]}
 ];
 
+const ICON=[
+ '<path d="M4 11l8-6 8 6"/><path d="M6 10v8h12v-8"/>',
+ '<rect x="4" y="7" width="16" height="11" rx="1"/><path d="M4 8l8 6 8-6"/>',
+ '<path d="M12 21v-6"/><path d="M12 15L6 6"/><path d="M12 15l6-9"/>',
+ '<path d="M12 3l2.2 6.3 6.3 1.7-6.3 2.2L12 19.5 9.8 13.2 3.5 11l6.3-1.7z"/>',
+ '<path d="M5 20V10a7 7 0 0 1 14 0v10"/><path d="M4 20h16"/>',
+ '<path d="M5 5l14 14"/><path d="M19 5L5 19"/>',
+ '<path d="M3 20h18"/><path d="M3 20l6-11 3 5 2.5-3.5L21 20"/>',
+ '<path d="M12 3c2.5 3.5 4.5 5.5 4.5 8.5a4.5 4.5 0 0 1-9 0c0-1.8 1-3 2-4 .2 1 1 1.8 1.8 1.8-.3-2.6-.3-4.3.7-6.3z"/>',
+ '<path d="M6 4h12l3 5-9 11L3 9z"/><path d="M3 9h18"/>',
+ '<path d="M20 12H5"/><path d="M11 6l-6 6 6 6"/>',
+ '<circle cx="12" cy="12" r="3.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',
+ '<rect x="5" y="10" width="14" height="10" rx="1"/><path d="M5 14h14M12 10v10"/><path d="M12 10c-.6-2.6-4.4-2.6-4.4-.4 0 1.3 2.4 1.2 4.4.4zM12 10c.6-2.6 4.4-2.6 4.4-.4 0 1.3-2.4 1.2-4.4.4z"/>'
+];
 let lang="zh", i=0, stats={c:0,w:0,h:0}, chosen=false;
 
 const SFX = {
@@ -280,12 +295,15 @@ function hud(){
   let d='';
   for(let k=0;k<S.length;k++){
     const a='act'+S[k].act;
-    const cls=k<i?'done':(k===i?'cur':'');
-    d+=`<div class="dot ${a} ${cls}">${k+1}</div>`;
+    const cls=k<i?'done':(k===i?'cur':'up');
+    const title=(k+1)+'. '+S[k][lang==='zh'?'zh':'en'];
+    d+=`<span class="ico ${a} ${cls}" title="${title}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICON[k]}</svg></span>`;
   }
   const mx=Math.max(6,stats.c,stats.w,stats.h);
   const bar=(v)=>Math.round(v/mx*100);
-  return `<div class="hud"><div class="dots">${d}</div>
+  const label=lang==='zh'?`第 ${i+1} 關 ／ 共 12 關`:`Stage ${i+1} of 12`;
+  return `<div class="hud"><div class="track">${d}</div>
+    <div class="track-label">${label}</div>
     <div class="stats">
       <div class="stat s-c"><span class="ic">⚔</span><span class="bar"><span class="fill" style="width:${bar(stats.c)}%"></span></span></div>
       <div class="stat s-w"><span class="ic">✦</span><span class="bar"><span class="fill" style="width:${bar(stats.w)}%"></span></span></div>

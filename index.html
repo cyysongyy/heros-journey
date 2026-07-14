@@ -25,6 +25,12 @@
   .map{margin:8px auto 12px;max-width:560px}
   .map img{width:100%;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.18)}
   .lede{max-width:680px;margin:0 auto 8px;text-align:center;color:var(--muted)}
+  .playbtn{display:inline-block;text-decoration:none;font-weight:600;letter-spacing:.06em;
+    color:#1a140c;background:linear-gradient(180deg,#d9b366,#a8843c);
+    padding:14px 34px;border-radius:40px;box-shadow:0 8px 26px rgba(217,179,102,.28);
+    transition:transform .15s}
+  .playbtn:hover{transform:translateY(-2px)}
+  @media (prefers-color-scheme:light){.playbtn{color:#2c2822}}
   .act{margin:56px 0 8px;display:flex;align-items:baseline;gap:14px;
     border-bottom:1px solid var(--line);padding-bottom:12px}
   .act .dot{width:14px;height:14px;border-radius:50%;flex:0 0 auto}
@@ -57,6 +63,9 @@
   <div class="map"><img src="images/00_map.png" alt="英雄旅程圓環地圖"></div>
   <p class="lede">英雄離開日常世界、跨越門檻進入未知，歷經考驗與蛻變，最終帶著能造福眾人的禮物回到起點——
     一個看似回到原點、實則脫胎換骨的圓。</p>
+  <div style="text-align:center;margin:26px 0 6px">
+    <a class="playbtn" href="heros_journey_game.html">▶ 開始互動遊戲 · Play the Game</a>
+  </div>
 
   <section class="a1">
     <div class="act a1"><span class="dot"></span><h2>第一幕 · 啟程 <span class="en">Departure</span></h2><span class="rng">階段 1–5</span></div>

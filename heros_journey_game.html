@@ -52,13 +52,18 @@
   /* hud */
   .hud{padding:6px 0 18px}
   .track{display:flex;gap:4px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:8px}
-  .ico{width:23px;height:23px;display:flex;align-items:center;justify-content:center;
+  .ico{position:relative;width:23px;height:23px;display:flex;align-items:center;justify-content:center;
     color:#4c4535;transition:transform .25s,color .25s,opacity .25s;flex:0 0 auto}
   .ico svg{width:19px;height:19px}
-  .ico.up{opacity:.55}
+  .ico.up{opacity:.5}
   .ico.act1.done{color:var(--blue)} .ico.act2.done{color:var(--amber)} .ico.act3.done{color:var(--green)}
-  .ico.cur{transform:scale(1.55);filter:drop-shadow(0 0 5px currentColor)}
+  .ico.cur{transform:scale(1.6);filter:drop-shadow(0 0 5px currentColor)}
   .ico.act1.cur{color:var(--blue)} .ico.act2.cur{color:var(--amber)} .ico.act3.cur{color:var(--green)}
+  .ico.cur::before{content:"";position:absolute;top:-7px;left:50%;transform:translateX(-50%);
+    width:0;height:0;border-left:3px solid transparent;border-right:3px solid transparent;
+    border-top:3.5px solid currentColor}
+  .ico.cur::after{content:"";position:absolute;inset:-3px;border-radius:50%;
+    border:1px solid currentColor;opacity:.4}
   .track-label{text-align:center;letter-spacing:.14em;font-size:.8rem;color:var(--muted);
     margin-bottom:16px;font-variant-numeric:tabular-nums}
   .stats{display:flex;gap:20px;justify-content:center;font-size:.9rem;color:var(--muted)}

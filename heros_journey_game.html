@@ -43,6 +43,11 @@
     padding:15px 46px;border-radius:40px;cursor:pointer;box-shadow:0 8px 30px rgba(217,179,102,.28);
     transition:transform .15s}
   .begin:hover{transform:translateY(-2px)}
+  .titlebtns{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:34px}
+  .titlebtns .begin{margin-top:0}
+  .begin.ghost{background:transparent;color:var(--gold);border:1px solid var(--gold-dim);
+    box-shadow:none;font-weight:normal;font-size:.98rem;padding:12px 34px}
+  .begin.ghost:hover{border-color:var(--gold)}
 
   /* hud */
   .hud{padding:6px 0 18px}
@@ -129,7 +134,10 @@ const T = {
   again:{zh:"再走一次",en:"Walk it Again"},
   acts:{1:{zh:"第一幕 · 啟程",en:"Act I · Departure"},2:{zh:"第二幕 · 啟蒙",en:"Act II · Initiation"},3:{zh:"第三幕 · 回歸",en:"Act III · Return"}},
   cour:{zh:"勇氣",en:"Courage"}, wis:{zh:"智慧",en:"Wisdom"}, heart:{zh:"心",en:"Heart"},
-  endTitle:{zh:"旅程完成",en:"The Journey Complete"}
+  endTitle:{zh:"旅程完成",en:"The Journey Complete"},
+  resume:{zh:"繼續上次的旅程",en:"Resume Your Journey"},
+  newgame:{zh:"重新啟程",en:"Begin Anew"},
+  share:{zh:"分享成績卡",en:"Share Result Card"}
 };
 const EP = {
   c:{zh:"無畏者",en:"The Fearless",d:{zh:"你以勇氣穿越了所有不可能。",en:"By courage you crossed the impossible."}},
@@ -262,11 +270,11 @@ const SFX = {
 };
 function toggleSfx(){ SFX.init(); SFX.resume(); SFX.setOn(!SFX.on);
   const b=document.getElementById('sfx'); b.textContent=SFX.on?'🔊':'🔇'; b.classList.toggle('off',!SFX.on);
-  if(SFX.on) SFX.hover(); }
+  if(SFX.on) SFX.hover(); savePrefs(); }
 
 function tr(o){return o[lang]||o.zh;}
 function setLang(l){lang=l;document.getElementById('lz').classList.toggle('on',l==='zh');
-  document.getElementById('le').classList.toggle('on',l==='en');render();}
+  document.getElementById('le').classList.toggle('on',l==='en');savePrefs();render();}
 
 function hud(){
   let d='';
@@ -318,31 +326,44 @@ function render(){
       ${ch}
     </div>`;
 }
+function savePrefs(){try{localStorage.setItem('hj_prefs',JSON.stringify({lang,on:SFX.on}));}catch(e){}}
+function saveState(){try{localStorage.setItem('hj_save',JSON.stringify({i,stats}));}catch(e){}}
+function loadSave(){try{return JSON.parse(localStorage.getItem('hj_save')||'null');}catch(e){return null;}}
+function clearSave(){try{localStorage.removeItem('hj_save');}catch(e){}}
+function computeTop(){const {c,w,h}=stats;if(c>w&&c>h)return 'c';if(w>c&&w>h)return 'w';if(h>c&&h>w)return 'h';return 'x';}
 function choose(x){SFX.choose();const s=S[i];const e=s.c[x].e;
   stats.c+=e.c||0;stats.w+=e.w||0;stats.h+=e.h||0;chosen={x};render();}
 function advance(){i++;chosen=false;window.scrollTo({top:0,behavior:'smooth'});
-  if(i>=S.length){SFX.ambientStop();SFX.ending();}
+  if(i>=S.length){SFX.ambientStop();SFX.ending();clearSave();}
   else if(i===7)SFX.ordeal();
   else if(i===8)SFX.reward();
   else if(i===10)SFX.resurrection();
   else SFX.advance();
+  if(i<S.length)saveState();
   render();}
 function startGame(){SFX.init();SFX.resume();SFX.begin();SFX.ambientStart();
-  i=0;stats={c:0,w:0,h:0};chosen=false;render();}
+  i=0;stats={c:0,w:0,h:0};chosen=false;clearSave();saveState();render();}
+function continueGame(){SFX.init();SFX.resume();SFX.ambientStart();
+  const s=loadSave();if(s&&typeof s.i==='number'){i=s.i;stats=s.stats||{c:0,w:0,h:0};}chosen=false;render();}
 
 function renderTitle(el){
+  const sv=loadSave();
+  const canResume=sv&&typeof sv.i==='number'&&sv.i>=0&&sv.i<S.length;
+  const btns=canResume
+    ? `<button class="begin" onclick="continueGame()">${tr(T.resume)}</button>
+       <button class="begin ghost" onclick="startGame()">${tr(T.newgame)}</button>`
+    : `<button class="begin" onclick="startGame()">${tr(T.begin)}</button>`;
   el.innerHTML=`<div class="title">
     <div class="disc"><img src="${IMG['00_map']}" alt=""></div>
     <h1>${tr(T.title)}</h1>
     <div class="en-sub">${tr(T.titleSub)}</div>
     <div class="quote">${tr(T.quote).replace(/\n/g,'<br>')}</div>
-    <button class="begin" onclick="startGame()">${tr(T.begin)}</button>
+    <div class="titlebtns">${btns}</div>
   </div>`;
 }
 function renderEnd(el){
-  let top='x';const {c,w,h}=stats;
-  if(c>w&&c>h)top='c';else if(w>c&&w>h)top='w';else if(h>c&&h>w)top='h';
-  const ep=EP[top];
+  const {c,w,h}=stats;
+  const ep=EP[computeTop()];
   el.innerHTML=`<div class="ending">
     <div class="act-tag" style="color:var(--green)">${tr(T.endTitle)}</div>
     <div class="disc"><img src="${IMG['12_return_elixir']}" alt=""></div>
@@ -350,8 +371,56 @@ function renderEnd(el){
     <div class="epi-en">${lang==='zh'?ep.en:ep.zh}</div>
     <div class="fstats"><span>⚔ ${tr(T.cour)} ${c}</span><span>✦ ${tr(T.wis)} ${w}</span><span>♥ ${tr(T.heart)} ${h}</span></div>
     <div class="close">${tr(ep.d)}<br><br>${tr(CLOSE).replace(/\n/g,'<br>')}</div>
-    <button class="begin" style="margin-top:30px" onclick="i=-1;render()">${tr(T.again)}</button>
+    <div class="titlebtns">
+      <button class="begin" onclick="shareResult()">${tr(T.share)}</button>
+      <button class="begin ghost" onclick="i=-1;render()">${tr(T.again)}</button>
+    </div>
   </div>`;
 }
+function roundRectPath(x,rx,ry,w,h,r){x.beginPath();x.moveTo(rx+r,ry);
+  x.arcTo(rx+w,ry,rx+w,ry+h,r);x.arcTo(rx+w,ry+h,rx,ry+h,r);
+  x.arcTo(rx,ry+h,rx,ry,r);x.arcTo(rx,ry,rx+w,ry,r);x.closePath();}
+function shareResult(){
+  if(SFX.reward)SFX.reward();
+  const ep=EP[computeTop()];
+  const cv=document.createElement('canvas');cv.width=1080;cv.height=1080;
+  const x=cv.getContext('2d');
+  const FZ='Georgia,"Songti TC","Noto Serif TC",serif';
+  const draw=(img)=>{
+    const g=x.createRadialGradient(540,320,60,540,760,940);
+    g.addColorStop(0,'#241d16');g.addColorStop(1,'#0d0a07');
+    x.fillStyle=g;x.fillRect(0,0,1080,1080);
+    x.strokeStyle='#a8843c';x.lineWidth=4;roundRectPath(x,42,42,996,996,30);x.stroke();
+    x.textAlign='center';
+    x.fillStyle='#b7ab93';x.font='500 30px '+FZ;
+    x.fillText(lang==='zh'?'英雄的旅程':"THE HERO'S JOURNEY",540,152);
+    if(img){x.save();x.beginPath();x.arc(540,395,182,0,7);x.closePath();x.clip();
+      x.drawImage(img,358,213,364,364);x.restore();
+      x.strokeStyle='#a8843c';x.lineWidth=3;x.beginPath();x.arc(540,395,182,0,7);x.stroke();}
+    x.fillStyle='#d9b366';x.font='600 92px '+FZ;x.fillText(tr(ep),540,715);
+    x.fillStyle='#b7ab93';x.font='500 30px '+FZ;x.fillText(lang==='zh'?ep.en:ep.zh,540,765);
+    x.fillStyle='#e8dfcd';x.font='500 36px '+FZ;
+    x.fillText(`${tr(T.cour)} ${stats.c}    ${tr(T.wis)} ${stats.w}    ${tr(T.heart)} ${stats.h}`,540,865);
+    x.fillStyle='#8a7f68';x.font='italic 27px '+FZ;
+    x.fillText(lang==='zh'?'我們出發，是為了帶著禮物歸來':'We set out only to return bearing a gift',540,950);
+    cv.toBlob(async(blob)=>{
+      if(!blob)return;
+      const file=new File([blob],'hero-journey-result.png',{type:'image/png'});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){
+        try{await navigator.share({files:[file],title:tr(T.title)});return;}catch(e){}
+      }
+      const url=URL.createObjectURL(blob);const a=document.createElement('a');
+      a.href=url;a.download='hero-journey-result.png';document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1500);
+    },'image/png');
+  };
+  const im=new Image();im.onload=()=>draw(im);im.onerror=()=>draw(null);im.src=IMG['12_return_elixir'];
+}
+(function(){try{const p=JSON.parse(localStorage.getItem('hj_prefs')||'null');
+  if(p){if(p.lang)lang=p.lang;if(typeof p.on==='boolean')SFX.on=p.on;}}catch(e){}
+  document.getElementById('lz').classList.toggle('on',lang==='zh');
+  document.getElementById('le').classList.toggle('on',lang==='en');
+  const b=document.getElementById('sfx');if(b){b.textContent=SFX.on?'🔊':'🔇';b.classList.toggle('off',!SFX.on);}
+})();
 i=-1;render();
 </script>

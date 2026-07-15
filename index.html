@@ -1,103 +1,2647 @@
-<!doctype html>
-<html lang="zh-Hant">
+<!DOCTYPE html>
+<html lang="zh-TW">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>英雄旅程 · 坎伯的十二階段</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英雄旅程 · Hero's Journey</title>
 <style>
-  :root{
-    --bg:#f4efe6; --card:#fbf8f2; --ink:#2c2822; --muted:#7a7266; --line:#e2d9c8;
-    --blue:#4a6fa5; --amber:#c08a2e; --green:#4f7a52;
-    --maxw:1080px;
-  }
-  @media (prefers-color-scheme: dark){
-    :root{ --bg:#1c1a17; --card:#26231e; --ink:#ece6da; --muted:#a49b8b; --line:#3a352d;
-      --blue:#7ea1d6; --amber:#e0b25f; --green:#82b085; }
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);
-    font-family:"Segoe UI","Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
-    line-height:1.7;padding:0 20px 80px}
-  .wrap{max-width:var(--maxw);margin:0 auto}
-  header{text-align:center;padding:64px 0 36px}
-  h1{font-size:2.4rem;margin:0 0 8px;letter-spacing:.04em}
-  .sub{color:var(--muted);font-size:1.05rem;margin:0}
-  .map{margin:8px auto 12px;max-width:560px}
-  .map img{width:100%;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.18)}
-  .lede{max-width:680px;margin:0 auto 8px;text-align:center;color:var(--muted)}
-  .playbtn{display:inline-block;text-decoration:none;font-weight:600;letter-spacing:.06em;
-    color:#1a140c;background:linear-gradient(180deg,#d9b366,#a8843c);
-    padding:14px 34px;border-radius:40px;box-shadow:0 8px 26px rgba(217,179,102,.28);
-    transition:transform .15s}
-  .playbtn:hover{transform:translateY(-2px)}
-  @media (prefers-color-scheme:light){.playbtn{color:#2c2822}}
-  .act{margin:56px 0 8px;display:flex;align-items:baseline;gap:14px;
-    border-bottom:1px solid var(--line);padding-bottom:12px}
-  .act .dot{width:14px;height:14px;border-radius:50%;flex:0 0 auto}
-  .act h2{font-size:1.5rem;margin:0}
-  .act .en{color:var(--muted);font-size:.95rem;font-weight:400}
-  .act .rng{margin-left:auto;color:var(--muted);font-size:.9rem}
-  .a1 .dot{background:var(--blue)} .a2 .dot{background:var(--amber)} .a3 .dot{background:var(--green)}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px;margin-top:24px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;
-    display:flex;flex-direction:column;transition:transform .18s ease,box-shadow .18s ease}
-  .card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,.16)}
-  .card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
-  .card .body{padding:16px 18px 20px}
-  .num{display:inline-block;font-size:.8rem;font-weight:600;color:#fff;
-    width:26px;height:26px;line-height:26px;text-align:center;border-radius:50%;margin-bottom:8px}
-  .a1 .num{background:var(--blue)} .a2 .num{background:var(--amber)} .a3 .num{background:var(--green)}
-  .card h3{margin:0 0 2px;font-size:1.15rem}
-  .card .en{color:var(--muted);font-size:.85rem;margin:0 0 8px}
-  .card p{margin:0;font-size:.95rem}
-  footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:64px}
+:root {
+  --gold: #c9a84c;
+  --gold-light: #f0d080;
+  --dark: #0a0a14;
+  --panel: rgba(10,10,20,0.92);
+  --text: #e8dfc0;
+  --accent: #7b4fc8;
+  --courage: #e05050;
+  --wisdom: #5090e0;
+  --heart: #e05090;
+  --green: #50c870;
+  --red: #e04040;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Georgia',serif;background:#000;}
+#game{position:fixed;inset:0;overflow:hidden;}
+
+/* ── SCREENS ── */
+.screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;}
+.screen.active{display:flex;}
+
+/* ── TITLE SCREEN ── */
+#title-screen{
+  background:linear-gradient(180deg,#0a0820 0%,#1a0a30 50%,#0a1a30 100%);
+}
+.title-stars{position:absolute;inset:0;background:radial-gradient(circle at 20% 30%, rgba(200,160,80,0.15) 0%, transparent 50%),
+  radial-gradient(circle at 80% 20%, rgba(120,80,200,0.15) 0%, transparent 40%);}
+.title-hero-img{width:280px;height:280px;object-fit:cover;border-radius:50%;border:3px solid var(--gold);
+  box-shadow:0 0 40px rgba(201,168,76,0.4),inset 0 0 20px rgba(0,0,0,0.5);margin-bottom:24px;}
+.title-zh{font-size:42px;color:var(--gold-light);letter-spacing:8px;text-shadow:0 0 20px rgba(201,168,76,0.6);margin-bottom:8px;}
+.title-en{font-size:16px;color:rgba(200,180,140,0.7);letter-spacing:4px;margin-bottom:40px;}
+.title-subtitle{font-size:13px;color:rgba(200,180,140,0.5);letter-spacing:2px;margin-bottom:50px;text-align:center;line-height:1.8;}
+.btn{
+  padding:14px 40px;background:linear-gradient(135deg,rgba(201,168,76,0.2),rgba(120,80,200,0.2));
+  border:1px solid var(--gold);color:var(--gold-light);font-size:16px;letter-spacing:3px;
+  cursor:pointer;border-radius:2px;transition:all 0.3s;font-family:inherit;
+}
+.btn:hover{background:linear-gradient(135deg,rgba(201,168,76,0.4),rgba(120,80,200,0.4));box-shadow:0 0 20px rgba(201,168,76,0.3);}
+.btn-sm{padding:8px 20px;font-size:13px;letter-spacing:1px;}
+.btn-danger{border-color:#e05050;color:#e05050;}
+.btn-green{border-color:var(--green);color:var(--green);}
+
+/* ── LANG TOGGLE ── */
+#lang-btn{
+  position:fixed;top:16px;right:16px;z-index:1000;
+  padding:6px 16px;background:rgba(0,0,0,0.6);border:1px solid var(--gold);
+  color:var(--gold);font-size:12px;cursor:pointer;letter-spacing:1px;border-radius:2px;
+}
+
+/* ── MAP SCREEN ── */
+#map-screen{background:#000;}
+#map-container{position:relative;width:100%;height:100%;}
+#map-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.8;}
+#map-fog{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.3;pointer-events:none;}
+.map-title{
+  position:absolute;top:20px;left:50%;transform:translateX(-50%);
+  color:var(--gold-light);font-size:20px;letter-spacing:4px;
+  text-shadow:0 0 10px rgba(0,0,0,0.9),0 0 20px rgba(201,168,76,0.4);
+  pointer-events:none;
+}
+.stage-node{
+  position:absolute;width:52px;height:52px;transform:translate(-50%,-50%);
+  cursor:pointer;z-index:10;
+}
+.stage-node .node-ring{
+  width:100%;height:100%;border-radius:50%;
+  border:2px solid var(--gold);
+  background:rgba(10,10,20,0.7);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:all 0.3s;position:relative;
+}
+.stage-node.locked .node-ring{border-color:rgba(100,100,120,0.5);background:rgba(5,5,10,0.8);}
+.stage-node.locked .node-ring:hover{transform:none;box-shadow:none;}
+.stage-node.unlocked .node-ring:hover,.stage-node.completed .node-ring:hover{
+  transform:scale(1.15);box-shadow:0 0 20px rgba(201,168,76,0.5);
+}
+.stage-node.completed .node-ring{border-color:var(--green);background:rgba(10,30,15,0.8);}
+.stage-node.current .node-ring{border-color:var(--gold-light);animation:pulse-node 1.5s infinite;}
+@keyframes pulse-node{0%,100%{box-shadow:0 0 8px rgba(201,168,76,0.4);}50%{box-shadow:0 0 20px rgba(201,168,76,0.8);}}
+.node-num{font-size:11px;color:var(--gold);font-weight:bold;}
+.node-icon{font-size:18px;}
+.node-label{
+  position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);
+  white-space:nowrap;font-size:10px;color:var(--gold);
+  text-shadow:0 0 6px rgba(0,0,0,1),0 0 10px rgba(0,0,0,1);
+  pointer-events:none;
+}
+.stage-node.locked .node-label{color:rgba(150,140,120,0.5);}
+
+/* ── ATTRS BAR (map) ── */
+#attrs-hud{
+  position:absolute;bottom:20px;left:20px;
+  background:var(--panel);border:1px solid rgba(201,168,76,0.3);
+  padding:12px 16px;border-radius:4px;min-width:200px;
+}
+.attr-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.attr-row:last-child{margin-bottom:0;}
+.attr-label{font-size:11px;color:var(--text);width:55px;}
+.attr-bar{flex:1;height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;}
+.attr-fill{height:100%;border-radius:3px;transition:width 0.5s;}
+.attr-fill.courage{background:linear-gradient(90deg,#a02020,var(--courage));}
+.attr-fill.wisdom{background:linear-gradient(90deg,#2050a0,var(--wisdom));}
+.attr-fill.heart{background:linear-gradient(90deg,#a02060,var(--heart));}
+.attr-val{font-size:11px;color:var(--gold);width:28px;text-align:right;}
+
+/* ── JOURNAL BTN ── */
+#journal-btn{
+  position:absolute;bottom:20px;right:20px;
+  padding:10px 20px;background:rgba(10,10,20,0.85);border:1px solid var(--gold);
+  color:var(--gold);font-size:13px;cursor:pointer;letter-spacing:1px;border-radius:2px;
+}
+
+/* ── STAGE SCREEN ── */
+#stage-screen{background:#000;}
+#stage-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.6;}
+#stage-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.3) 0%,rgba(0,0,0,0.7) 100%);}
+
+#stage-header{
+  position:absolute;top:0;left:0;right:0;
+  padding:16px 20px;background:linear-gradient(180deg,rgba(0,0,0,0.8),transparent);
+  display:flex;align-items:center;gap:16px;z-index:20;
+}
+#stage-back{background:none;border:1px solid rgba(201,168,76,0.4);color:var(--gold);
+  padding:6px 14px;cursor:pointer;font-size:12px;letter-spacing:1px;border-radius:2px;}
+#stage-title-text{color:var(--gold-light);font-size:18px;letter-spacing:2px;flex:1;}
+#stage-myth{font-size:11px;color:rgba(200,180,140,0.6);letter-spacing:1px;}
+
+/* ── DIALOGUE BOX ── */
+#dialogue-box{
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(180deg,transparent,var(--panel) 20%);
+  padding:20px 24px 24px;z-index:30;
+  transform:translateY(100%);transition:transform 0.4s;
+}
+#dialogue-box.visible{transform:translateY(0);}
+#dialogue-portrait{
+  width:72px;height:72px;object-fit:cover;border-radius:50%;
+  border:2px solid var(--gold);float:left;margin-right:16px;
+}
+#dialogue-name{font-size:13px;color:var(--gold);letter-spacing:1px;margin-bottom:6px;}
+#dialogue-text{font-size:15px;color:var(--text);line-height:1.7;clear:none;}
+#dialogue-continue{
+  display:block;text-align:right;color:var(--gold);font-size:12px;
+  margin-top:10px;cursor:pointer;letter-spacing:1px;animation:blink 1.2s infinite;
+}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3};}
+
+/* ── GAME AREA (stage center) ── */
+#game-area{
+  position:absolute;top:70px;bottom:180px;left:0;right:0;
+  display:flex;align-items:center;justify-content:center;
+  z-index:20;
+}
+#game-canvas-wrap{position:relative;max-width:700px;width:100%;max-height:100%;}
+
+/* ── HOTSPOT EXPLORE ── */
+.hotspot-map{position:relative;width:100%;max-width:650px;margin:0 auto;}
+.hotspot-map img{width:100%;border-radius:4px;border:1px solid rgba(201,168,76,0.2);}
+.hotspot{
+  position:absolute;width:48px;height:48px;transform:translate(-50%,-50%);
+  cursor:pointer;z-index:5;
+}
+.hotspot-ring{
+  width:100%;height:100%;border-radius:50%;border:2px solid var(--gold);
+  background:rgba(201,168,76,0.15);display:flex;align-items:center;justify-content:center;
+  font-size:20px;transition:all 0.3s;animation:pulse-hotspot 2s infinite;
+}
+.hotspot.visited .hotspot-ring{border-color:var(--green);background:rgba(80,200,112,0.2);animation:none;}
+@keyframes pulse-hotspot{0%,100%{box-shadow:0 0 0 0 rgba(201,168,76,0.4);}50%{box-shadow:0 0 0 8px rgba(201,168,76,0);};}
+.hotspot-ring:hover{transform:scale(1.2);}
+.hotspot-tooltip{
+  position:absolute;bottom:110%;left:50%;transform:translateX(-50%);
+  background:var(--panel);border:1px solid var(--gold);
+  color:var(--text);font-size:12px;padding:6px 10px;white-space:nowrap;
+  border-radius:2px;pointer-events:none;opacity:0;transition:opacity 0.2s;
+}
+.hotspot:hover .hotspot-tooltip{opacity:1;}
+
+/* ── STAGE PROGRESS ── */
+#stage-progress{
+  position:absolute;top:70px;right:20px;z-index:25;
+  background:var(--panel);border:1px solid rgba(201,168,76,0.3);
+  padding:10px 14px;border-radius:4px;font-size:12px;color:var(--text);
+  min-width:140px;
+}
+.prog-bar{height:5px;background:rgba(255,255,255,0.1);border-radius:3px;margin-top:6px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--gold));border-radius:3px;transition:width 0.4s;}
+
+/* ── SCALE GAME ── */
+#scale-game{text-align:center;width:100%;max-width:560px;}
+.scale-question{color:var(--gold-light);font-size:16px;margin-bottom:20px;line-height:1.6;}
+.scale-svg-wrap{display:flex;justify-content:center;margin:10px 0 20px;}
+.scale-choices{display:flex;gap:20px;justify-content:center;}
+.scale-btn{
+  padding:14px 28px;background:rgba(201,168,76,0.1);border:1px solid var(--gold);
+  color:var(--text);font-size:14px;cursor:pointer;border-radius:2px;
+  transition:all 0.3s;min-width:160px;line-height:1.5;
+}
+.scale-btn:hover{background:rgba(201,168,76,0.25);color:var(--gold-light);}
+.scale-progress{color:rgba(200,180,140,0.6);font-size:12px;margin-bottom:12px;}
+
+/* ── MAZE GAME ── */
+#maze-game{text-align:center;width:100%;max-width:520px;}
+#maze-canvas{border:1px solid rgba(201,168,76,0.3);border-radius:4px;cursor:none;}
+.fear-meter-wrap{display:flex;align-items:center;gap:10px;margin:10px 0;}
+.fear-label{color:var(--courage);font-size:12px;width:80px;}
+.fear-bar{flex:1;height:8px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;}
+.fear-fill{height:100%;background:linear-gradient(90deg,#a02020,var(--courage));border-radius:4px;transition:width 0.3s;}
+.maze-hint{color:rgba(200,180,140,0.6);font-size:12px;margin-top:8px;}
+
+/* ── RHYTHM GAME ── */
+#rhythm-game{text-align:center;width:100%;max-width:500px;}
+.rhythm-track{
+  display:flex;gap:12px;justify-content:center;margin:20px 0;
+  height:80px;align-items:center;
+}
+.rhythm-zone{
+  width:70px;height:70px;border-radius:50%;border:2px solid var(--gold);
+  background:rgba(201,168,76,0.05);display:flex;align-items:center;
+  justify-content:center;font-size:28px;cursor:pointer;transition:all 0.15s;
+}
+.rhythm-zone.active{background:rgba(201,168,76,0.4);transform:scale(1.15);}
+.rhythm-zone.hit{background:rgba(80,200,112,0.4);border-color:var(--green);}
+.rhythm-zone.miss{background:rgba(224,80,80,0.4);border-color:var(--red);}
+.rhythm-status{color:var(--text);font-size:14px;margin-bottom:10px;}
+.rhythm-score{color:var(--gold);font-size:24px;font-weight:bold;}
+.rhythm-instruction{color:rgba(200,180,140,0.6);font-size:12px;margin-top:8px;}
+.hp-bar-wrap{display:flex;align-items:center;gap:10px;margin:8px 0;}
+.hp-label{font-size:12px;color:var(--text);width:60px;}
+.hp-bar{flex:1;height:8px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;}
+.hp-fill{height:100%;border-radius:4px;transition:width 0.3s;}
+.hp-fill.boss{background:linear-gradient(90deg,#800,var(--courage));}
+.hp-fill.player{background:linear-gradient(90deg,#206020,var(--green));}
+
+/* ── PATH CHOICE ── */
+#path-game{text-align:center;width:100%;max-width:560px;}
+.path-question{color:var(--gold-light);font-size:15px;margin-bottom:20px;line-height:1.6;}
+.path-options{display:flex;flex-direction:column;gap:12px;}
+.path-btn{
+  padding:14px 20px;background:rgba(120,80,200,0.1);border:1px solid var(--accent);
+  color:var(--text);font-size:13px;cursor:pointer;border-radius:2px;
+  transition:all 0.3s;text-align:left;line-height:1.5;
+}
+.path-btn:hover{background:rgba(120,80,200,0.25);color:var(--gold-light);}
+.path-cost{font-size:11px;color:rgba(200,180,140,0.5);margin-top:4px;}
+
+/* ── TEXT INPUT ── */
+#text-game{text-align:center;width:100%;max-width:520px;}
+.text-question{color:var(--gold-light);font-size:16px;margin-bottom:20px;line-height:1.7;}
+.text-sub{color:rgba(200,180,140,0.6);font-size:13px;margin-bottom:16px;}
+#soul-input{
+  width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);
+  border:1px solid var(--gold);color:var(--text);font-size:15px;
+  font-family:inherit;border-radius:2px;resize:none;min-height:80px;
+}
+#soul-input:focus{outline:none;border-color:var(--gold-light);background:rgba(255,255,255,0.08);}
+.text-submit{margin-top:14px;}
+
+/* ── STAR PUZZLE ── */
+#star-game{text-align:center;width:100%;max-width:500px;}
+#star-canvas{border:1px solid rgba(201,168,76,0.2);border-radius:4px;}
+.star-hint{color:rgba(200,180,140,0.6);font-size:12px;margin-top:8px;}
+.star-score{color:var(--gold);font-size:14px;margin-bottom:8px;}
+
+/* ── STRATEGY GAME ── */
+#strategy-game{text-align:center;width:100%;max-width:520px;}
+.strategy-grid{
+  display:grid;grid-template-columns:repeat(8,1fr);gap:4px;
+  margin:16px auto;max-width:400px;
+}
+.strategy-cell{
+  aspect-ratio:1;border:1px solid rgba(201,168,76,0.2);
+  background:rgba(201,168,76,0.03);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;transition:all 0.2s;border-radius:2px;
+}
+.strategy-cell:hover{background:rgba(201,168,76,0.15);}
+.strategy-cell.trap{background:rgba(120,80,200,0.3);border-color:var(--accent);}
+.strategy-cell.dragon{background:rgba(200,80,40,0.3);border-color:var(--courage);}
+.strategy-cell.path{background:rgba(201,168,76,0.1);}
+.strategy-hint{color:rgba(200,180,140,0.6);font-size:12px;margin-bottom:10px;}
+.strategy-status{color:var(--gold);font-size:14px;margin-top:10px;}
+.strategy-tokens{display:flex;gap:12px;justify-content:center;margin-bottom:10px;}
+.token-badge{padding:6px 14px;background:rgba(120,80,200,0.2);border:1px solid var(--accent);
+  color:var(--text);font-size:13px;border-radius:2px;}
+
+/* ── STEALTH GAME ── */
+#stealth-game{text-align:center;width:100%;max-width:520px;}
+#stealth-canvas{border:1px solid rgba(201,168,76,0.3);border-radius:4px;cursor:pointer;}
+.stealth-hint{color:rgba(200,180,140,0.6);font-size:12px;margin-top:8px;}
+
+/* ── SAIL GAME ── */
+#sail-game{text-align:center;width:100%;max-width:520px;}
+#sail-canvas{border:1px solid rgba(100,150,200,0.3);border-radius:4px;cursor:crosshair;}
+.sail-hint{color:rgba(200,180,140,0.6);font-size:12px;margin-top:8px;}
+
+/* ── DIVE GAME ── */
+#dive-game{text-align:center;width:100%;max-width:520px;}
+#dive-canvas{border:1px solid rgba(80,100,200,0.3);border-radius:4px;cursor:pointer;}
+.dive-hint{color:rgba(200,180,140,0.6);font-size:12px;margin-top:8px;}
+.dive-depth{color:var(--wisdom);font-size:13px;margin-bottom:8px;}
+
+/* ── AWAKE GAME ── */
+#awake-game{text-align:center;width:100%;max-width:520px;}
+.awake-day{color:var(--gold-light);font-size:18px;margin-bottom:10px;}
+.awake-canvas-wrap{position:relative;display:inline-block;}
+#awake-canvas{border:1px solid rgba(201,168,76,0.3);border-radius:4px;}
+.awake-btn{
+  display:block;margin:16px auto;padding:16px 40px;
+  background:rgba(201,168,76,0.15);border:2px solid var(--gold);
+  color:var(--gold-light);font-size:18px;cursor:pointer;border-radius:4px;
+  animation:awake-pulse 1s infinite;
+}
+@keyframes awake-pulse{0%,100%{box-shadow:0 0 10px rgba(201,168,76,0.3);}50%{box-shadow:0 0 25px rgba(201,168,76,0.7);}}
+.awake-status{color:var(--text);font-size:14px;}
+
+/* ── WILDERNESS GAME ── */
+#wild-game{text-align:center;width:100%;max-width:560px;}
+.wild-map{position:relative;display:inline-block;}
+.wild-map img{width:500px;max-width:100%;border-radius:4px;opacity:0.7;}
+.wild-target{
+  position:absolute;width:44px;height:44px;transform:translate(-50%,-50%);
+  cursor:pointer;
+}
+.wild-ring{
+  width:100%;height:100%;border-radius:50%;border:2px dashed rgba(201,168,76,0.5);
+  background:rgba(201,168,76,0.1);display:flex;align-items:center;
+  justify-content:center;font-size:18px;transition:all 0.3s;
+  animation:pulse-hotspot 2.5s infinite;
+}
+.wild-target.found .wild-ring{border-color:var(--green);background:rgba(80,200,112,0.2);animation:none;}
+.wild-hint{color:rgba(200,180,140,0.6);font-size:12px;margin-top:8px;}
+.wild-clue{color:var(--gold);font-size:13px;margin-bottom:10px;}
+
+/* ── CONFESSION GAME ── */
+#confession-game{text-align:center;width:100%;max-width:540px;}
+.confession-judge{color:var(--gold-light);font-size:15px;margin-bottom:12px;line-height:1.6;}
+.confession-context{
+  background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);
+  padding:10px 14px;border-radius:2px;font-size:13px;color:var(--text);
+  margin-bottom:14px;line-height:1.5;font-style:italic;
+}
+.confession-progress{color:rgba(200,180,140,0.5);font-size:12px;margin-bottom:10px;}
+
+/* ── JOURNAL PANEL ── */
+#journal-panel{
+  position:fixed;right:-420px;top:0;bottom:0;width:400px;
+  background:linear-gradient(180deg,#0d0820,#0a1020);
+  border-left:1px solid rgba(201,168,76,0.3);
+  transition:right 0.4s;z-index:100;overflow-y:auto;
+  padding:24px 20px;
+}
+#journal-panel.open{right:0;}
+#journal-close{
+  position:absolute;top:16px;right:16px;background:none;border:none;
+  color:var(--gold);font-size:20px;cursor:pointer;
+}
+#journal-title{font-size:18px;color:var(--gold-light);letter-spacing:3px;margin-bottom:20px;}
+.journal-entry{
+  margin-bottom:16px;padding:12px 14px;
+  background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.15);
+  border-radius:2px;
+}
+.journal-entry-stage{font-size:11px;color:var(--gold);margin-bottom:4px;letter-spacing:1px;}
+.journal-entry-text{font-size:13px;color:var(--text);line-height:1.6;}
+.journal-attrs{margin-top:20px;padding-top:16px;border-top:1px solid rgba(201,168,76,0.2);}
+.journal-attrs-title{font-size:12px;color:var(--gold);margin-bottom:12px;letter-spacing:1px;}
+
+/* ── ENDING SCREEN ── */
+#ending-screen{
+  background:radial-gradient(circle at center,#1a1040 0%,#0a0820 60%,#000 100%);
+}
+.ending-medal{width:150px;height:150px;object-fit:cover;border-radius:50%;
+  border:3px solid var(--gold);box-shadow:0 0 40px rgba(201,168,76,0.5);margin-bottom:24px;}
+.ending-title-label{font-size:13px;color:rgba(200,180,140,0.6);letter-spacing:3px;margin-bottom:8px;}
+.ending-hero-title{font-size:32px;color:var(--gold-light);letter-spacing:4px;margin-bottom:20px;text-shadow:0 0 20px rgba(201,168,76,0.5);}
+.ending-description{font-size:14px;color:var(--text);line-height:1.8;text-align:center;max-width:500px;margin-bottom:30px;}
+.ending-motto{font-size:13px;color:var(--gold);font-style:italic;margin-bottom:12px;letter-spacing:1px;}
+.ending-epitaph{
+  max-width:500px;text-align:center;font-size:13px;color:rgba(200,180,140,0.5);
+  line-height:1.9;border-top:1px solid rgba(201,168,76,0.2);padding-top:20px;margin-top:10px;
+}
+
+/* ── NOTIFICATION ── */
+#notif{
+  position:fixed;top:60px;left:50%;transform:translateX(-50%);
+  background:var(--panel);border:1px solid var(--gold);
+  color:var(--text);font-size:13px;padding:10px 20px;
+  border-radius:2px;z-index:200;pointer-events:none;
+  opacity:0;transition:opacity 0.3s;max-width:320px;text-align:center;
+}
+#notif.show{opacity:1;}
+
+/* ── ATTR POPUP ── */
+.attr-popup{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:var(--panel);border:1px solid var(--gold);
+  padding:20px 30px;border-radius:4px;z-index:150;text-align:center;
+  min-width:280px;
+}
+.attr-popup h3{color:var(--gold-light);font-size:16px;margin-bottom:14px;letter-spacing:2px;}
+.attr-popup .attr-change{font-size:14px;color:var(--text);margin:4px 0;}
+.attr-popup .attr-change.pos{color:var(--green);}
+.attr-popup .attr-change.neg{color:var(--red);}
+
+/* ── OVERLAY ── */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:140;display:none;}
+
+/* ── MINI-MAP ── */
+#mini-map{
+  position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
+  background:var(--panel);border:1px solid rgba(201,168,76,0.3);
+  padding:6px 10px;border-radius:4px;font-size:11px;color:rgba(200,180,140,0.6);
+  pointer-events:none;z-index:25;
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1>英雄旅程</h1>
-    <p class="sub">約瑟夫·坎伯的十二階段 · The Hero's Journey</p>
-  </header>
+<div id="game">
+  <!-- LANG TOGGLE -->
+  <button id="lang-btn" onclick="toggleLang()">EN</button>
 
-  <div class="map"><img src="images/00_map.png" alt="英雄旅程圓環地圖"></div>
-  <p class="lede">英雄離開日常世界、跨越門檻進入未知，歷經考驗與蛻變，最終帶著能造福眾人的禮物回到起點——
-    一個看似回到原點、實則脫胎換骨的圓。</p>
-  <div style="text-align:center;margin:26px 0 6px">
-    <a class="playbtn" href="heros_journey_game.html">▶ 開始互動遊戲 · Play the Game</a>
+  <!-- NOTIFICATION -->
+  <div id="notif"></div>
+  <div id="modal-overlay"></div>
+
+  <!-- TITLE SCREEN -->
+  <div id="title-screen" class="screen active">
+    <div class="title-stars"></div>
+    <img class="title-hero-img" src="./images/img15.png" alt="Hero" onerror="this.style.display='none'">
+    <div class="title-zh" id="t-title-zh">英雄旅程</div>
+    <div class="title-en">HERO'S JOURNEY</div>
+    <div class="title-subtitle" id="t-title-sub">
+      12個世界神話的時空節點<br>
+      <span style="font-size:11px;opacity:0.7">Twelve Mythic Thresholds Across Time & Space</span>
+    </div>
+    <button class="btn" onclick="startGame()" id="t-start-btn">踏上旅程 · BEGIN</button>
   </div>
 
-  <section class="a1">
-    <div class="act a1"><span class="dot"></span><h2>第一幕 · 啟程 <span class="en">Departure</span></h2><span class="rng">階段 1–5</span></div>
-    <div class="grid">
-      <div class="card"><img src="images/01_ordinary_world.png" alt="平凡世界"><div class="body"><span class="num">1</span><h3>平凡世界</h3><p class="en">Ordinary World</p><p>英雄身處熟悉的日常，尚未察覺即將到來的召喚。</p></div></div>
-      <div class="card"><img src="images/02_call_to_adventure.png" alt="冒險召喚"><div class="body"><span class="num">2</span><h3>冒險召喚</h3><p class="en">Call to Adventure</p><p>一則訊息、一樁事件，把冒險的邀請擺到英雄面前。</p></div></div>
-      <div class="card"><img src="images/03_refusal.png" alt="拒絕召喚"><div class="body"><span class="num">3</span><h3>拒絕召喚</h3><p class="en">Refusal of the Call</p><p>出於恐懼或責任，英雄猶豫、抗拒踏出第一步。</p></div></div>
-      <div class="card"><img src="images/04_meeting_mentor.png" alt="遇見導師"><div class="body"><span class="num">4</span><h3>遇見導師</h3><p class="en">Meeting the Mentor</p><p>智者現身，給予忠告、訓練，或一件關鍵法寶。</p></div></div>
-      <div class="card"><img src="images/05_crossing_threshold.png" alt="跨越門檻"><div class="body"><span class="num">5</span><h3>跨越門檻</h3><p class="en">Crossing the Threshold</p><p>英雄下定決心，離開已知世界，正式踏入未知。</p></div></div>
+  <!-- MAP SCREEN -->
+  <div id="map-screen" class="screen">
+    <div id="map-container">
+      <img id="map-bg" src="./images/img0.png" alt="World Map" onerror="this.style.background='#1a1030'">
+      <img id="map-fog" src="./images/img1.png" alt="Fog" onerror="this.style.display='none'">
+      <div class="map-title" id="t-map-title">選擇你的下一個旅程節點</div>
+      <div id="map-nodes"></div>
+      <div id="attrs-hud">
+        <div class="attr-row">
+          <div class="attr-label" id="t-attr-c">⚔️ 勇氣</div>
+          <div class="attr-bar"><div class="attr-fill courage" id="bar-courage" style="width:50%"></div></div>
+          <div class="attr-val" id="val-courage">10</div>
+        </div>
+        <div class="attr-row">
+          <div class="attr-label" id="t-attr-w">🌙 智慧</div>
+          <div class="attr-bar"><div class="attr-fill wisdom" id="bar-wisdom" style="width:50%"></div></div>
+          <div class="attr-val" id="val-wisdom">10</div>
+        </div>
+        <div class="attr-row">
+          <div class="attr-label" id="t-attr-h">❤️ 心</div>
+          <div class="attr-bar"><div class="attr-fill heart" id="bar-heart" style="width:50%"></div></div>
+          <div class="attr-val" id="val-heart">10</div>
+        </div>
+      </div>
+      <button id="journal-btn" onclick="openJournal()" id="t-journal-btn">📖 英雄日誌</button>
+      <div id="mini-map" id="t-mini-map">🗺️ 世界地圖</div>
     </div>
-  </section>
+  </div>
 
-  <section class="a2">
-    <div class="act a2"><span class="dot"></span><h2>第二幕 · 啟蒙 <span class="en">Initiation</span></h2><span class="rng">階段 6–9</span></div>
-    <div class="grid">
-      <div class="card"><img src="images/06_tests_allies_enemies.png" alt="考驗、盟友、敵人"><div class="body"><span class="num">6</span><h3>考驗 · 盟友 · 敵人</h3><p class="en">Tests, Allies, Enemies</p><p>在新世界歷經試煉，結識盟友、辨明敵人。</p></div></div>
-      <div class="card"><img src="images/07_inmost_cave.png" alt="深入洞穴"><div class="body"><span class="num">7</span><h3>深入洞穴</h3><p class="en">Approach the Inmost Cave</p><p>逼近最危險的核心，準備面對最深的恐懼。</p></div></div>
-      <div class="card"><img src="images/08_the_ordeal.png" alt="重大考驗"><div class="body"><span class="num">8</span><h3>重大考驗</h3><p class="en">The Ordeal</p><p>生死交關的關鍵一戰，象徵一次死亡與重生。</p></div></div>
-      <div class="card"><img src="images/09_reward.png" alt="獲得寶藏"><div class="body"><span class="num">9</span><h3>獲得寶藏</h3><p class="en">Reward</p><p>戰勝試煉，奪得寶藏、知識或全新的力量。</p></div></div>
+  <!-- STAGE SCREEN -->
+  <div id="stage-screen" class="screen">
+    <img id="stage-bg" src="" alt="">
+    <div id="stage-overlay"></div>
+    <div id="stage-header">
+      <button id="stage-back" onclick="goToMap()">◀ 地圖</button>
+      <div id="stage-title-text"></div>
+      <div id="stage-myth"></div>
     </div>
-  </section>
-
-  <section class="a3">
-    <div class="act a3"><span class="dot"></span><h2>第三幕 · 回歸 <span class="en">Return</span></h2><span class="rng">階段 10–12</span></div>
-    <div class="grid">
-      <div class="card"><img src="images/10_road_back.png" alt="歸途"><div class="body"><span class="num">10</span><h3>歸途</h3><p class="en">The Road Back</p><p>帶著寶藏踏上返鄉之路，往往仍有追兵與抉擇。</p></div></div>
-      <div class="card"><img src="images/11_resurrection.png" alt="重生"><div class="body"><span class="num">11</span><h3>重生</h3><p class="en">Resurrection</p><p>最後的淨化與蛻變，英雄徹底獲得新生。</p></div></div>
-      <div class="card"><img src="images/12_return_elixir.png" alt="帶著禮物回來"><div class="body"><span class="num">12</span><h3>帶著禮物回來</h3><p class="en">Return with the Elixir</p><p>帶著能造福眾人的禮物回到起點，圓環閉合。</p></div></div>
+    <div id="stage-progress">
+      <span id="stage-prog-label">進度</span>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
     </div>
-  </section>
+    <div id="game-area">
+      <!-- Dynamic content injected here -->
+    </div>
+    <div id="dialogue-box">
+      <img id="dialogue-portrait" src="" alt="">
+      <div id="dialogue-name"></div>
+      <div id="dialogue-text"></div>
+      <span id="dialogue-continue" onclick="nextDialogue()">▶ 繼續</span>
+    </div>
+  </div>
 
-  <footer>圖像由 gpt-image-1 生成 · 架構依循 Joseph Campbell《千面英雄》與 Christopher Vogler 的十二階段</footer>
+  <!-- JOURNAL PANEL -->
+  <div id="journal-panel">
+    <button id="journal-close" onclick="closeJournal()">✕</button>
+    <div id="journal-title">📖 <span id="t-journal-title">英雄日誌</span></div>
+    <div id="journal-entries"></div>
+    <div class="journal-attrs">
+      <div class="journal-attrs-title" id="t-journal-attrs">屬性成長</div>
+      <div class="attr-row"><div class="attr-label">⚔️ 勇氣</div>
+        <div class="attr-bar"><div class="attr-fill courage" id="j-bar-courage" style="width:50%"></div></div>
+        <div class="attr-val" id="j-val-courage">10</div></div>
+      <div class="attr-row"><div class="attr-label">🌙 智慧</div>
+        <div class="attr-bar"><div class="attr-fill wisdom" id="j-bar-wisdom" style="width:50%"></div></div>
+        <div class="attr-val" id="j-val-wisdom">10</div></div>
+      <div class="attr-row"><div class="attr-label">❤️ 心</div>
+        <div class="attr-bar"><div class="attr-fill heart" id="j-bar-heart" style="width:50%"></div></div>
+        <div class="attr-val" id="j-val-heart">10</div></div>
+    </div>
+  </div>
+
+  <!-- ENDING SCREEN -->
+  <div id="ending-screen" class="screen">
+    <img class="ending-medal" src="./images/img37.png" alt="Medal" onerror="this.style.display='none'">
+    <div class="ending-title-label" id="t-end-label">你的英雄稱號</div>
+    <div class="ending-hero-title" id="end-hero-title"></div>
+    <div class="ending-description" id="end-description"></div>
+    <div class="ending-motto" id="end-motto"></div>
+    <div class="ending-epitaph" id="end-epitaph"></div>
+    <button class="btn btn-sm" style="margin-top:24px" onclick="restartGame()" id="t-restart-btn">重新旅程 · RESTART</button>
+  </div>
 </div>
+<script>
+// ═══════════════════════════════════════════════════════════
+// TRANSLATIONS
+// ═══════════════════════════════════════════════════════════
+const T = {
+  zh: {
+    start:'踏上旅程', mapTitle:'選擇你的下一個旅程節點',
+    attrC:'⚔️ 勇氣', attrW:'🌙 智慧', attrH:'❤️ 心',
+    journal:'📖 英雄日誌', journalTitle:'英雄日誌', journalAttrs:'屬性成長',
+    progress:'進度', back:'◀ 地圖', cont:'▶ 繼續',
+    restart:'重新旅程', endLabel:'你的英雄稱號',
+    locked:'🔒 尚未解鎖', complete:'關卡完成！',
+    stageComplete:'你完成了這個關卡！', nextStage:'前往下一關',
+    submit:'確認送出', skip:'略過',
+    soulPrompt:'在這裡寫下你的答案…',
+    attrGain:'屬性提升！', attrLose:'屬性變化',
+    fearLabel:'⚠️ 恐懼值',
+    scaleInstruct:'拖動天平，決定哪邊更重',
+  },
+  en: {
+    start:'Begin Journey', mapTitle:'Choose Your Next Stage',
+    attrC:'⚔️ Courage', attrW:'🌙 Wisdom', attrH:'❤️ Heart',
+    journal:'📖 Journal', journalTitle:"Hero's Journal", journalAttrs:'Attributes',
+    progress:'Progress', back:'◀ Map', cont:'▶ Continue',
+    restart:'Restart', endLabel:'Your Hero Title',
+    locked:'🔒 Locked', complete:'Stage Complete!',
+    stageComplete:'You completed this stage!', nextStage:'Next Stage',
+    submit:'Submit', skip:'Skip',
+    soulPrompt:'Write your answer here…',
+    attrGain:'Attribute Gained!', attrLose:'Attribute Change',
+    fearLabel:'⚠️ Fear',
+    scaleInstruct:'Tip the scale — which weighs more?',
+  }
+};
+
+// ═══════════════════════════════════════════════════════════
+// GAME STATE
+// ═══════════════════════════════════════════════════════════
+const G = {
+  lang: 'zh',
+  stage: 0,           // 0=map, 1-12=active
+  unlocked: 1,        // highest accessible
+  completed: [],      // array of completed stage nums
+  attrs: { courage:10, wisdom:10, heart:10 },
+  journal: [],        // {stage, label, text}
+  choices: {},        // {stageNum: choiceKey}
+  killedHumbaba: null,
+  listenedSiduri: false,
+  finalAnswer: '',
+  orpheusAnswer: '',
+  s1VisitedCount: 0,
+  s2SoulWord: '',
+  s4Choices: [],
+  s5Outcome: null,
+  s6EnkiduDays: 0,
+  s8Survived: false,
+  s9TrapResult: null,
+  s10HeartLight: null,
+  s11Resisted: 0,
+};
+
+// ═══════════════════════════════════════════════════════════
+// STAGE DEFINITIONS
+// ═══════════════════════════════════════════════════════════
+const STAGES = [
+  null, // 0 unused
+  { // STAGE 1
+    id:1, icon:'🏛️',
+    zh:{title:'第一關：平凡的牢籠', sub:'吉爾伽美什的烏魯克城 · 《吉爾伽美什史詩》'},
+    en:{title:'Stage 1: The Gilded Cage', sub:"Gilgamesh's Uruk · Epic of Gilgamesh"},
+    bg:'./images/img3.png',
+    type:'explore',
+    portrait:'./images/img15.png', portraitName:'吉爾伽美什',
+    dialogues:{
+      zh:[
+        {who:'旁白', text:'時間：青銅時代黃昏。你是吉爾伽美什——三分之二神明的國王。你擁有一切，卻沒有一個能真正相伴的靈魂。', portrait:'./images/img33.png'},
+        {who:'吉爾伽美什', text:'城市在我腳下，卻不屬於我。我的城牆是世上最高的，但我的心……', portrait:'./images/img15.png'},
+      ],
+      en:[
+        {who:'Narrator', text:'Bronze Age dusk. You are Gilgamesh — two-thirds god, one-third mortal. You possess everything, yet not a single soul truly accompanies you.', portrait:'./images/img33.png'},
+        {who:'Gilgamesh', text:'The city lies beneath me, yet it does not belong to me. My walls are the tallest in the world, but my heart…', portrait:'./images/img15.png'},
+      ]
+    },
+    hotspots:[
+      {x:'18%',y:'35%', icon:'🏛️', zh:{name:'宮殿',result:'侍女竊竊私語：「他是怪物，不是國王…」你的心收緊了。',attr:{heart:-1}},
+        en:{name:'Palace',result:'Handmaidens whisper: "He is a monster, not a king…" Your heart tightens.',attr:{heart:-1}}},
+      {x:'35%',y:'60%', icon:'💧', zh:{name:'水井',result:'老婦拒絕讓路，說：「你的眼睛裡沒有人。」',attr:{wisdom:1}},
+        en:{name:'Well',result:'An old woman refuses to move: "There is no one in your eyes."',attr:{wisdom:1}}},
+      {x:'55%',y:'45%', icon:'🌾', zh:{name:'市場',result:'商人見你紛紛逃散。市場安靜如死。孤獨如此刺骨。',attr:{heart:-1,courage:1}},
+        en:{name:'Market',result:'Merchants scatter at your sight. The marketplace falls silent as death.',attr:{heart:-1,courage:1}}},
+      {x:'72%',y:'30%', icon:'🌙', zh:{name:'神廟',result:'祭司說：「眾神聽見了人民的哭泣，正在準備一個對手給你。」',attr:{wisdom:1}},
+        en:{name:'Temple',result:'The priest says: "The gods have heard the people\'s cries. They are creating a rival for you."',attr:{wisdom:1}}},
+      {x:'85%',y:'65%', icon:'🦁', zh:{name:'城門',result:'遠方傳來野獸的嘶吼——那是荒野的呼喚。夜裡，天神阿努的使者入夢：「明日，荒野中將誕生一個人——只有遇見他，你才能知道你真正是誰。」',attr:{courage:1}},
+        en:{name:'City Gate',result:'Wild beast cries echo from the distance — the call of the wilderness. That night, the god Anu\'s messenger enters your dream: "Tomorrow, a man shall be born in the wild — only by meeting him will you know who you truly are."',attr:{courage:1}}},
+    ],
+    requiredVisits: 3,
+    endDialogue:{
+      zh:{who:'夢中使者', text:'「你的孤獨已被天上聽見。明日，荒野中將誕生一個人——他是泥土與野獸的兒子。只有遇見他，你才能知道自己真正是誰。」', portrait:'./images/img33.png'},
+      en:{who:'Dream Messenger', text:'"Your loneliness has been heard in heaven. Tomorrow, a man shall be born in the wild — son of earth and beast. Only by meeting him will you know who you truly are."', portrait:'./images/img33.png'},
+    }
+  },
+  { // STAGE 2
+    id:2, icon:'🌊',
+    zh:{title:'第二關：召喚的聲音', sub:'恩基杜現身 · 幼發拉底河'},
+    en:{title:'Stage 2: The Wild Call', sub:'Enkidu Appears · Euphrates River'},
+    bg:'./images/img4.png',
+    type:'stealth',
+    portrait:'./images/img16.png', portraitName:'恩基杜',
+    dialogues:{
+      zh:[
+        {who:'旁白', text:'清晨，幼發拉底河邊。河對岸，一個用草葉遮身的巨人正在喝水——他是恩基杜，神造的野人，從未見過城市的存在。', portrait:'./images/img33.png'},
+        {who:'吉爾伽美什', text:'那不是恐懼，不是欲望——是「終於」。彷彿有什麼東西在很遠的地方輕聲說：「來。」', portrait:'./images/img15.png'},
+      ],
+      en:[
+        {who:'Narrator', text:'Dawn at the Euphrates. Across the river, a giant clothed in leaves drinks water — Enkidu, the wild man made by gods, who has never seen a city.', portrait:'./images/img33.png'},
+        {who:'Gilgamesh', text:'This is not fear, not desire — it is "finally." As if something far away whispers softly: "Come."', portrait:'./images/img15.png'},
+      ]
+    },
+    soulQuestion:{
+      zh:'你在水面上看見自己的臉。你看見的第一個字是什麼？',
+      en:'You see your own face on the water. What is the first word you see?',
+    },
+    endDialogue:{
+      zh:{who:'恩基杜', text:'「你是王。但你的眼睛裡有一種飢渴，和獅子一樣。你在找什麼？」', portrait:'./images/img16.png'},
+      en:{who:'Enkidu', text:'"You are a king. But there is a hunger in your eyes — like a lion\'s. What are you searching for?"', portrait:'./images/img16.png'},
+    }
+  },
+  { // STAGE 3
+    id:3, icon:'⚡',
+    zh:{title:'第三關：第一道考驗', sub:'跨越雷霆之門 · 北歐《埃達》+ 但丁《神曲》'},
+    en:{title:'Stage 3: The Crossing', sub:"Through the Thunder Gate · Norse Edda + Dante's Inferno"},
+    bg:'./images/img5.png',
+    type:'path',
+    portrait:'./images/img16.png', portraitName:'恩基杜',
+    dialogues:{
+      zh:[
+        {who:'長老們', text:'「陛下，不要去雪松山。沒有人回來過。洪巴巴是神指定的守護者，他的吼聲能讓人瘋狂。」', portrait:'./images/img17.png'},
+        {who:'恩基杜', text:'「恐懼與我同在，但我還是去。這就是勇氣。」', portrait:'./images/img16.png'},
+      ],
+      en:[
+        {who:'Elders', text:'"My lord, do not go to the Cedar Mountain. No one has returned. Humbaba is the gods\' appointed guardian — his roar can drive men mad."', portrait:'./images/img17.png'},
+        {who:'Enkidu', text:'"Fear walks with me, yet I still go. That is what courage is."', portrait:'./images/img16.png'},
+      ]
+    },
+    paths:[
+      {zh:{name:'👑 王道大路', desc:'光明正大，有士兵護送。旅程快但少了發現。', cost:'勇氣 +1', effect:{courage:1}},
+       en:{name:"👑 King's Road", desc:'Honorable march with soldiers. Fast but you discover little.', cost:'Courage +1', effect:{courage:1}}},
+      {zh:{name:'🌲 森林小徑', desc:'需解開樹根謎題，遭遇野豬，時間長但見識更廣。', cost:'心 -1 · 智慧 +2', effect:{heart:-1,wisdom:2}},
+       en:{name:'🌲 Forest Path', desc:'Requires solving root puzzles, wild boar encounter — longer but richer.', cost:'Heart -1 · Wisdom +2', effect:{heart:-1,wisdom:2}}},
+      {zh:{name:'🌊 河流路線', desc:'需讀星圖導航，可能迷失，但能與自然同行。', cost:'心 +2 · 智慧 +1', effect:{heart:2,wisdom:1}},
+       en:{name:'🌊 River Route', desc:'Navigate by star chart, risk of getting lost, but journey with nature.', cost:'Heart +2 · Wisdom +1', effect:{heart:2,wisdom:1}}},
+    ],
+    starPuzzle: true,
+    endDialogue:{
+      zh:{who:'恩基杜', text:'「夢1：山崩——那是洪巴巴，他的倒下是我們的勝利。夢2：閃電——神在試探你的心志。夢3：你變成鷹——你的靈魂已在天空了。』」', portrait:'./images/img16.png'},
+      en:{who:'Enkidu', text:'"Dream 1: Mountain collapses — that is Humbaba, his fall is our victory. Dream 2: Lightning — the gods test your resolve. Dream 3: You become an eagle — your soul is already in the sky."', portrait:'./images/img16.png'},
+    }
+  },
+  { // STAGE 4
+    id:4, icon:'⚖️',
+    zh:{title:'第四關：導師的試煉', sub:'智者之間 · 《摩訶婆羅多》+ 凱爾特傳說'},
+    en:{title:"Stage 4: The Mentor's Fire", sub:"The Wise Ones · Mahabharata + Celtic Legend"},
+    bg:'./images/img6.png',
+    type:'scale',
+    portrait:'./images/img23.png', portraitName:'導師',
+    dialogues:{
+      zh:[
+        {who:'導師', text:'「我知道你要去殺洪巴巴。但在你殺他之前——你必須回答我一個問題。不，三個問題。用你的心，不是你的嘴。」', portrait:'./images/img23.png'},
+        {who:'旁白', text:'他是所有導師的總和：克里希納、梅林、菩提祖師。他的眼睛有一千歲。', portrait:'./images/img33.png'},
+      ],
+      en:[
+        {who:'Mentor', text:'"I know you mean to slay Humbaba. But before you do — you must answer me. Not one question. Three. With your heart, not your mouth."', portrait:'./images/img23.png'},
+        {who:'Narrator', text:'He is the sum of all mentors: Krishna, Merlin, Bodhi Patriarch. His eyes hold a thousand years.', portrait:'./images/img33.png'},
+      ]
+    },
+    scaleQuestions:[
+      {zh:{left:'榮耀', right:'家人的安全', question:'哪個更重要？'},
+       en:{left:'Glory', right:"Family's Safety", question:'Which weighs more?'}},
+      {zh:{left:'力量', right:'智慧', question:'哪個更重要？'},
+       en:{left:'Strength', right:'Wisdom', question:'Which weighs more?'}},
+      {zh:{left:'現在的勝利', right:'後代的記憶', question:'哪個更重要？'},
+       en:{left:'Present Victory', right:'Future Legacy', question:'Which weighs more?'}},
+    ],
+    endDialogue:{
+      zh:{who:'導師', text:'「你的答案告訴了我你的英雄之路。記住這些字——你在最黑暗的時候，它們是你的燈。」', portrait:'./images/img23.png'},
+      en:{who:'Mentor', text:'"Your answers have shown me your heroic path. Remember these words — in your darkest hour, they will be your light."', portrait:'./images/img23.png'},
+    }
+  },
+  { // STAGE 5
+    id:5, icon:'🦁',
+    zh:{title:'第五關：深入洞穴', sub:'洪巴巴的領域 · 《吉爾伽美什》+ 希臘神話'},
+    en:{title:'Stage 5: Into the Beast', sub:"Humbaba's Domain · Gilgamesh + Greek Mythology"},
+    bg:'./images/img7.png',
+    type:'maze',
+    portrait:'./images/img17.png', portraitName:'洪巴巴',
+    dialogues:{
+      zh:[
+        {who:'旁白', text:'雪松山的心臟地帶。樹木高如城牆，空氣裡有一種讓人想回頭的氣息。洪巴巴是神指定的守護者——殺他是一種僭越。', portrait:'./images/img33.png'},
+        {who:'恩基杜', text:'「吉爾伽美什，想想你的城市。想想你來這裡的理由。恐懼是真實的——但你比你的恐懼更真實。」', portrait:'./images/img16.png'},
+      ],
+      en:[
+        {who:'Narrator', text:'The heart of the Cedar Mountain. Trees tall as city walls; the air carries a scent that makes you want to turn back. Humbaba is the gods\' guardian — to slay him is transgression.', portrait:'./images/img33.png'},
+        {who:'Enkidu', text:'"Gilgamesh, think of your city. Think of why you came here. Fear is real — but you are more real than your fear."', portrait:'./images/img16.png'},
+      ]
+    },
+    endDialogue:{
+      zh:{who:'洪巴巴', text:'「留我一命……我可以成為你的守衛。你為什麼來？是為了榮耀？還是為了逃避你的孤獨？」', portrait:'./images/img17.png'},
+      en:{who:'Humbaba', text:'"Spare my life… I can become your guardian. Why did you come? For glory? Or to escape your loneliness?"', portrait:'./images/img17.png'},
+    },
+    finalChoice:{
+      zh:{
+        q:'洪巴巴跪下求饒。你的選擇？',
+        a:'斬殺洪巴巴（獲得神木，但諸神憤怒）',
+        b:'放走洪巴巴（失去神木，但獲得盟友）',
+      },
+      en:{
+        q:'Humbaba kneels, begging for mercy. Your choice?',
+        a:'Slay Humbaba (gain the cedar, but anger the gods)',
+        b:'Spare Humbaba (lose the cedar, but gain an ally)',
+      }
+    }
+  },
+  { // STAGE 6
+    id:6, icon:'🌌',
+    zh:{title:'第六關：天上的憤怒', sub:'諸神的審判 · 《吉爾伽美什》+ 《西遊記》天庭'},
+    en:{title:'Stage 6: The Wrath of Heaven', sub:'Divine Judgment · Gilgamesh + Journey to the West'},
+    bg:'./images/img8.png',
+    type:'rhythm',
+    portrait:'./images/img17.png', portraitName:'伊絲塔',
+    dialogues:{
+      zh:[
+        {who:'伊絲塔', text:'「吉爾伽美什，成為我的男人。我將給你黃金的戰車，所有的王都將跪在你面前。」', portrait:'./images/img17.png'},
+        {who:'吉爾伽美什', text:'「你的前任戀人們——哪一個沒有被你摧毀？獅子、馬、牧羊人……我不會是下一個。」', portrait:'./images/img15.png'},
+        {who:'旁白', text:'這是英雄最危險的時刻：勝利後的傲慢。諸神憤怒了，天牛降臨烏魯克。你必須疏散市民，與恩基杜配合，共同擊敗天牛！', portrait:'./images/img33.png'},
+      ],
+      en:[
+        {who:'Ishtar', text:'"Gilgamesh, be my husband. I will give you a golden chariot; every king shall kneel before you."', portrait:'./images/img17.png'},
+        {who:'Gilgamesh', text:'"Which of your lovers was not destroyed by you? The lion, the horse, the shepherd… I will not be next."', portrait:'./images/img15.png'},
+        {who:'Narrator', text:"This is the hero's most dangerous moment: pride after victory. The gods rage; the Bull of Heaven descends on Uruk. You must evacuate citizens and fight alongside Enkidu!", portrait:'./images/img33.png'},
+      ]
+    },
+    endDialogue:{
+      zh:{who:'旁白', text:'天牛死後，諸神宣判：「英雄的代價必須有人付出。」恩基杜生病了。你陪伴他走過了12天。第12天，恩基杜死去。你，第一次哭泣。', portrait:'./images/img33.png'},
+      en:{who:'Narrator', text:'After the Bull of Heaven falls, the gods decree: "The price of heroism must be paid." Enkidu falls ill. You spend 12 days at his side. On the twelfth day, Enkidu dies. You weep — for the first time.', portrait:'./images/img33.png'},
+    },
+    soulQuestion:{
+      zh:'你最感謝恩基杜的一件事是什麼？',
+      en:'What is one thing you are most grateful to Enkidu for?',
+    }
+  },
+  { // STAGE 7
+    id:7, icon:'💀',
+    zh:{title:'第七關：恐懼的名字', sub:'面對死亡 · 北歐奧丁 + 佛陀無常'},
+    en:{title:'Stage 7: Fear Has a Name', sub:'Facing Death · Norse Odin + Buddhist Impermanence'},
+    bg:'./images/img9.png',
+    type:'wilderness',
+    portrait:'./images/img20.png', portraitName:'西杜麗',
+    dialogues:{
+      zh:[
+        {who:'旁白', text:'恩基杜死了。你扔下王冠，離開烏魯克，往世界的盡頭走去。如果他也會死——那你呢？', portrait:'./images/img33.png'},
+        {who:'吉爾伽美什', text:'「我要找到永生。我不能死。」', portrait:'./images/img15.png'},
+      ],
+      en:[
+        {who:'Narrator', text:"Enkidu is dead. You throw down your crown and leave Uruk, walking toward the world's end. If even he could die — what of you?", portrait:'./images/img33.png'},
+        {who:'Gilgamesh', text:'"I will find immortality. I cannot die."', portrait:'./images/img15.png'},
+      ]
+    },
+    targets:[
+      {x:'30%',y:'55%', icon:'🍺', zh:{name:'西杜麗的酒館', found:'你找到了西杜麗。她說：「你尋找的永生，你找不到。當神明創造人類時，他們把死亡留給人類。吉爾伽美什——讓你活著的人愛你，這就是你的任務。」'},
+        en:{name:"Siduri's Tavern", found:'You find Siduri. She says: "The immortality you seek — you will not find it. When the gods created man, they kept death for mankind. Gilgamesh — let those who love you embrace you. That is your task."'}},
+      {x:'70%',y:'65%', icon:'⛵', zh:{name:'船夫爾薩納比的船', found:'你找到了船夫爾薩納比。他說：「死水之路只有一條，我帶你去。」'},
+        en:{name:"Urshanabi's Boat", found:"You find Urshanabi. He says: 'There is only one path across the Waters of Death. I will take you there.'"}}
+    ],
+    siduri: true,
+    endDialogue:{
+      zh:{who:'西杜麗', text:'「你為什麼如此消瘦，如此憔悴？你找的永生，你找不到。這就是人類的任務——讓你活著的人愛你。」', portrait:'./images/img20.png'},
+      en:{who:'Siduri', text:'"Why are you so thin, so haggard? The immortality you seek — you will not find it. This is the human task: to be loved by those who are alive."', portrait:'./images/img20.png'},
+    }
+  },
+  { // STAGE 8
+    id:8, icon:'🌊',
+    zh:{title:'第八關：永生的秘密', sub:'最深的洞穴 · 烏塔納匹什提的島嶼'},
+    en:{title:'Stage 8: The Secret of Immortality', sub:'The Deepest Cave · Isle of Utnapishtim'},
+    bg:'./images/img10.png',
+    type:'awake',
+    portrait:'./images/img21.png', portraitName:'烏塔納匹什提',
+    dialogues:{
+      zh:[
+        {who:'烏塔納匹什提', text:'「我是唯一被神明賜予永生的人。你問永生的秘密——秘密在一個考驗裡：不要睡著，撐過七天七夜。」', portrait:'./images/img21.png'},
+        {who:'旁白', text:'睡眠是死亡的兄弟。七天七夜——這就是永生的代價。', portrait:'./images/img33.png'},
+      ],
+      en:[
+        {who:'Utnapishtim', text:'"I am the only mortal granted immortality by the gods. You ask the secret — the secret is a test: do not sleep. Endure seven days and seven nights."', portrait:'./images/img21.png'},
+        {who:'Narrator', text:"Sleep is death's brother. Seven days and seven nights — this is the price of immortality.", portrait:'./images/img33.png'},
+      ]
+    },
+    endDialogue:{
+      zh:{who:'烏塔納匹什提', text:'「在海底深處，有一株靈草——刺如玫瑰，可以讓老人重返年輕。」你找到它了，卻在河邊洗澡時，被蛇偷走。你空著手，坐在水邊，哭了。', portrait:'./images/img21.png'},
+      en:{who:'Utnapishtim', text:'"Deep in the sea floor, there is an herb — thorned like a rose, it can make the old young again." You find it, but a snake steals it while you bathe. Empty-handed, you sit by the water and weep.', portrait:'./images/img21.png'},
+    }
+  },
+  { // STAGE 9
+    id:9, icon:'🔥',
+    zh:{title:'第九關：戰士的死與重生', sub:'鳳凰時刻 · 北歐西格爾德 + 埃及奧西里斯'},
+    en:{title:'Stage 9: Death and Fire', sub:'The Phoenix Moment · Norse Sigurd + Egyptian Osiris'},
+    bg:'./images/img11.png',
+    type:'strategy',
+    portrait:'./images/img34.png', portraitName:'鳳凰',
+    dialogues:{
+      zh:[
+        {who:'旁白', text:'時空跳轉。你的靈魂進入新的容器——這次，你是西格爾德，北歐最偉大的英雄，龍的剋星。你站在法夫尼爾的黃金山前。', portrait:'./images/img34.png'},
+        {who:'旁白', text:'龍的皮膚刀槍不入。你不能正面硬攻——你必須挖一條壕溝，躲在裡面，等龍從身上爬過，刺穿它的肚子。策略比蠻力更強大。', portrait:'./images/img33.png'},
+      ],
+      en:[
+        {who:'Narrator', text:'Time shifts. Your soul enters a new vessel — this time, you are Sigurd, the greatest hero of the Norse world, slayer of dragons. You stand before Fafnir\'s golden mountain.', portrait:'./images/img34.png'},
+        {who:'Narrator', text:"The dragon's hide is impenetrable. You cannot fight him head-on — you must dig a trench, hide inside, and stab upward as he passes. Strategy is mightier than force.", portrait:'./images/img33.png'},
+      ]
+    },
+    endDialogue:{
+      zh:{who:'旁白', text:'西格爾德殺死法夫尼爾後，沾到龍血，能聽懂鳥語。鳥兒說：「遠方有一個沉睡的女武神，被火焰包圍。你的舊自我在這一關死去——奧西里斯被分屍、重新拼合。死亡不是終點，它是你真正開始的地方。」', portrait:'./images/img34.png'},
+      en:{who:'Narrator', text:"After slaying Fafnir, Sigurd tastes dragon blood and understands birds. They say: 'Far away, a sleeping Valkyrie is surrounded by flames.' Your old self dies in this stage — like Osiris, dismembered and reborn. Death is not the end; it is where you truly begin.", portrait:'./images/img34.png'},
+    }
+  },
+  { // STAGE 10
+    id:10, icon:'⚖️',
+    zh:{title:'第十關：靈魂的審判', sub:'真理之廳 · 埃及《亡靈書》+ 希臘奧菲斯'},
+    en:{title:'Stage 10: The Hall of Two Truths', sub:'Judgment Hall · Egyptian Book of the Dead + Orpheus'},
+    bg:'./images/img12.png',
+    type:'confession',
+    portrait:'./images/img19.png', portraitName:'阿努比斯',
+    dialogues:{
+      zh:[
+        {who:'阿努比斯', text:'「你進入了真理之廳。天平的一端是瑪特之羽——真理的重量。另一端，將要放你的心臟。42位法官等待你的告白。」', portrait:'./images/img19.png'},
+        {who:'旁白', text:'這是整個旅程中最誠實的時刻。不是辯解——是如實陳述。', portrait:'./images/img33.png'},
+      ],
+      en:[
+        {who:'Anubis', text:'"You enter the Hall of Two Truths. On one side of the scale: the Feather of Ma\'at — the weight of truth. On the other: your heart. Forty-two judges await your confession."', portrait:'./images/img19.png'},
+        {who:'Narrator', text:'This is the most honest moment of the entire journey. Not justification — but truthful declaration.', portrait:'./images/img33.png'},
+      ]
+    },
+    endDialogue:{
+      zh:{who:'奧菲斯', text:'「你曾經因為愛一個人，而做了一件你知道結果的傻事嗎？」', portrait:'./images/img22.png'},
+      en:{who:'Orpheus', text:'"Have you ever, out of love for someone, done something foolish — knowing the outcome in advance?"', portrait:'./images/img22.png'},
+    },
+    orpheusQuestion:{
+      zh:'奧菲斯問你：「你曾經因為愛一個人，而做了一件你知道結果的傻事嗎？」',
+      en:'Orpheus asks: "Have you ever done something foolish for love — knowing the outcome in advance?"',
+    }
+  },
+  { // STAGE 11
+    id:11, icon:'🌅',
+    zh:{title:'第十一關：回頭路上的誘惑', sub:'奧德修斯的海 · 《奧德賽》+ 《西遊記》'},
+    en:{title:'Stage 11: The Road of Trials', sub:"Odysseus' Sea · The Odyssey + Journey to the West"},
+    bg:'./images/img13.png',
+    type:'sail',
+    portrait:'./images/img22.png', portraitName:'奧菲斯',
+    dialogues:{
+      zh:[
+        {who:'旁白', text:'你踏上歸途。但回家的路，比出發的路更難。因為你變了，但那些等著讓你「不要回去」的力量還在。', portrait:'./images/img33.png'},
+        {who:'旁白', text:'三個誘惑島嶼等著你：塞壬之歌（舊日榮耀的回憶）、瑟西的花園（舒適的陷阱）、卡呂普索的洞穴（愛與永生的承諾）。', portrait:'./images/img33.png'},
+      ],
+      en:[
+        {who:'Narrator', text:'You set sail for home. But the road back is harder than the road out — because you have changed, yet the forces that want you to "never return" remain.', portrait:'./images/img33.png'},
+        {who:'Narrator', text:"Three temptation islands await: Sirens' Song (memories of past glory), Circe's Garden (the comfort trap), Calypso's Cave (the promise of love and immortality).", portrait:'./images/img33.png'},
+      ]
+    },
+    endDialogue:{
+      zh:{who:'旁白', text:'你抵達了彼岸。三個誘惑，你都通過了。不是因為你不想留下——而是因為你知道為什麼必須回去。', portrait:'./images/img33.png'},
+      en:{who:'Narrator', text:'You reach the far shore. You passed all three temptations — not because you did not want to stay, but because you knew why you had to return.', portrait:'./images/img33.png'},
+    }
+  },
+  { // STAGE 12
+    id:12, icon:'🌍',
+    zh:{title:'第十二關：帶著靈丹回家', sub:'蛻變的英雄 · 吉爾伽美什回到烏魯克'},
+    en:{title:'Stage 12: Return with the Elixir', sub:'The Transformed Hero · Gilgamesh Returns to Uruk'},
+    bg:'./images/img14.png',
+    type:'return',
+    portrait:'./images/img15.png', portraitName:'吉爾伽美什',
+    dialogues:{
+      zh:[
+        {who:'旁白', text:'你回到了起點——但「起點」不再是起點了。烏魯克城的城牆還在。人民還在。市場還在。但你——已經是另一個人。', portrait:'./images/img33.png'},
+        {who:'吉爾伽美什', text:'「我沒有帶回永生。我沒有帶回靈草。我帶回的，是一個更難解釋的東西：我知道了死亡的真相，而我選擇繼續活著。」', portrait:'./images/img15.png'},
+      ],
+      en:[
+        {who:'Narrator', text:'You return to where you began — yet the "beginning" is no longer where you began. The walls of Uruk remain. The people remain. But you — you are someone else entirely.', portrait:'./images/img33.png'},
+        {who:'Gilgamesh', text:'"I did not bring back immortality. I did not bring back the herb. What I brought back is harder to explain: I learned the truth of death — and I chose to keep living."', portrait:'./images/img15.png'},
+      ]
+    },
+    hotspots:[
+      {x:'18%',y:'35%', icon:'🏛️', zh:{name:'宮殿',result:'侍女說：「國王回來了，但他的眼神……更溫柔了。」'},
+        en:{name:'Palace',result:'The handmaidens say: "The king has returned — but his eyes… they are gentler now."'}},
+      {x:'35%',y:'60%', icon:'💧', zh:{name:'水井',result:'老婦讓出了路，說：「你的眼睛裡有了我們。歡迎回來，國王。」'},
+        en:{name:'Well',result:'The old woman steps aside: "There are people in your eyes now. Welcome home, King."'}},
+      {x:'55%',y:'45%', icon:'🌾', zh:{name:'市場',result:'商人不再逃跑。他們拿出最好的食物，為你的歸來慶祝。'},
+        en:{name:'Market',result:'The merchants do not flee. They bring out their finest food to celebrate your return.'}},
+      {x:'72%',y:'30%', icon:'🌙', zh:{name:'神廟',result:'祭司說：「神明不再憤怒了，因為你終於學會了謙遜。你已是真正的英雄。」'},
+        en:{name:'Temple',result:'The priest says: "The gods are no longer angry — for you have finally learned humility. You are a true hero."'}},
+      {x:'85%',y:'65%', icon:'🦁', zh:{name:'城門',result:'荒野的嘶吼聲還在。但這次，你笑了。'},
+        en:{name:'City Gate',result:'The wild cry still echoes from the distance. This time, you smile.'}},
+    ],
+    finalQuestion:{
+      zh:'你的英雄旅程帶給你的最重要的一樣東西，是什麼？',
+      en:"What is the single most important thing your Hero's Journey gave you?",
+    },
+    requiredVisits: 5,
+    endDialogue:{
+      zh:{who:'旁白', text:'吉爾伽美什對船夫說：「爬上城牆，走在上面，看那基礎，看那磚石工事……他知道了：不朽，不在永生。不朽，在你留下的事物。」', portrait:'./images/img33.png'},
+      en:{who:'Narrator', text:'"Climb the wall of Uruk, walk along it, see the foundations, see the brickwork…" He understood at last: immortality is not in living forever. Immortality is in what you leave behind.', portrait:'./images/img33.png'},
+    }
+  },
+];
+
+// Stage node positions on map (% of container)
+const NODE_POS = [
+  null,
+  {x:12,y:62}, {x:22,y:52}, {x:33,y:40}, {x:45,y:36},
+  {x:56,y:28}, {x:62,y:44}, {x:73,y:48}, {x:79,y:63},
+  {x:68,y:72}, {x:52,y:76}, {x:36,y:70}, {x:16,y:67},
+];
+
+// ═══════════════════════════════════════════════════════════
+// CORE GAME FUNCTIONS
+// ═══════════════════════════════════════════════════════════
+const L = () => G.lang;
+
+function t(key){ return T[L()][key] || T.zh[key] || key; }
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startGame(){
+  renderMap();
+  showScreen('map-screen');
+  updateHUD();
+}
+
+function goToMap(){
+  stopAllGames();
+  showScreen('map-screen');
+  renderMap();
+  updateHUD();
+}
+
+function restartGame(){
+  G.stage=0; G.unlocked=1; G.completed=[];
+  G.attrs={courage:10,wisdom:10,heart:10};
+  G.journal=[]; G.choices={};
+  G.killedHumbaba=null; G.listenedSiduri=false;
+  G.s2SoulWord=''; G.s4Choices=[];
+  G.finalAnswer=''; G.orpheusAnswer='';
+  startGame();
+}
+
+function toggleLang(){
+  G.lang = G.lang==='zh'?'en':'zh';
+  document.getElementById('lang-btn').textContent = G.lang==='zh'?'EN':'中';
+  updateHUD();
+  if(document.getElementById('map-screen').classList.contains('active')) renderMap();
+}
+
+// ── HUD UPDATE ──
+function updateHUD(){
+  const cap = 20;
+  ['courage','wisdom','heart'].forEach(k=>{
+    const v = Math.min(cap,Math.max(0,G.attrs[k]));
+    const pct = Math.round(v/cap*100);
+    const el = document.getElementById('bar-'+k);
+    const vEl = document.getElementById('val-'+k);
+    const jEl = document.getElementById('j-bar-'+k);
+    const jvEl = document.getElementById('j-val-'+k);
+    if(el){el.style.width=pct+'%';}
+    if(vEl){vEl.textContent=v;}
+    if(jEl){jEl.style.width=pct+'%';}
+    if(jvEl){jvEl.textContent=v;}
+  });
+  const lb = document.getElementById('t-attr-c');
+  if(lb) lb.textContent = t('attrC');
+  const lb2 = document.getElementById('t-attr-w');
+  if(lb2) lb2.textContent = t('attrW');
+  const lb3 = document.getElementById('t-attr-h');
+  if(lb3) lb3.textContent = t('attrH');
+}
+
+function applyAttr(delta, msg){
+  if(!delta) return;
+  const changes = [];
+  for(const [k,v] of Object.entries(delta)){
+    G.attrs[k] = Math.min(20,Math.max(0,(G.attrs[k]||10)+v));
+    if(v>0) changes.push({k,v:'+'+v,pos:true});
+    else changes.push({k,v:''+v,pos:false});
+  }
+  updateHUD();
+  showAttrPopup(changes, msg);
+}
+
+function showAttrPopup(changes, msg){
+  const overlay = document.getElementById('modal-overlay');
+  overlay.style.display='block';
+  const pop = document.createElement('div');
+  pop.className='attr-popup';
+  pop.innerHTML=`<h3>${msg||t('attrGain')}</h3>${
+    changes.map(c=>`<div class="attr-change ${c.pos?'pos':'neg'}">${
+      c.k==='courage'?'⚔️ 勇氣':c.k==='wisdom'?'🌙 智慧':'❤️ 心'
+    }: ${c.v}</div>`).join('')
+  }<br><button class="btn btn-sm" onclick="this.parentElement.remove();document.getElementById('modal-overlay').style.display='none'">繼續</button>`;
+  document.body.appendChild(pop);
+}
+
+function notify(msg, dur=2500){
+  const el = document.getElementById('notif');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>el.classList.remove('show'), dur);
+}
+
+// ── MAP RENDERING ──
+function renderMap(){
+  const container = document.getElementById('map-nodes');
+  container.innerHTML='';
+  document.getElementById('t-map-title').textContent = t('mapTitle');
+  document.getElementById('journal-btn').textContent = t('journal');
+  for(let i=1;i<=12;i++){
+    const st = STAGES[i];
+    const pos = NODE_POS[i];
+    const isCompleted = G.completed.includes(i);
+    const isUnlocked = i <= G.unlocked;
+    const node = document.createElement('div');
+    node.className='stage-node '+(isCompleted?'completed':isUnlocked?'unlocked':'locked');
+    if(i===G.unlocked && !isCompleted) node.classList.add('current');
+    node.style.left=pos.x+'%';
+    node.style.top=pos.y+'%';
+    const label = st[L()]?.title || st.zh.title;
+    const shortLabel = label.split('：')[0]||label.split(':')[0]||label;
+    node.innerHTML=`<div class="node-ring">
+      <div class="node-num">${i}</div>
+      <div class="node-icon">${isCompleted?'✓':st.icon}</div>
+    </div>
+    <div class="node-label">${isUnlocked?shortLabel:t('locked')}</div>`;
+    if(isUnlocked){
+      node.addEventListener('click',()=>enterStage(i));
+    } else {
+      node.addEventListener('click',()=>notify(t('locked')));
+    }
+    container.appendChild(node);
+  }
+}
+
+// ── JOURNAL ──
+function openJournal(){
+  renderJournal();
+  document.getElementById('journal-panel').classList.add('open');
+}
+function closeJournal(){
+  document.getElementById('journal-panel').classList.remove('open');
+}
+function renderJournal(){
+  const el = document.getElementById('journal-entries');
+  el.innerHTML='';
+  if(!G.journal.length){
+    el.innerHTML=`<div style="color:rgba(200,180,140,0.4);font-size:13px;text-align:center;margin-top:20px">${
+      G.lang==='zh'?'日誌還是空的…旅程才剛開始。':'The journal is empty… the journey has just begun.'
+    }</div>`;
+    return;
+  }
+  G.journal.slice().reverse().forEach(e=>{
+    const div=document.createElement('div');
+    div.className='journal-entry';
+    div.innerHTML=`<div class="journal-entry-stage">${e.stage}</div>
+      <div class="journal-entry-text">${e.text}</div>`;
+    el.appendChild(div);
+  });
+  updateHUD();
+}
+function addJournal(stageLabel, text){
+  G.journal.push({stage:stageLabel, text});
+}
+
+// ── DIALOGUE SYSTEM ──
+let dlgQueue=[], dlgIdx=0, dlgCallback=null;
+
+function showDialogue(lines, cb){
+  dlgQueue = lines;
+  dlgIdx = 0;
+  dlgCallback = cb||null;
+  renderDialogue();
+  document.getElementById('dialogue-box').classList.add('visible');
+}
+
+function renderDialogue(){
+  if(dlgIdx>=dlgQueue.length){
+    document.getElementById('dialogue-box').classList.remove('visible');
+    if(dlgCallback) dlgCallback();
+    return;
+  }
+  const d = dlgQueue[dlgIdx];
+  document.getElementById('dialogue-name').textContent = d.who;
+  document.getElementById('dialogue-text').textContent = d.text;
+  const port = document.getElementById('dialogue-portrait');
+  if(d.portrait){ port.src=d.portrait; port.style.display='block'; }
+  else { port.style.display='none'; }
+  document.getElementById('dialogue-continue').textContent = dlgIdx<dlgQueue.length-1?t('cont'):(G.lang==='zh'?'▶ 開始':'▶ Start');
+}
+
+function nextDialogue(){
+  dlgIdx++;
+  renderDialogue();
+}
+
+// ── STAGE ENTRY ──
+let currentStageEngine = null;
+
+function enterStage(num){
+  G.stage = num;
+  const st = STAGES[num];
+  showScreen('stage-screen');
+  // Background
+  document.getElementById('stage-bg').src = st.bg||'';
+  // Header
+  const info = st[L()]||st.zh;
+  document.getElementById('stage-title-text').textContent = info.title;
+  document.getElementById('stage-myth').textContent = info.sub||'';
+  document.getElementById('stage-back').textContent = t('back');
+  // Progress
+  setProgress(0);
+  // Clear game area
+  document.getElementById('game-area').innerHTML='';
+  document.getElementById('dialogue-box').classList.remove('visible');
+  // Show opening dialogues
+  const dlgs = st.dialogues?.[L()]||st.dialogues?.zh||[];
+  showDialogue(dlgs, ()=>launchStageGame(num));
+}
+
+function setProgress(pct){
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('stage-prog-label').textContent = t('progress')+' '+Math.round(pct)+'%';
+}
+
+function stopAllGames(){
+  if(currentStageEngine&&currentStageEngine.stop) currentStageEngine.stop();
+  currentStageEngine=null;
+}
+
+function stageComplete(num){
+  if(!G.completed.includes(num)) G.completed.push(num);
+  if(num>=G.unlocked) G.unlocked=Math.min(12,num+1);
+  setProgress(100);
+  const st = STAGES[num];
+  const endDlg = st.endDialogue?.[L()]||st.endDialogue?.zh;
+  if(endDlg){
+    showDialogue([endDlg], ()=>afterStageComplete(num));
+  } else {
+    afterStageComplete(num);
+  }
+}
+
+function afterStageComplete(num){
+  notify(t('stageComplete'));
+  setTimeout(()=>{
+    if(num===12){
+      showEnding();
+    } else {
+      goToMap();
+    }
+  },1500);
+}
+
+// ═══════════════════════════════════════════════════════════
+// STAGE LAUNCHER
+// ═══════════════════════════════════════════════════════════
+function launchStageGame(num){
+  const st = STAGES[num];
+  const area = document.getElementById('game-area');
+  area.innerHTML='';
+  switch(st.type){
+    case 'explore':  engineExplore(num, area); break;
+    case 'stealth':  engineStealth(num, area); break;
+    case 'path':     enginePath(num, area); break;
+    case 'scale':    engineScale(num, area); break;
+    case 'maze':     engineMaze(num, area); break;
+    case 'rhythm':   engineRhythm(num, area); break;
+    case 'wilderness':engineWild(num, area); break;
+    case 'awake':    engineAwake(num, area); break;
+    case 'strategy': engineStrategy(num, area); break;
+    case 'confession':engineConfession(num, area); break;
+    case 'sail':     engineSail(num, area); break;
+    case 'return':   engineReturn(num, area); break;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// ENGINE: EXPLORE (Stage 1 & 12)
+// ═══════════════════════════════════════════════════════════
+function engineExplore(num, area){
+  const st = STAGES[num];
+  const lang = L();
+  const spots = st.hotspots;
+  const req = st.requiredVisits||3;
+  let visited = 0;
+  const wrap = document.createElement('div');
+  wrap.className='hotspot-map';
+  wrap.innerHTML=`<img src="${st.bg}" alt="" style="width:100%;max-height:55vh;object-fit:cover;border-radius:4px;border:1px solid rgba(201,168,76,0.2)">`;
+  spots.forEach((sp,i)=>{
+    const btn = document.createElement('div');
+    btn.className='hotspot';
+    btn.style.left=sp.x; btn.style.top=sp.y;
+    const info = sp[lang]||sp.zh;
+    btn.innerHTML=`<div class="hotspot-ring">${sp.icon}</div>
+      <div class="hotspot-tooltip">${info.name}</div>`;
+    btn.addEventListener('click',()=>{
+      if(btn.classList.contains('visited')) return;
+      btn.classList.add('visited');
+      visited++;
+      const delta = info.attr||{};
+      if(Object.keys(delta).length) applyAttr(delta);
+      const stLabel = (st[lang]||st.zh).title;
+      addJournal(stLabel, `📍 ${info.name}: ${info.result}`);
+      showDialogue([{who:info.name, text:info.result, portrait:st.portrait}],()=>{
+        setProgress(Math.round(visited/req*80));
+        if(visited>=req){
+          setTimeout(()=>stageComplete(num),400);
+        }
+      });
+    });
+    wrap.appendChild(btn);
+  });
+  area.appendChild(wrap);
+}
+
+// ═══════════════════════════════════════════════════════════
+// ENGINE: STEALTH (Stage 2)
+// ═══════════════════════════════════════════════════════════
+function engineStealth(num, area){
+  const lang=L();
+  const st = STAGES[num];
+  const wrap=document.createElement('div');
+  wrap.id='stealth-game';
+  const W=480,H=300;
+  wrap.innerHTML=`<div style="color:var(--gold-light);font-size:14px;margin-bottom:10px">${
+    lang==='zh'?'在不驚動恩基杜的前提下靠近他。點擊草叢或餵魚轉移目光，然後移動！':'Approach Enkidu without startling him. Click reeds or fish to distract, then move!'
+  }</div>
+  <canvas id="stealth-canvas" width="${W}" height="${H}"></canvas>
+  <div class="stealth-hint" id="stealth-status">${lang==='zh'?'點擊畫面中的草叢或魚來轉移恩基杜的目光':'Click reeds or fish in the scene to distract Enkidu'}</div>
+  <div style="margin-top:12px;text-align:center">
+    <button class="btn btn-sm" id="stealth-move" disabled>${lang==='zh'?'趁機前進':'Advance'}</button>
+  </div>`;
+  area.appendChild(wrap);
+
+  const canvas=document.getElementById('stealth-canvas');
+  const ctx=canvas.getContext('2d');
+  let playerX=30, targetX=430, guards=[{x:200,y:150,dir:1,alert:false}];
+  let distractCount=0, moved=0, soulDone=false;
+  const EY=150;
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // bg gradient
+    const grad=ctx.createLinearGradient(0,0,W,H);
+    grad.addColorStop(0,'#0a1a2a'); grad.addColorStop(1,'#1a2a10');
+    ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+    // river
+    ctx.fillStyle='rgba(40,80,160,0.6)'; ctx.fillRect(0,120,W,60);
+    // reeds (clickable)
+    [{x:100},{x:180},{x:320}].forEach((r,i)=>{
+      ctx.fillStyle=distractCount>i?'rgba(80,200,112,0.6)':'rgba(201,168,76,0.4)';
+      ctx.fillRect(r.x,80,12,60);
+      ctx.fillStyle='#5c8'; ctx.fillText('🎋',r.x-2,75);
+    });
+    // fish
+    ctx.font='18px serif';
+    ctx.fillText('🐟',260,155);
+    // player
+    ctx.font='24px serif';
+    ctx.fillText('🧑‍⚔️',playerX,EY+20);
+    // enkidu
+    ctx.fillText('🦁',targetX,EY+20);
+    // guards
+    guards.forEach(g=>{
+      ctx.fillStyle=g.alert?'rgba(224,80,80,0.8)':'rgba(100,100,200,0.6)';
+      ctx.beginPath(); ctx.arc(g.x,g.y,14,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.font='12px serif'; ctx.fillText('👁️',g.x-8,g.y+5);
+    });
+    // water reflection check
+    ctx.fillStyle='rgba(80,160,200,0.3)';
+    ctx.beginPath(); ctx.ellipse(playerX+12,170,15,8,0,0,Math.PI*2); ctx.fill();
+    // soul reflection prompt
+    if(!soulDone){
+      ctx.fillStyle='rgba(201,168,76,0.7)';
+      ctx.font='11px Georgia'; ctx.fillText(lang==='zh'?'(點擊水面反光→靈魂問答)':'(Click reflection→soul question)',playerX-30,185);
+    }
+  }
+
+  function checkGuard(){
+    return guards.some(g=>Math.abs(g.x-playerX)<50 && !g.alert===false);
+  }
+
+  const advBtn=document.getElementById('stealth-move');
+  advBtn.addEventListener('click',()=>{
+    if(distractCount>=1){
+      moved++;
+      playerX=Math.min(targetX-60, playerX+80);
+      draw();
+      setProgress(Math.round(moved/4*60));
+      if(moved>=4){
+        // soul question first
+        if(!soulDone){
+          showSoulInput(st.soulQuestion?.[lang]||st.soulQuestion?.zh||'你在水面上看見自己的臉。你看見的第一個字是什麼？', (ans)=>{
+            G.s2SoulWord=ans;
+            addJournal((st[lang]||st.zh).title, `💧 ${lang==='zh'?'水面上的字':'Word on the water'}: "${ans}"`);
+            soulDone=true;
+            stageComplete(num);
+          });
+        } else { stageComplete(num); }
+      }
+      distractCount=Math.max(0,distractCount-1);
+      if(distractCount<1) advBtn.disabled=true;
+    }
+  });
+
+  canvas.addEventListener('click',(e)=>{
+    const rect=canvas.getBoundingClientRect();
+    const cx=(e.clientX-rect.left)*(W/rect.width);
+    const cy=(e.clientY-rect.top)*(H/rect.height);
+    // check reeds
+    if(cy<120 && cy>60){
+      distractCount++;
+      advBtn.disabled=false;
+      document.getElementById('stealth-status').textContent=lang==='zh'?'草叢沙沙作響，恩基杜的目光轉移了！':'The reeds rustle — Enkidu looks away!';
+      draw();
+      return;
+    }
+    // check fish
+    if(cx>245&&cx<290&&cy>140&&cy<170){
+      distractCount++;
+      advBtn.disabled=false;
+      document.getElementById('stealth-status').textContent=lang==='zh'?'魚兒跳起，恩基杜好奇地望向河中！':'The fish leaps — Enkidu looks toward the river!';
+      draw();
+      return;
+    }
+    // water reflection
+    if(cy>165&&cy<180&&!soulDone){
+      showSoulInput(st.soulQuestion?.[lang]||'你在水面上看見自己的臉。你看見的第一個字是什麼？',(ans)=>{
+        G.s2SoulWord=ans;
+        addJournal((st[lang]||st.zh).title,`💧 ${lang==='zh'?'水面上的字':'Word on the water'}: "${ans}"`);
+        soulDone=true;
+        setProgress(50);
+        document.getElementById('stealth-status').textContent=lang==='zh'?'你把答案存入了英雄日誌。繼續前進！':'Your answer is in the journal. Keep moving!';
+        draw();
+      });
+    }
+  });
+  draw();
+}
+
+// ═══════════════════════════════════════════════════════════
+// ENGINE: PATH CHOICE (Stage 3)
+// ═══════════════════════════════════════════════════════════
+function enginePath(num, area){
+  const lang=L();
+  const st = STAGES[num];
+  let chosen=false;
+  const wrap=document.createElement('div');
+  wrap.id='path-game';
+  wrap.innerHTML=`<div class="path-question">${lang==='zh'?'恩基杜向你發出挑戰：一起前往雪松山。城裡的長老們跪在地說：「沒有人回來過。」<br>你選擇哪條路？':'Enkidu challenges you: journey together to the Cedar Mountain. The city elders kneel: "No one has returned." Which path do you choose?'}</div>
+  <div class="path-options" id="path-opts"></div>
+  <div id="path-result" style="display:none;margin-top:20px;padding:16px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:4px;color:var(--text);font-size:14px;line-height:1.7"></div>`;
+  area.appendChild(wrap);
+
+  const paths = st.paths||[];
+  const opts = document.getElementById('path-opts');
+  paths.forEach((p,i)=>{
+    const info = p[lang]||p.zh;
+    const btn=document.createElement('button');
+    btn.className='path-btn';
+    btn.innerHTML=`<strong>${info.name}</strong><br>${info.desc}<div class="path-cost">${info.cost}</div>`;
+    btn.addEventListener('click',()=>{
+      if(chosen) return;
+      chosen=true;
+      opts.querySelectorAll('.path-btn').forEach(b=>b.disabled=true);
+      if(info.effect) applyAttr(info.effect);
+      G.choices[num]=i;
+      addJournal((st[lang]||st.zh).title, `🛤️ ${lang==='zh'?'選擇路線':'Chosen path'}: ${info.name}`);
+      const result=document.getElementById('path-result');
+      result.style.display='block';
+      result.textContent = lang==='zh'?
+        `你踏上了${info.name}。旅途漫長，但每一步都讓你更接近雪松山——和那個你必須面對的命運。`:
+        `You take the ${info.name}. The journey is long, but each step brings you closer to the Cedar Mountain — and the destiny you must face.`;
+      setProgress(50);
+      if(i===2){ // river route — star puzzle
+        setTimeout(()=>showStarPuzzle(num, area), 800);
+      } else {
+        setTimeout(()=>stageComplete(num),1200);
+      }
+    });
+    opts.appendChild(btn);
+  });
+}
+
+function showStarPuzzle(num, area){
+  const lang=L();
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:50;display:flex;align-items:center;justify-content:center;flex-direction:column;';
+  overlay.innerHTML=`<div style="color:var(--gold-light);font-size:16px;margin-bottom:16px">${
+    lang==='zh'?'🌟 星圖導航：連接正確星座找到北極星方向':'🌟 Star Chart: Connect the constellation to find the North Star'
+  }</div>
+  <canvas id="star-canvas" width="400" height="300" style="border:1px solid rgba(201,168,76,0.3);border-radius:4px;cursor:crosshair"></canvas>
+  <div id="star-msg" style="margin-top:12px;color:rgba(200,180,140,0.7);font-size:13px">${
+    lang==='zh'?'點擊星星連線，找出通往北方的路':'Click the stars to connect them and find the northward path'
+  }</div>`;
+  document.body.appendChild(overlay);
+  const canvas=document.getElementById('star-canvas');
+  const ctx=canvas.getContext('2d');
+  const stars=[{x:200,y:30,key:true},{x:120,y:90},{x:280,y:90},{x:160,y:160},{x:240,y:160},{x:200,y:230},{x:80,y:200},{x:320,y:200}];
+  const correct=[[0,1],[0,2],[1,3],[2,4],[3,5],[4,5]]; // correct path indices
+  let connected=[];
+  let lastStar=null;
+
+  function drawStars(){
+    ctx.clearRect(0,0,400,300);
+    ctx.fillStyle='#000820'; ctx.fillRect(0,0,400,300);
+    // bg twinkles
+    for(let i=0;i<80;i++){
+      ctx.fillStyle=`rgba(255,255,255,${Math.random()*0.4+0.1})`;
+      ctx.beginPath(); ctx.arc(Math.random()*400,Math.random()*300,Math.random()*1.5,0,Math.PI*2); ctx.fill();
+    }
+    // connections
+    connected.forEach(pair=>{
+      const a=stars[pair[0]],b=stars[pair[1]];
+      const isCorrect=correct.some(c=>(c[0]===pair[0]&&c[1]===pair[1])||(c[0]===pair[1]&&c[1]===pair[0]));
+      ctx.strokeStyle=isCorrect?'rgba(80,200,112,0.7)':'rgba(224,80,80,0.5)';
+      ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+    });
+    // stars
+    stars.forEach((s,i)=>{
+      ctx.fillStyle=s.key?'#f0d080':'rgba(200,180,140,0.8)';
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.key?8:5,0,Math.PI*2); ctx.fill();
+      if(s.key){ ctx.strokeStyle='#f0d080'; ctx.lineWidth=2; ctx.stroke(); }
+      if(i===0){ ctx.fillStyle='#f0d080'; ctx.font='11px Georgia'; ctx.fillText('★北極星',s.x+10,s.y); }
+    });
+  }
+
+  canvas.addEventListener('click',e=>{
+    const r=canvas.getBoundingClientRect();
+    const mx=(e.clientX-r.left)*(400/r.width);
+    const my=(e.clientY-r.top)*(300/r.height);
+    const hit=stars.findIndex(s=>Math.hypot(s.x-mx,s.y-my)<14);
+    if(hit<0){lastStar=null;return;}
+    if(lastStar!==null&&lastStar!==hit){
+      const pair=[Math.min(lastStar,hit),Math.max(lastStar,hit)];
+      if(!connected.some(c=>c[0]===pair[0]&&c[1]===pair[1])) connected.push(pair);
+      const correctCount=connected.filter(p=>correct.some(c=>(c[0]===p[0]&&c[1]===p[1])||(c[0]===p[1]&&c[1]===p[0]))).length;
+      document.getElementById('star-msg').textContent=(lang==='zh'?`已連接：${correctCount}/${correct.length}個正確星路`:`Connected: ${correctCount}/${correct.length} correct paths`);
+      lastStar=null;
+      drawStars();
+      if(correctCount>=4){
+        setTimeout(()=>{
+          overlay.remove();
+          applyAttr({wisdom:1});
+          stageComplete(num);
+        },800);
+      }
+    } else {
+      lastStar=hit;
+    }
+    drawStars();
+  });
+  drawStars();
+}
+
+// ═══════════════════════════════════════════════════════════
+// ENGINE: SCALE (Stage 4)
+// ═══════════════════════════════════════════════════════════
+function engineScale(num, area){
+  const lang=L();
+  const st=STAGES[num];
+  const questions=st.scaleQuestions||[];
+  let qi=0;
+  const choices=[];
+
+  function renderQ(){
+    if(qi>=questions.length){
+      // done
+      G.s4Choices=choices;
+      const majority=choices.reduce((a,c)=>({left:(a.left+(c==='left'?1:0)),right:(a.right+(c==='right'?1:0))}),{left:0,right:0});
+      const gift = majority.left>=majority.right?
+        (lang==='zh'?'🗡️ 碎裂的神劍（「它不完整，但每次你戰鬥，它就會更完整」）':
+         '🗡️ Shattered Divine Sword ("It is incomplete, but grows whole each time you fight")'):
+        (lang==='zh'?'📜 空白的書（「你遇到的每個智慧，都會自動寫進去」）':
+         '📜 The Blank Book ("Every wisdom you encounter writes itself within")');
+      addJournal((st[lang]||st.zh).title, `⚖️ ${lang==='zh'?'導師的靈物':"Mentor's Gift"}: ${gift}`);
+      applyAttr({wisdom:2});
+      area.innerHTML=`<div style="text-align:center;color:var(--gold-light);font-size:15px;max-width:400px">
+        <div style="font-size:40px;margin-bottom:20px">🎁</div>
+        <div style="margin-bottom:16px">${lang==='zh'?'導師將靈物交給你：':'The Mentor bestows a gift upon you:'}</div>
+        <div style="color:var(--gold);font-size:17px;margin-bottom:24px">${gift}</div>
+        <button class="btn btn-sm" onclick="stageComplete(${num})">${lang==='zh'?'接受靈物':'Accept the Gift'}</button>
+      </div>`;
+      return;
+    }
+    const q=questions[qi];
+    const info=q[lang]||q.zh;
+    area.innerHTML=`<div id="scale-game">
+      <div class="scale-progress">${lang==='zh'?`問題 ${qi+1}/${questions.length}`:`Question ${qi+1}/${questions.length}`}</div>
+      <div class="scale-question">${info.question}</div>
+      <div class="scale-svg-wrap">
+        <svg width="280" height="140" viewBox="0 0 280 140">
+          <line x1="140" y1="20" x2="140" y2="60" stroke="#c9a84c" stroke-width="2"/>
+          <line x1="20" y1="60" x2="260" y2="60" stroke="#c9a84c" stroke-width="2"/>
+          <line x1="20" y1="60" x2="20" y2="100" stroke="#c9a84c" stroke-width="2"/>
+          <line x1="260" y1="60" x2="260" y2="100" stroke="#c9a84c" stroke-width="2"/>
+          <rect x="0" y="100" width="60" height="30" rx="2" fill="rgba(201,168,76,0.15)" stroke="#c9a84c" stroke-width="1"/>
+          <text x="30" y="120" fill="#e8dfc0" font-size="10" text-anchor="middle">${info.left}</text>
+          <rect x="220" y="100" width="60" height="30" rx="2" fill="rgba(201,168,76,0.15)" stroke="#c9a84c" stroke-width="1"/>
+          <text x="250" y="120" fill="#e8dfc0" font-size="10" text-anchor="middle">${info.right}</text>
+          <circle cx="140" cy="15" r="8" fill="#c9a84c"/>
+        </svg>
+      </div>
+      <div class="scale-choices">
+        <button class="scale-btn" onclick="scaleChoose(${num},'left')">${info.left}<br><small style="color:rgba(200,180,140,0.5)">${lang==='zh'?'這個更重':'This weighs more'}</small></button>
+        <button class="scale-btn" onclick="scaleChoose(${num},'right')">${info.right}<br><small style="color:rgba(200,180,140,0.5)">${lang==='zh'?'這個更重':'This weighs more'}</small></button>
+      </div>
+    </div>`;
+    setProgress(Math.round(qi/questions.length*90));
+  }
+
+  window.scaleChoose=(stNum,side)=>{
+    if(stNum!==num) return;
+    choices.push(side);
+    const q=questions[qi];
+    const info=q[lang]||q.zh;
+    addJournal((st[lang]||st.zh).title,`⚖️ "${info.left}" ${lang==='zh'?'vs':'vs'} "${info.right}" → ${side==='left'?info.left:info.right}`);
+    qi++;
+    renderQ();
+  };
+  renderQ();
+}
+
+// ═══════════════════════════════════════════════════════════
+// ENGINE: MAZE (Stage 5)
+// ═══════════════════════════════════════════════════════════
+function engineMaze(num, area){
+  const lang=L();
+  const st=STAGES[num];
+  const W=460,H=320;
+  let fear=0, found=false, step=0;
+  let gameOver=false;
+
+  area.innerHTML=`<div id="maze-game">
+    <div style="color:var(--gold-light);font-size:13px;margin-bottom:8px">${lang==='zh'?'在洞穴迷宮中找到洪巴巴。用方向鍵或WASD移動。管理你的恐懼！':'Navigate the maze to find Humbaba. Use arrow keys or WASD. Manage your fear!'}</div>
+    <div class="fear-meter-wrap">
+      <div class="fear-label">${lang==='zh'?'⚠️ 恐懼':'⚠️ Fear'}</div>
+      <div class="fear-bar"><div class="fear-fill" id="fear-fill" style="width:0%"></div></div>
+      <span id="fear-val" style="font-size:11px;color:var(--courage);width:30px">0%</span>
+    </div>
+    <canvas id="maze-canvas" width="${W}" height="${H}"></canvas>
+    <div class="maze-hint" id="maze-hint">${lang==='zh'?'💡 點擊❤️ 按鈕或按空白鍵穩定自己，降低恐懼值':'💡 Click ❤️ or press Space to calm yourself and reduce fear'}</div>
+    <button class="btn btn-sm" id="calm-btn" style="margin-top:10px" onclick="mazeCalm()">❤️ ${lang==='zh'?'穩定心神':'Steady Heart'}</button>
+  </div>`;
+
+  const canvas=document.getElementById('maze-canvas');
+  const ctx=canvas.getContext('2d');
+  const CELL=40;
+  const COLS=Math.floor(W/CELL), ROWS=Math.floor(H/CELL);
+  // Simple maze: walls as a set
+  const walls=new Set();
+  // Generate simple maze pattern
+  const mazePattern=[
+    '############',
+    '#..#.....#.#',
+    '#.##.###.#.#',
+    '#....#.....#',
+    '#.##.#.###.#',
+    '#....#.....#',
+    '#.#####.#.##',
+    '#...........#'
+  ];
+  // Player & enemy
+  let px=1,py=1;
+  const hx=COLS-2, hy=ROWS-2;
+  let treeTimer=0;
+
+  function isWall(cx,cy){
+    if(cx<0||cy<0||cx>=COLS||cy>=ROWS) return true;
+    const row=mazePattern[cy]||'';
+    return row[cx]==='#';
+  }
+
+  let animId;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // bg
+    ctx.fillStyle='#0a1408'; ctx.fillRect(0,0,W,H);
+    // cells
+    for(let r=0;r<ROWS;r++){
+      for(let c=0;c<COLS;c++){
+        if(isWall(c,r)){
+          ctx.fillStyle='#1a2a10'; ctx.fillRect(c*CELL,r*CELL,CELL,CELL);
+          ctx.fillStyle='rgba(80,120,50,0.3)'; ctx.fillRect(c*CELL+2,r*CELL+2,CELL-4,CELL-4);
+        } else {
+          // path
+          ctx.fillStyle='rgba(10,30,10,0.8)'; ctx.fillRect(c*CELL,r*CELL,CELL,CELL);
+        }
+      }
+    }
+    // fear overlay
+    if(fear>0){
+      ctx.fillStyle=`rgba(100,0,0,${fear/200})`;
+      ctx.fillRect(0,0,W,H);
+    }
+    // Humbaba
+    ctx.font='26px serif'; ctx.fillText('🦁',hx*CELL+7,hy*CELL+30);
+    // Player
+    ctx.fillText('🧑‍⚔️',px*CELL+7,py*CELL+30);
+    // hint trees
+    ctx.font='12px Georgia'; ctx.fillStyle='rgba(200,180,140,0.5)';
+    // vignette
+    const vig=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*0.2,W/2,H/2,Math.min(W,H)*0.7);
+    vig.addColorStop(0,'transparent'); vig.addColorStop(1,`rgba(0,0,0,${Math.min(0.6,fear/100)})`);
+    ctx.fillStyle=vig; ctx.fillRect(0,0,W,H);
+  }
+
+  function move(dx,dy){
+    if(gameOver||found) return;
+    const nx=px+dx, ny=py+dy;
+    if(!isWall(nx,ny)){ px=nx; py=ny; }
+    // random fear increase on move
+    if(Math.random()<0.2){ fear=Math.min(100,fear+5); updateFear(); }
+    // check reach humbaba
+    if(Math.abs(px-hx)<=1&&Math.abs(py-hy)<=1){
+      found=true;
+      gameOver=true;
+      ctx.clearRect(0,0,W,H);
+      draw();
+      setTimeout(()=>showHumbabaChoice(num,area), 400);
+    }
+    step++;
+    setProgress(Math.min(80,step*3));
+    draw();
+  }
+
+  function updateFear(){
+    const pct=Math.min(100,fear);
+    document.getElementById('fear-fill').style.width=pct+'%';
+    document.getElementById('fear-val').textContent=Math.round(pct)+'%';
+    if(pct>=80){
+      document.getElementById('maze-hint').textContent=lang==='zh'?
+        '⚠️ 恩基杜的聲音：「想想你的城市。想想你來這裡的理由！」':
+        '⚠️ Enkidu: "Think of your city. Remember why you came here!"';
+    }
+    if(pct>=100){
+      fear=70; // reset with penalty
+      applyAttr({courage:-1});
+      updateFear();
+    }
+  }
+
+  window.mazeCalm=()=>{ fear=Math.max(0,fear-25); updateFear(); draw(); };
+
+  document.addEventListener('keydown',mazeKeyHandler);
+  function mazeKeyHandler(e){
+    if(!document.getElementById('maze-canvas')) { document.removeEventListener('keydown',mazeKeyHandler); return; }
+    if(e.key==='ArrowUp'||e.key==='w'||e.key==='W'){e.preventDefault();move(0,-1);}
+    if(e.key==='ArrowDown'||e.key==='s'||e.key==='S'){e.preventDefault();move(0,1);}
+    if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A'){e.preventDefault();move(-1,0);}
+    if(e.key==='ArrowRight'||e.key==='d'||e.key==='D'){e.preventDefault();move(1,0);}
+    if(e.key===' '){e.preventDefault();window.mazeCalm();}
+  }
+  canvas.addEventListener('click',e=>{
+    const r=canvas.getBoundingClientRect();
+    const mx=(e.clientX-r.left)*(W/r.width);
+    const my=(e.clientY-r.top)*(H/r.height);
+    const dx=Math.sign(Math.round((mx/CELL)-px));
+    const dy=Math.sign(Math.round((my/CELL)-py));
+    if(Math.abs(dx)>Math.abs(dy)) move(dx,0); else move(0,dy);
+  });
+  currentStageEngine={stop:()=>{ document.removeEventListener('keydown',mazeKeyHandler); }};
+  draw();
+}
+
+function showHumbabaChoice(num, area){
+  const lang=L();
+  const st=STAGES[num];
+  const fc=st.finalChoice?.[lang]||st.finalChoice?.zh;
+  area.innerHTML=`<div style="text-align:center;max-width:440px">
+    <div style="font-size:40px;margin-bottom:16px">🦁</div>
+    <div style="color:var(--gold-light);font-size:15px;margin-bottom:20px;line-height:1.7">${fc.q}</div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <button class="path-btn" onclick="humbabaDecide(${num},'kill')">${fc.a}</button>
+      <button class="path-btn" onclick="humbabaDecide(${num},'spare')">${fc.b}</button>
+    </div>
+  </div>`;
+}
+
+window.humbabaDecide=(num,choice)=>{
+  const lang=L();
+  const st=STAGES[num];
+  G.killedHumbaba=(choice==='kill');
+  G.choices[num]=choice;
+  if(choice==='kill'){
+    applyAttr({courage:2,wisdom:-1},{});
+    addJournal((st[lang]||st.zh).title,lang==='zh'?'⚔️ 你斬殺了洪巴巴，獲得神木。但諸神憤怒了。':'⚔️ You slew Humbaba and took the cedar. But the gods are angry.');
+  } else {
+    applyAttr({heart:2,courage:-1},{});
+    addJournal((st[lang]||st.zh).title,lang==='zh'?'❤️ 你放走了洪巴巴，失去神木，但他承諾成為你的盟友。':'❤️ You spared Humbaba, losing the cedar but gaining an ally.');
+  }
+  stageComplete(num);
+};
+
+// ═══════════════════════════════════════════════════════════
+// ENGINE: RHYTHM (Stage 6)
+// ═══════════════════════════════════════════════════════════
+function engineRhythm(num, area){
+  const lang=L();
+  const st=STAGES[num];
+  let phase=0; // 0=evacuate, 1=fight
+  let score=0, bossHP=100, playerHP=100;
+  let citizens=[], evacuated=0;
+  let beatInterval, gameActive=true;
+
+  // Phase 1: Evacuation
+  function startEvacuation(){
+    area.innerHTML=`<div id="rhythm-game" style="max-width:500px">
+      <div style="color:var(--gold-light);font-size:14px;margin-bottom:10px">${lang==='zh'?'⚡ 天牛降臨！快速點擊市民圖標將他們疏散到安全區（綠色區域）！':'⚡ The Bull of Heaven descends! Click citizens quickly to evacuate them to the safe zone (green area)!'}</div>
+      <div style="position:relative;width:460px;height:280px;background:rgba(20,10,40,0.8);border:1px solid rgba(201,168,76,0.3);border-radius:4px;margin:0 auto" id="evac-area">
+        <div style="position:absolute;right:0;top:0;bottom:0;width:80px;background:rgba(80,200,112,0.15);border-left:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--green)">${lang==='zh'?'安全區':'Safe Zone'}</div>
+        <div style="position:absolute;top:10px;left:10px;color:var(--gold);font-size:13px" id="evac-count">${lang==='zh'?`疏散：0/${10}`:`Evacuated: 0/10`}</div>
+      </div>
+    </div>`;
+    const evacArea=document.getElementById('evac-area');
+    for(let i=0;i<10;i++){
+      const c=document.createElement('div');
+      c.style.cssText=`position:absolute;font-size:20px;cursor:pointer;transition:left 0.3s;left:${20+Math.random()*300}px;top:${40+Math.random()*200}px;`;
+      c.textContent='🧑';
+      c.addEventListener('click',()=>{
+        c.style.left='380px';
+        evacuated++;
+        document.getElementById('evac-count').textContent=lang==='zh'?`疏散：${evacuated}/10`:`Evacuated: ${evacuated}/10`;
+        setProgress(Math.round(evacuated/10*40));
+        c.style.pointerEvents='none';
+        if(evacuated>=7){ setTimeout(startBattle,600); }
+      });
+      evacArea.appendChild(c);
+      citizens.push(c);
+    }
+    // bull moving
+    const bull=document.createElement('div');
+    bull.style.cssText='position:absolute;font-size:30px;left:50px;top:120px;animation:bullMove 2s infinite alternate;';
+    bull.textContent='🐂';
+    evacArea.appendChild(bull);
+    const style=document.createElement('style');
+    style.textContent='@keyframes bullMove{0%{left:50px}100%{left:250px}}';
+    document.head.appendChild(style);
+  }
+
+  // Phase 2: Rhythm battle
+  function startBattle(){
+    phase=1;
+    area.innerHTML=`<div id="rhythm-game">
+      <div class="hp-bar-wrap"><div class="hp-label">${lang==='zh'?'天牛':'Bull'}</div>
+        <div class="hp-bar"><div class="hp-fill boss" id="boss-hp" style="width:100%"></div></div>
+        <span id="boss-hp-val" style="font-size:12px;color:var(--courage);width:35px">100</span></div>
+      <div class="hp-bar-wrap"><div class="hp-label">${lang==='zh'?'你':'You'}</div>
+        <div class="hp-bar"><div class="hp-fill player" id="player-hp" style="width:100%"></div></div>
+        <span id="player-hp-val" style="font-size:12px;color:var(--green);width:35px">100</span></div>
+      <div style="color:var(--gold-light);font-size:13px;margin:12px 0">${lang==='zh'?'當圓圈發光時，迅速點擊！與恩基杜協作消滅天牛！':'When circles glow, click fast! Cooperate with Enkidu to defeat the Bull!'}</div>
+      <div class="rhythm-track" id="rt"></div>
+      <div class="rhythm-status" id="r-status">${lang==='zh'?'準備好了嗎？':'Ready?'}</div>
+      <div class="rhythm-instruction">${lang==='zh'?'🎵 節奏感應中…點擊亮起的圓圈':'🎵 Rhythm detected… click the lit circle'}</div>
+    </div>`;
+    const rt=document.getElementById('rt');
+    const zones=['⚔️','🛡️','⚔️'];
+    const zoneDivs=zones.map((icon,i)=>{
+      const z=document.createElement('div');
+      z.className='rhythm-zone'; z.textContent=icon;
+      z.addEventListener('click',()=>hitZone(i));
+      rt.appendChild(z);
+      return z;
+    });
+    let hitCount=0;
+    function activateZone(){
+      if(!gameActive||bossHP<=0) return;
+      const idx=Math.floor(Math.random()*3);
+      zoneDivs.forEach(z=>z.classList.remove('active'));
+      zoneDivs[idx].classList.add('active');
+      setTimeout(()=>{
+        if(zoneDivs[idx].classList.contains('active')){
+          zoneDivs[idx].classList.remove('active');
+          playerHP=Math.max(0,playerHP-12);
+          updateBattleHP();
+          if(playerHP<=0){ gameActive=false; battleEnd(false); }
+        }
+      },1200);
+    }
+    function hitZone(i){
+      if(!zoneDivs[i].classList.contains('active')) return;
+      zoneDivs[i].classList.remove('active');
+      zoneDivs[i].classList.add('hit');
+      bossHP=Math.max(0,bossHP-15);
+      hitCount++;
+      score+=10;
+      updateBattleHP();
+      document.getElementById('r-status').textContent=lang==='zh'?`命中！天牛受到傷害！連擊 ${hitCount}`:`Hit! Bull takes damage! Combo ${hitCount}`;
+      setTimeout(()=>zoneDivs[i].classList.remove('hit'),300);
+      if(bossHP<=0){ gameActive=false; clearInterval(beatInterval); battleEnd(true); }
+    }
+    function updateBattleHP(){
+      document.getElementById('boss-hp').style.width=bossHP+'%';
+      document.getElementById('boss-hp-val').textContent=Math.round(bossHP);
+      document.getElementById('player-hp').style.width=playerHP+'%';
+      document.getElementById('player-hp-val').textContent=Math.round(playerHP);
+      setProgress(40+Math.round((100-bossHP)*0.4));
+    }
+    beatInterval=setInterval(activateZone,1500);
+    setTimeout(activateZone,500);
+
+    function battleEnd(won){
+      clearInterval(beatInterval);
+      if(won){ applyAttr({courage:2,heart:1}); }
+      else { applyAttr({courage:1,heart:-1}); }
+      addJournal((STAGES[num][L()]||STAGES[num].zh).title, lang==='zh'?
+        (won?'⚔️ 你與恩基杜合力擊敗了天牛！城市得救了。':'⚔️ 天牛被擊退，代價慘重。但城市倖存了。'):
+        (won?'⚔️ You and Enkidu defeated the Bull of Heaven! The city is saved.':'⚔️ The Bull was driven back, at great cost. The city survived.'));
+      // Soul question about Enkidu
+      setTimeout(()=>showSoulInput(
+        st.soulQuestion?.[lang]||st.soulQuestion?.zh||'你最感謝恩基杜的一件事是什麼？',
+        (ans)=>{
+          addJournal((st[lang]||st.zh).title, `❤️ ${lang==='zh'?'感謝恩基杜':'Gratitude for Enkidu'}: "${ans}"`);
+          G.choices['enkidu_gratitude']=ans;
+          stageComplete(num);
+        }
+      ),800);
+    }
+  }
+  startEvacuation();
+}
+
+// ═══════════════════════════════════════════════════════════
+// ENGINE: WILDERNESS (Stage 7)
+// ═══════════════════════════════════════════════════════════
+function engineWild(num, area){
+  const lang=L();
+  const st=STAGES[num];
+  const targets=st.targets||[];
+  let found=0;
+  const wrap=document.createElement('div');
+  wrap.id='wild-game';
+  const clue=lang==='zh'?'在荒野中找到兩個地點：西杜麗的酒館和船夫爾薩納比的船。':
+    "Find two locations in the wilderness: Siduri's Tavern and Urshanabi's Boat.";
+  wrap.innerHTML=`<div class="wild-clue">${clue}</div>
+    <div class="wild-map">
+      <img src="${st.bg}" alt="" onerror="this.style.background='#1a2a10'">
+    </div>
+    <div class="wild-hint" id="wild-hint">${lang==='zh'?'四處探索，尋找線索…':'Explore everywhere, look for clues…'}</div>`;
+  area.appendChild(wrap);
+  const mapEl=wrap.querySelector('.wild-map');
+  targets.forEach((tg,i)=>{
+    const info=tg[lang]||tg.zh;
+    const btn=document.createElement('div');
+    btn.className='wild-target';
+    btn.style.left=tg.x; btn.style.top=tg.y;
+    btn.innerHTML=`<div class="wild-ring">${tg.icon}</div>`;
+    btn.addEventListener('click',()=>{
+      if(btn.classList.contains('found')) return;
+      btn.classList.add('found');
+      found++;
+      // siduri choice
+      if(i===0 && st.siduri){
+        showDialogue([{who:lang==='zh'?'西杜麗':'Siduri', text:info.found, portrait:st.portrait}],()=>{
+          if(found<targets.length){
+            document.getElementById('wild-hint').textContent=lang==='zh'?
+              '你做了選擇。繼續尋找船夫…':'You have made your choice. Now find the ferryman…';
+          }
+          addJournal((st[lang]||st.zh).title,`🍺 ${info.name}: ${info.found}`);
+          setProgress(40+Math.round(found/targets.length*50));
+          if(found>=targets.length) setTimeout(()=>stageComplete(num),600);
+        });
+      } else {
+        notify(info.found, 3000);
+        addJournal((st[lang]||st.zh).title,`⛵ ${info.name}: ${info.found}`);
+        setProgress(40+Math.round(found/targets.length*50));
+        if(found>=targets.length) setTimeout(()=>stageComplete(num),600);
+      }
+    });
+    mapEl.appendChild(btn);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// ENGINE: AWAKE (Stage 8)
+// ═══════════════════════════════════════════════════════════
+function engineAwake(num, area){
+  const lang=L();
+  const st=STAGES[num];
+  const DAYS=7;
+  let day=1, blur=0, sleepTimer, survived=true, gameActive=true;
+  const CLICK_INTERVAL=3000;
+
+  area.innerHTML=`<div id="awake-game">
+    <div class="awake-day" id="awake-day-text">${lang==='zh'?`第 ${day} 天`:`Day ${day}`}</div>
+    <div style="position:relative;display:inline-block">
+      <canvas id="awake-canvas" width="400" height="220" style="border:1px solid rgba(201,168,76,0.3);border-radius:4px"></canvas>
+    </div>
+    <button class="awake-btn" id="awake-click-btn">👁️ ${lang==='zh'?'保持清醒！':'Stay Awake!'}</button>
+    <div class="awake-status" id="awake-status">${lang==='zh'?`撐過 ${DAYS} 天才能獲得永生的秘密`:`Endure ${DAYS} days to learn the secret of immortality`}</div>
+  </div>`;
+
+  const canvas=document.getElementById('awake-canvas');
+  const ctx=canvas.getContext('2d');
+  const btn=document.getElementById('awake-click-btn');
+
+  function drawScene(){
+    ctx.clearRect(0,0,400,220);
+    const grd=ctx.createLinearGradient(0,0,400,220);
+    grd.addColorStop(0,`rgba(0,5,20,${0.8+blur*0.2})`);
+    grd.addColorStop(1,`rgba(10,0,30,${0.9+blur*0.1})`);
+    ctx.fillStyle=grd; ctx.fillRect(0,0,400,220);
+    // stars
+    for(let i=0;i<60;i++){
+      const a=Math.max(0.05,0.4-blur*0.3);
+      ctx.fillStyle=`rgba(255,255,200,${Math.random()*a+0.05})`;
+      ctx.beginPath(); ctx.arc(Math.random()*400,Math.random()*150,Math.random()*1.5,0,Math.PI*2); ctx.fill();
+    }
+    // moon
+    ctx.fillStyle=`rgba(240,220,160,${0.8-blur*0.4})`;
+    ctx.beginPath(); ctx.arc(320,50,25,0,Math.PI*2); ctx.fill();
+    // bread count (utnapishtim tracking)
+    ctx.font='16px serif'; ctx.fillStyle='rgba(201,168,76,0.6)';
+    for(let i=0;i<day-1;i++){ ctx.fillText('🍞',20+i*22,200); }
+    // blur/sleepiness overlay
+    if(blur>0.3){
+      ctx.fillStyle=`rgba(0,0,0,${blur*0.6})`;
+      ctx.fillRect(0,0,400,220);
+    }
+    // ghost enkidu if day>=5
+    if(day>=5&&blur>0.4){
+      ctx.font='28px serif'; ctx.globalAlpha=blur*0.5; ctx.fillText('👤',180,100); ctx.globalAlpha=1;
+      ctx.fillStyle='rgba(200,180,140,0.4)'; ctx.font='11px Georgia';
+      ctx.fillText(lang==='zh'?'…恩基杜？':'…Enkidu?',210,95);
+    }
+    // day text
+    ctx.fillStyle='rgba(201,168,76,0.8)'; ctx.font='bold 14px Georgia';
+    ctx.fillText(lang==='zh'?`第 ${day} 天`:`Day ${day}`,10,20);
+  }
+
+  function nextDay(){
+    if(!gameActive) return;
+    day++;
+    blur=0;
+    document.getElementById('awake-day-text').textContent=lang==='zh'?`第 ${day} 天`:`Day ${day}`;
+    drawScene();
+    if(day>DAYS){
+      // survived!
+      gameActive=false;
+      G.s8Survived=true;
+      clearTimeout(sleepTimer);
+      notify(lang==='zh'?'你撐過了七天！烏塔納匹什提驚訝極了。':'You endured seven days! Utnapishtim is astonished.',3000);
+      applyAttr({wisdom:2,courage:1});
+      setProgress(80);
+      setTimeout(()=>showDivePuzzle(num,area),2000);
+    } else {
+      startSleepCountdown();
+    }
+  }
+
+  function fallAsleep(){
+    if(!gameActive) return;
+    survived=false;
+    gameActive=false;
+    G.s8Survived=false;
+    blur=1;
+    drawScene();
+    document.getElementById('awake-status').textContent=lang==='zh'?
+      `你在第 ${day} 天睡著了。烏塔納匹什提的妻子烤了 ${day} 個麵包作為記錄。`:`You fell asleep on day ${day}. Utnapishtim's wife baked ${day} loaves to record your sleep.`;
+    btn.style.display='none';
+    applyAttr({wisdom:1});
+    setProgress(50);
+    setTimeout(()=>showDivePuzzle(num,area),2000);
+  }
+
+  function startSleepCountdown(){
+    clearTimeout(sleepTimer);
+    const blurInterval=setInterval(()=>{ blur=Math.min(1,blur+0.05); drawScene(); },200);
+    sleepTimer=setTimeout(()=>{ clearInterval(blurInterval); fallAsleep(); }, Math.max(2000, 5000-day*400));
+  }
+
+  btn.addEventListener('click',()=>{
+    if(!gameActive) return;
+    blur=Math.max(0,blur-0.3);
+    drawScene();
+    clearTimeout(sleepTimer);
+    document.getElementById('awake-status').textContent=lang==='zh'?
+      `第 ${day} 天，你仍然清醒…`:`Day ${day}, you are still awake…`;
+    setProgress(Math.round(day/DAYS*50));
+    setTimeout(nextDay, 1500);
+  });
+  document.addEventListener('keydown',e=>{if(e.key===' '&&gameActive){e.preventDefault();btn.click();}});
+  drawScene();
+  startSleepCountdown();
+}
+
+function showDivePuzzle(num, area){
+  const lang=L();
+  const W=400,H=320;
+  let playerY=30, depth=0, herb=false, eel=[], found=false;
+  area.innerHTML=`<div id="dive-game">
+    <div class="dive-depth" id="dive-depth">${lang==='zh'?'深度：0m':'Depth: 0m'}</div>
+    <div style="color:rgba(200,180,140,0.7);font-size:13px;margin-bottom:8px">${lang==='zh'?'下潛找到靈草！躲避電鰻，點擊靈草採集！':'Dive and find the herb! Dodge electric eels — click the herb to collect it!'}</div>
+    <canvas id="dive-canvas" width="${W}" height="${H}"></canvas>
+    <div class="dive-hint" id="dive-hint">${lang==='zh'?'點擊畫面下方讓潛水員下潛':'Click lower area to dive deeper'}</div>
+  </div>`;
+  const canvas=document.getElementById('dive-canvas');
+  const ctx=canvas.getContext('2d');
+  // eels
+  for(let i=0;i<3;i++) eel.push({x:Math.random()*300+50,y:80+i*70,dx:(Math.random()-0.5)*2,speed:1+i*0.5});
+  let herbX=180, herbY=260;
+  let animId2;
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // ocean gradient
+    const gr=ctx.createLinearGradient(0,0,0,H);
+    gr.addColorStop(0,'#0a1a3a'); gr.addColorStop(1,'#000820');
+    ctx.fillStyle=gr; ctx.fillRect(0,0,W,H);
+    // depth lines
+    for(let i=1;i<5;i++){
+      ctx.strokeStyle=`rgba(80,120,200,0.1)`;ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(0,i*H/5);ctx.lineTo(W,i*H/5);ctx.stroke();
+    }
+    // herb
+    if(!found){ctx.font='20px serif';ctx.fillText('🌿',herbX,herbY);}
+    // eels
+    eel.forEach(e=>{
+      e.x+=e.dx;if(e.x<0||e.x>W-20)e.dx*=-1;
+      ctx.font='18px serif';ctx.fillText('⚡',e.x,e.y);
+    });
+    // player (diver)
+    ctx.font='22px serif';ctx.fillText('🤿',W/2,playerY);
+    // bubbles
+    for(let i=0;i<5;i++){
+      ctx.fillStyle='rgba(80,160,200,0.3)';
+      ctx.beginPath();ctx.arc(W/2-8+Math.random()*16,playerY-5-i*8,2,0,Math.PI*2);ctx.fill();
+    }
+  }
+
+  function gameLoop(){
+    draw();
+    // check eel collision
+    const hit=eel.some(e=>Math.abs(e.x-W/2)<25&&Math.abs(e.y-playerY)<25);
+    if(hit){
+      notify(lang==='zh'?'⚡ 電鰻！你被電到了，損失一點勇氣':'⚡ Electric eel hit! Courage -1',2000);
+      playerY=Math.max(30,playerY-40);
+      applyAttr({courage:-1});
+    }
+    depth=Math.round(playerY/H*80);
+    document.getElementById('dive-depth').textContent=lang==='zh'?`深度：${depth}m`:`Depth: ${depth}m`;
+    if(!found) animId2=requestAnimationFrame(gameLoop);
+  }
+
+  canvas.addEventListener('click',e=>{
+    const r=canvas.getBoundingClientRect();
+    const cy=(e.clientY-r.top)*(H/r.height);
+    if(cy>playerY){playerY=Math.min(H-30,playerY+30);}else{playerY=Math.max(30,playerY-20);}
+    // check herb
+    if(Math.abs(playerY-herbY)<30&&!found){
+      found=true;cancelAnimationFrame(animId2);
+      notify(lang==='zh'?'🌿 你找到了靈草！但…':'🌿 You found the herb! But…',3000);
+      applyAttr({wisdom:1});
+      addJournal((STAGES[num][L()]||STAGES[num].zh).title,lang==='zh'?
+        '🌿 你從深海取得靈草……卻在洗澡時被蛇偷走。英雄不因失敗而停止，而是在失敗中看見自己。':
+        '🌿 You retrieved the herb from the deep sea… but a snake stole it while you bathed. A hero does not stop at failure — they see themselves within it.');
+      setProgress(100);
+      setTimeout(()=>stageComplete(num),2000);
+    }
+  });
+  gameLoop();
+}
+
+// ═══════════════════════════════════════════════════════════
+// ENGINE: STRATEGY (Stage 9)
+// ═══════════════════════════════════════════════════════════
+function engineStrategy(num, area){
+  const lang=L();
+  const st=STAGES[num];
+  const ROWS=6,COLS=8;
+  let traps=[], placed=0, maxTraps=3;
+  // Dragon path (cells)
+  const dragonPath=[[1,0],[1,1],[2,1],[3,1],[4,1],[4,2],[4,3],[5,3],[5,4],[6,4],[6,5]];
+  const grid=Array.from({length:ROWS},()=>Array(COLS).fill('empty'));
+  dragonPath.forEach(([r,c])=>grid[r][c]='path');
+  grid[5][7]='dragon'; // dragon start off-grid
+  let score=0;
+
+  area.innerHTML=`<div id="strategy-game">
+    <div style="color:var(--gold-light);font-size:14px;margin-bottom:8px">${lang==='zh'?
+      '設計陷阱伏擊法夫尼爾！在龍的必經之路上點擊挖壕溝（最多3條）。龍必須經過壕溝才會受傷。':
+      "Place trench traps to ambush Fafnir! Click on the dragon's path to dig trenches (max 3). The dragon must cross a trench to be wounded."}</div>
+    <div class="strategy-tokens"><span class="token-badge" id="trap-count">${lang==='zh'?`壕溝：${maxTraps-placed}/${maxTraps}`:`Trenches: ${maxTraps-placed}/${maxTraps}`}</span></div>
+    <div class="strategy-grid" id="strat-grid"></div>
+    <div class="strategy-status" id="strat-status">${lang==='zh'?'點擊龍的路徑（橙色格）挖設壕溝':"Click the dragon's path (orange cells) to dig trenches"}</div>
+    <div style="margin-top:12px;text-align:center"><button class="btn btn-sm" id="launch-dragon">${lang==='zh'?'🐲 釋放龍！':'🐲 Release the Dragon!'}</button></div>
+  </div>`;
+
+  const gridEl=document.getElementById('strat-grid');
+  const cells=[];
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      const cell=document.createElement('div');
+      cell.className='strategy-cell';
+      if(grid[r][c]==='path') cell.style.background='rgba(201,120,40,0.2)', cell.style.borderColor='rgba(201,120,40,0.4)';
+      if(r===0&&c===0){cell.textContent='🧑‍⚔️';}
+      if(r===dragonPath[0][0]&&c===dragonPath[0][1]) cell.style.borderColor='rgba(200,80,40,0.6)';
+      cell.addEventListener('click',()=>{
+        if(grid[r][c]==='path'&&placed<maxTraps&&!cell.classList.contains('trap')){
+          cell.classList.add('trap');
+          cell.textContent='🕳️';
+          traps.push([r,c]);
+          placed++;
+          document.getElementById('trap-count').textContent=lang==='zh'?`壕溝：${maxTraps-placed}/${maxTraps}`:`Trenches: ${maxTraps-placed}/${maxTraps}`;
+          setProgress(Math.round(placed/maxTraps*40));
+          document.getElementById('strat-status').textContent=lang==='zh'?
+            `已設置 ${placed} 個壕溝。${placed>=maxTraps?'點擊「釋放龍」測試！':''}`:`Placed ${placed} trenches. ${placed>=maxTraps?'Click "Release Dragon" to test!':''}`;
+        }
+      });
+      gridEl.appendChild(cell);
+      cells.push({el:cell,r,c});
+    }
+  }
+
+  document.getElementById('launch-dragon').addEventListener('click',()=>{
+    if(placed===0){notify(lang==='zh'?'先設置至少一個壕溝！':'Place at least one trench!');return;}
+    document.getElementById('launch-dragon').disabled=true;
+    document.getElementById('strat-status').textContent=lang==='zh'?'🐲 龍來了！':'🐲 The dragon comes!';
+    let di=0;
+    let dragonHP=100;
+    const interval=setInterval(()=>{
+      if(di>0) {
+        const prev=dragonPath[di-1];
+        const prevCell=cells.find(c=>c.r===prev[0]&&c.c===prev[1]);
+        if(prevCell&&!prevCell.el.classList.contains('trap')) prevCell.el.textContent='';
+      }
+      if(di>=dragonPath.length){
+        clearInterval(interval);
+        const won=dragonHP<=40;
+        if(won){
+          applyAttr({courage:2,wisdom:1});
+          G.s9TrapResult='victory';
+          addJournal((st[lang]||st.zh).title,lang==='zh'?
+            '🐲 策略成功！你的壕溝擊敗了法夫尼爾。龍血沾到你，你能聽懂鳥語了。':
+            '🐲 Strategy worked! Your trenches defeated Fafnir. Dragon blood touches you — you now understand the birds.');
+        } else {
+          applyAttr({courage:1});
+          G.s9TrapResult='partial';
+          addJournal((st[lang]||st.zh).title,lang==='zh'?
+            '🐲 龍受到了傷害但最終逃走了。你的智謀尚需磨練，但你活下來了。':
+            '🐲 The dragon was wounded but escaped. Your tactics need refinement — but you survived.');
+        }
+        setTimeout(()=>stageComplete(num),800);
+        return;
+      }
+      const pos=dragonPath[di];
+      const curr=cells.find(c=>c.r===pos[0]&&c.c===pos[1]);
+      if(curr){
+        if(curr.el.classList.contains('trap')){
+          curr.el.textContent='💥';
+          dragonHP-=35;
+          score+=30;
+          document.getElementById('strat-status').textContent=lang==='zh'?
+            `💥 壕溝命中！龍 HP: ${Math.round(dragonHP)}`:`💥 Trench hit! Dragon HP: ${Math.round(dragonHP)}`;
+        } else {
+          curr.el.textContent='🐲';
+        }
+      }
+      di++;
+    },400);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// ENGINE: CONFESSION (Stage 10)
+// ═══════════════════════════════════════════════════════════
+function engineConfession(num, area){
+  const lang=L();
+  const st=STAGES[num];
+  const confessions=[];
+  // Build questions from past choices
+  const questions=[];
+  if(G.killedHumbaba!==null){
+    questions.push({
+      zh:{context:`在第五關，你${G.killedHumbaba?'殺死了':'放走了'}洪巴巴。`,
+          q:'你為什麼做出這個選擇？'},
+      en:{context:`In Stage 5, you ${G.killedHumbaba?'slew':'spared'} Humbaba.`,
+          q:'Why did you make that choice?'},
+    });
+  }
+  if(G.s2SoulWord){
+    questions.push({
+      zh:{context:`在第二關，你在水面上看見的字是：「${G.s2SoulWord}」。`,q:'這個字代表了什麼？'},
+      en:{context:`In Stage 2, the word you saw in the water was: "${G.s2SoulWord}".`,q:'What does that word represent?'},
+    });
+  }
+  if(G.choices['enkidu_gratitude']){
+    questions.push({
+      zh:{context:`你感謝恩基杜的是：「${G.choices['enkidu_gratitude']}」。`,q:'這份感謝如何改變了你？'},
+      en:{context:`You were grateful to Enkidu for: "${G.choices['enkidu_gratitude']}".`,q:'How has this gratitude changed you?'},
+    });
+  }
+  // Add generic if none
+  if(!questions.length){
+    questions.push({
+      zh:{context:'你走過了艱難的旅程。',q:'在這段旅程中，你最誠實地承認自己失去了什麼？'},
+      en:{context:'You have traveled a difficult journey.',q:'What is the most honest thing you admit to having lost along the way?'},
+    });
+  }
+
+  let qi=0;
+  function renderQ(){
+    if(qi>=questions.length){
+      // Scale ritual + orpheus
+      showOrpheusQuestion(num, area);
+      return;
+    }
+    const q=questions[qi];
+    const info=q[lang]||q.zh;
+    area.innerHTML=`<div id="confession-game">
+      <div style="text-align:center;font-size:28px;margin-bottom:12px">⚖️</div>
+      <div class="confession-judge">${lang==='zh'?
+        `法官 ${qi+1}/${questions.length} 問：${info.q}`:`Judge ${qi+1}/${questions.length} asks: ${info.q}`}</div>
+      <div class="confession-context">${info.context}</div>
+      <textarea id="conf-input" class="soul-input" placeholder="${t('soulPrompt')}" style="width:100%;min-height:70px;padding:10px;background:rgba(255,255,255,0.05);border:1px solid var(--gold);color:var(--text);font-size:14px;font-family:inherit;resize:none;border-radius:2px"></textarea>
+      <div style="text-align:right;margin-top:10px">
+        <button class="btn btn-sm" onclick="submitConf(${num})">${t('submit')}</button>
+      </div>
+    </div>`;
+    setProgress(Math.round(qi/questions.length*60));
+  }
+
+  window.submitConf=(stNum)=>{
+    if(stNum!==num) return;
+    const val=document.getElementById('conf-input').value.trim();
+    if(!val){notify(lang==='zh'?'請寫下你的回答':'Please write your answer');return;}
+    const q=questions[qi];
+    const info=q[lang]||q.zh;
+    confessions.push({q:info.q,a:val});
+    addJournal((st[lang]||st.zh).title,`⚖️ "${info.q}" → "${val}"`);
+    qi++;
+    renderQ();
+  };
+  renderQ();
+}
+
+function showOrpheusQuestion(num, area){
+  const lang=L();
+  const st=STAGES[num];
+  const oq=st.orpheusQuestion?.[lang]||st.orpheusQuestion?.zh||'';
+  area.innerHTML=`<div style="text-align:center;max-width:480px">
+    <img src="./images/img22.png" alt="Orpheus" style="width:80px;height:80px;border-radius:50%;border:2px solid var(--gold);object-fit:cover;margin-bottom:16px" onerror="this.style.display='none'">
+    <div style="color:var(--gold-light);font-size:15px;line-height:1.7;margin-bottom:16px">${oq}</div>
+    <textarea id="orpheus-input" placeholder="${t('soulPrompt')}" style="width:100%;min-height:70px;padding:10px;background:rgba(255,255,255,0.05);border:1px solid var(--gold);color:var(--text);font-size:14px;font-family:inherit;resize:none;border-radius:2px"></textarea>
+    <div style="text-align:right;margin-top:10px">
+      <button class="btn btn-sm" onclick="submitOrpheus(${num})">${t('submit')}</button>
+    </div>
+  </div>`;
+  window.submitOrpheus=(stNum)=>{
+    if(stNum!==num) return;
+    const val=document.getElementById('orpheus-input').value.trim();
+    if(!val){notify(lang==='zh'?'請寫下你的回答':'Please write your answer');return;}
+    G.orpheusAnswer=val;
+    addJournal((st[lang]||st.zh).title,`🎵 ${lang==='zh'?'奧菲斯的問題':"Orpheus' Question"}: "${val}"`);
+    applyAttr({heart:2,wisdom:1});
+    setProgress(100);
+    setTimeout(()=>stageComplete(num),600);
+  };
+}
+
+// ═══════════════════════════════════════════════════════════
+// ENGINE: SAIL (Stage 11)
+// ═══════════════════════════════════════════════════════════
+function engineSail(num, area){
+  const lang=L();
+  const st=STAGES[num];
+  const W=460,H=300;
+  let shipX=60,shipY=150,islandPhase=0,resisted=0;
+  let siren=false,circe=false,calypso=false;
+  let gameActive=true;
+  const islands=[
+    {x:160,y:80,icon:'🧜‍♀️',zh:{name:'塞壬之島',tip:'舊日榮耀的回憶讓你沉溺'},en:{name:"Sirens' Rock",tip:'Memories of past glory draw you in'}},
+    {x:280,y:170,icon:'🌺',zh:{name:'瑟西的花園',tip:'舒適陷阱：「這裡沒有危險。」'},en:{name:"Circe's Garden",tip:'Comfort trap: "There is no danger here."'}},
+    {x:390,y:80,icon:'🕊️',zh:{name:'卡呂普索的洞穴',tip:'愛與永生的承諾'},en:{name:"Calypso's Cave",tip:'Promise of love and immortality'}},
+  ];
+  const danger=[{x:130,y:150},{x:250,y:120},{x:360,y:150}];
+  let attractTimer;
+
+  area.innerHTML=`<div id="sail-game">
+    <div style="color:var(--gold-light);font-size:13px;margin-bottom:8px">${lang==='zh'?
+      '駕船穿越愛琴海。避開誘惑島嶼，直達彼岸！用滑鼠/點擊移動船隻。':
+      'Sail across the Aegean. Avoid the temptation islands and reach the far shore! Click/hover to steer.'}</div>
+    <canvas id="sail-canvas" width="${W}" height="${H}"></canvas>
+    <div class="sail-hint" id="sail-hint">${lang==='zh'?'🌊 抵禦誘惑，不要靠近島嶼！':'🌊 Resist temptation — do not approach the islands!'}</div>
+    <div id="sail-resist" style="color:var(--green);font-size:13px;margin-top:6px">${lang==='zh'?`已抵禦：${resisted}/3`:`Resisted: ${resisted}/3`}</div>
+  </div>`;
+
+  const canvas=document.getElementById('sail-canvas');
+  const ctx=canvas.getContext('2d');
+  let animId;
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // ocean
+    const gr=ctx.createLinearGradient(0,0,0,H);
+    gr.addColorStop(0,'#0a2040'); gr.addColorStop(1,'#0a1030');
+    ctx.fillStyle=gr; ctx.fillRect(0,0,W,H);
+    // waves
+    for(let y=20;y<H;y+=30){
+      ctx.strokeStyle='rgba(80,120,200,0.15)'; ctx.lineWidth=1;
+      ctx.beginPath();
+      for(let x=0;x<W;x+=20) ctx.quadraticCurveTo(x+10,y+5,x+20,y);
+      ctx.stroke();
+    }
+    // goal line
+    ctx.strokeStyle='rgba(80,200,112,0.5)'; ctx.setLineDash([6,4]); ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(W-20,0); ctx.lineTo(W-20,H); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(80,200,112,0.7)'; ctx.font='11px Georgia';
+    ctx.fillText(lang==='zh'?'彼岸':'Far Shore',W-58,20);
+    // islands
+    islands.forEach((isl,i)=>{
+      const done=[siren,circe,calypso][i];
+      ctx.font='28px serif'; ctx.globalAlpha=done?0.3:1;
+      ctx.fillText(isl.icon,isl.x,isl.y);
+      ctx.globalAlpha=1;
+      // attraction radius
+      if(!done){
+        ctx.strokeStyle='rgba(200,80,200,0.2)'; ctx.lineWidth=1;
+        ctx.beginPath(); ctx.arc(isl.x,isl.y,55,0,Math.PI*2); ctx.stroke();
+      }
+    });
+    // danger rocks
+    danger.forEach(d=>{
+      ctx.font='16px serif'; ctx.fillText('🪨',d.x,d.y);
+    });
+    // ship
+    ctx.font='24px serif'; ctx.fillText('⛵',shipX,shipY);
+  }
+
+  function checkIslands(){
+    islands.forEach((isl,i)=>{
+      const done=[siren,circe,calypso][i];
+      if(done) return;
+      const dist=Math.hypot(shipX-isl.x,shipY-isl.y);
+      if(dist<55){
+        // pull toward island
+        const info=isl[lang]||isl.zh;
+        document.getElementById('sail-hint').textContent=`⚠️ ${info.tip}`;
+        if(dist<30){
+          // too close, resist minigame
+          resistIsland(i);
+        }
+      }
+    });
+    if(shipX>=W-30){
+      gameActive=false;
+      cancelAnimationFrame(animId);
+      G.s11Resisted=resisted;
+      applyAttr({heart:2,wisdom:1});
+      addJournal((st[lang]||st.zh).title,lang==='zh'?
+        `⛵ 你成功航過了愛琴海，抵禦了 ${resisted}/3 個誘惑。`:
+        `⛵ You sailed across the Aegean, resisting ${resisted}/3 temptations.`);
+      setTimeout(()=>stageComplete(num),600);
+    }
+  }
+
+  let resistInProgress=false;
+  function resistIsland(idx){
+    if(resistInProgress) return;
+    const done=[siren,circe,calypso];
+    if(done[idx]) return;
+    resistInProgress=true;
+    const lang2=lang;
+    const isl=islands[idx];
+    const info=isl[lang2]||isl.zh;
+    // Show resist panel
+    const popup=document.createElement('div');
+    popup.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:80;display:flex;align-items:center;justify-content:center';
+    const anchor=G.choices['enkidu_gratitude']||G.s2SoulWord||'你的旅程';
+    popup.innerHTML=`<div style="background:var(--panel);border:1px solid var(--gold);padding:24px;max-width:400px;border-radius:4px;text-align:center">
+      <div style="font-size:36px;margin-bottom:12px">${isl.icon}</div>
+      <div style="color:var(--gold-light);font-size:15px;margin-bottom:12px">${info.name}</div>
+      <div style="color:var(--text);font-size:13px;line-height:1.7;margin-bottom:20px">${
+        idx===2&&anchor?
+          (lang2==='zh'?`卡呂普索說：「我可以給你恩基杜所失去的東西。」<br>但你想起了：<em>"${anchor}"</em>`
+            :`Calypso says: "I can give back what Enkidu lost." But you remember: <em>"${anchor}"</em>`):
+          (lang2==='zh'?`${info.tip}。但你知道你必須回去。`:`${info.tip}. But you know you must return.`)
+      }</div>
+      <button class="btn btn-sm btn-danger" onclick="this.closest('div[style*=fixed]').remove();resistInProgress=false;notResist(${idx})">${lang2==='zh'?'留下來':'Stay'}</button>
+      &nbsp;&nbsp;
+      <button class="btn btn-sm btn-green" onclick="this.closest('div[style*=fixed]').remove();resistInProgress=false;doResist(${idx})">${lang2==='zh'?'繼續前行':'Press On'}</button>
+    </div>`;
+    document.body.appendChild(popup);
+    window.doResist=(i)=>{
+      if(i===0) siren=true;
+      else if(i===1) circe=true;
+      else calypso=true;
+      resisted++;
+      document.getElementById('sail-resist').textContent=lang2==='zh'?`已抵禦：${resisted}/3`:`Resisted: ${resisted}/3`;
+      applyAttr({heart:1});
+      notify(lang2==='zh'?'你抵禦了誘惑！繼續前行。':'You resisted! Keep sailing.',2000);
+    };
+    window.notResist=(i)=>{
+      applyAttr({heart:-1,wisdom:1});
+      notify(lang2==='zh'?'你在島上停留了一陣，但最終還是繼續了。':'You lingered on the island, but eventually sailed on.',2500);
+      if(i===0) siren=true; else if(i===1) circe=true; else calypso=true;
+    };
+  }
+
+  canvas.addEventListener('mousemove',e=>{
+    if(!gameActive) return;
+    const r=canvas.getBoundingClientRect();
+    const tx=(e.clientX-r.left)*(W/r.width);
+    const ty=(e.clientY-r.top)*(H/r.height);
+    shipX+=(tx-shipX)*0.08;
+    shipY+=(ty-shipY)*0.08;
+    shipX=Math.max(20,Math.min(W-30,shipX));
+    shipY=Math.max(20,Math.min(H-30,shipY));
+  });
+  canvas.addEventListener('click',e=>{
+    if(!gameActive) return;
+    const r=canvas.getBoundingClientRect();
+    shipX=(e.clientX-r.left)*(W/r.width);
+    shipY=(e.clientY-r.top)*(H/r.height);
+  });
+
+  function loop(){
+    if(!gameActive) return;
+    // auto-advance ship rightward
+    shipX+=0.4;
+    draw();
+    checkIslands();
+    setProgress(Math.round(shipX/W*90));
+    animId=requestAnimationFrame(loop);
+  }
+  loop();
+  currentStageEngine={stop:()=>{gameActive=false;cancelAnimationFrame(animId);}};
+}
+
+// ═══════════════════════════════════════════════════════════
+// ENGINE: RETURN (Stage 12)
+// ═══════════════════════════════════════════════════════════
+function engineReturn(num, area){
+  const lang=L();
+  const st=STAGES[num];
+  const spots=st.hotspots;
+  const req=st.requiredVisits||5;
+  let visited=0;
+  // Journal review first
+  area.innerHTML=`<div style="text-align:center;max-width:500px">
+    <div style="color:var(--gold-light);font-size:16px;margin-bottom:12px">📖 ${lang==='zh'?'英雄日誌回顧':'Journal Review'}</div>
+    <div style="max-height:200px;overflow-y:auto;text-align:left;background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.2);padding:12px;border-radius:2px;margin-bottom:20px">
+      ${G.journal.length?G.journal.map(j=>`<div style="margin-bottom:8px;font-size:12px;color:var(--text)">
+        <span style="color:var(--gold);font-size:10px">${j.stage}</span><br>${j.text}
+      </div>`).join(''):(`<div style="color:rgba(200,180,140,0.4);font-size:13px">${lang==='zh'?'（日誌是空的）':'(Journal is empty)'}</div>`)}
+    </div>
+    <button class="btn btn-sm" onclick="startReturnExplore(${num})">${lang==='zh'?'繼續探索城牆':'Continue — Explore the City Walls'}</button>
+  </div>`;
+
+  window.startReturnExplore=(stNum)=>{
+    if(stNum!==num) return;
+    const wrap=document.createElement('div');
+    wrap.className='hotspot-map';
+    wrap.innerHTML=`<img src="${st.bg}" alt="" style="width:100%;max-height:50vh;object-fit:cover;border-radius:4px;border:1px solid rgba(201,168,76,0.2)">
+      <div style="color:rgba(200,180,140,0.6);font-size:12px;text-align:center;margin-top:6px">${lang==='zh'?'同樣的地點，不同的你。點擊探索所有5個地點。':'Same places, a different you. Click to explore all 5 locations.'}</div>`;
+    area.innerHTML='';
+    area.appendChild(wrap);
+    spots.forEach(sp=>{
+      const info=sp[lang]||sp.zh;
+      const btn=document.createElement('div');
+      btn.className='hotspot';
+      btn.style.left=sp.x; btn.style.top=sp.y;
+      btn.innerHTML=`<div class="hotspot-ring">${sp.icon}</div>
+        <div class="hotspot-tooltip">${info.name}</div>`;
+      btn.addEventListener('click',()=>{
+        if(btn.classList.contains('visited')) return;
+        btn.classList.add('visited');
+        visited++;
+        showDialogue([{who:info.name, text:info.result, portrait:st.portrait}],()=>{
+          setProgress(Math.round(visited/req*60));
+          if(visited>=req) showFinalQuestion(num);
+        });
+      });
+      wrap.appendChild(btn);
+    });
+  };
+}
+
+function showFinalQuestion(num){
+  const lang=L();
+  const st=STAGES[num];
+  const q=st.finalQuestion?.[lang]||st.finalQuestion?.zh||'你的英雄旅程帶給你的最重要的一樣東西，是什麼？';
+  const area=document.getElementById('game-area');
+  area.innerHTML=`<div style="text-align:center;max-width:480px">
+    <div style="font-size:36px;margin-bottom:16px">🌟</div>
+    <div style="color:var(--gold-light);font-size:16px;line-height:1.7;margin-bottom:20px">${q}</div>
+    <textarea id="final-input" placeholder="${t('soulPrompt')}" style="width:100%;min-height:80px;padding:12px;background:rgba(255,255,255,0.05);border:1px solid var(--gold);color:var(--text);font-size:15px;font-family:inherit;resize:none;border-radius:2px"></textarea>
+    <div style="text-align:right;margin-top:12px">
+      <button class="btn" onclick="submitFinal(${num})">${lang==='zh'?'完成旅程 · COMPLETE':'Complete the Journey'}</button>
+    </div>
+  </div>`;
+  window.submitFinal=(stNum)=>{
+    if(stNum!==num) return;
+    const val=document.getElementById('final-input').value.trim();
+    if(!val){notify(lang==='zh'?'請寫下你的答案':'Please write your answer');return;}
+    G.finalAnswer=val;
+    addJournal((st[lang]||st.zh).title,`✨ ${lang==='zh'?'最終的靈丹':'The Elixir'}: "${val}"`);
+    applyAttr({courage:1,wisdom:1,heart:1});
+    setProgress(100);
+    setTimeout(()=>stageComplete(num),400);
+  };
+}
+
+// ═══════════════════════════════════════════════════════════
+// SOUL INPUT HELPER
+// ═══════════════════════════════════════════════════════════
+function showSoulInput(question, callback){
+  const lang=L();
+  const popup=document.createElement('div');
+  popup.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:90;display:flex;align-items:center;justify-content:center';
+  popup.innerHTML=`<div style="background:var(--panel);border:1px solid var(--gold);padding:28px;max-width:420px;width:90%;border-radius:4px;text-align:center">
+    <div style="font-size:28px;margin-bottom:14px">💧</div>
+    <div style="color:var(--gold-light);font-size:15px;line-height:1.7;margin-bottom:18px">${question}</div>
+    <textarea id="soul-inp" placeholder="${t('soulPrompt')}" style="width:100%;min-height:70px;padding:10px;background:rgba(255,255,255,0.05);border:1px solid var(--gold);color:var(--text);font-size:14px;font-family:inherit;resize:none;border-radius:2px"></textarea>
+    <div style="display:flex;gap:12px;justify-content:center;margin-top:16px">
+      <button class="btn btn-sm" style="border-color:rgba(200,180,140,0.4);color:rgba(200,180,140,0.6)" onclick="
+        const v=document.getElementById('soul-inp').value.trim()||'…';
+        this.closest('div[style*=fixed]').remove();
+        (${callback.toString()})(v);
+      ">${lang==='zh'?'略過':'Skip'}</button>
+      <button class="btn btn-sm" onclick="
+        const v=document.getElementById('soul-inp').value.trim();
+        if(!v){return;}
+        this.closest('div[style*=fixed]').remove();
+        (${callback.toString()})(v);
+      ">${t('submit')}</button>
+    </div>
+  </div>`;
+  document.body.appendChild(popup);
+}
+
+// ─────────────────────────────────────────────────────────
+// ENDING
+// ─────────────────────────────────────────────────────────
+function showEnding(){
+  showScreen('ending-screen');
+  const {courage,wisdom,heart} = G.attrs;
+  let title,desc,motto;
+  const lang=L();
+  if(courage>=wisdom&&courage>=heart){
+    title=lang==='zh'?'⚔️ 烈焰英雄':'⚔️ Hero of Flames';
+    desc=lang==='zh'?'你的故事成為後人的戰歌。每一個面對黑暗的人，都會想起你曾跨越的那道門。':'Your story became the battle-hymn of those who came after. All who face darkness remember the threshold you crossed.';
+    motto=lang==='zh'?'「恐懼存在，但你比恐懼更真實。」':'"Fear exists — but you are more real than your fear."';
+  } else if(wisdom>=courage&&wisdom>=heart){
+    title=lang==='zh'?'🌙 星海智者':'🌙 Star-Sea Sage';
+    desc=lang==='zh'?'你的洞見改變了烏魯克的法律。不是用劍，而是用你在旅程中獲得的理解。':'Your insight changed the laws of Uruk — not by sword, but by the understanding you gathered along the way.';
+    motto=lang==='zh'?'「不朽，在你留下的思想。」':'"Immortality lives in the thoughts you leave behind."';
+  } else if(heart>=courage&&heart>=wisdom){
+    title=lang==='zh'?'❤️ 深淵慈人':'❤️ Compassion from the Abyss';
+    desc=lang==='zh'?'你的名字成為「有人陪伴的」的代名詞。你帶回來的，不是永生，而是永遠不再讓人孤獨的決心。':'Your name became a synonym for "being accompanied." What you brought back was not immortality, but the resolve that no one should be alone.';
+    motto=lang==='zh'?'「你遇見了恩基杜，你才真正成為了你。」':'"You met Enkidu — and only then did you truly become yourself."';
+  } else {
+    title=lang==='zh'?'💎 完整的人':'💎 The Complete Human';
+    desc=lang==='zh'?'吉爾伽美什在城牆上刻下了他的故事——這本書就是你看的這個。你是第一個完整的人類英雄。':'Gilgamesh inscribed his story on the city walls — and that story is the one you just lived. You are the first complete human hero.';
+    motto=lang==='zh'?'「不朽，不在永生。不朽，在你留下的事物。」':'"Immortality is not in living forever. It is in what you leave behind."';
+  }
+  document.getElementById('end-hero-title').textContent=title;
+  document.getElementById('end-description').textContent=desc;
+  document.getElementById('end-motto').textContent=motto;
+  document.getElementById('t-end-label').textContent=t('endLabel');
+  document.getElementById('t-restart-btn').textContent=t('restart');
+  const epitaph = document.getElementById('end-epitaph');
+  epitaph.innerHTML=(lang==='zh'?
+    `<em>「爬上城牆，走在上面，看那基礎，看那磚石工事；它的磚石是不是窯燒的？它的地基是不是七賢者鑄就的？這是烏魯克。」</em><br><br>` :
+    `<em>"Climb the wall of Uruk, walk along it; inspect its foundation, examine its brickwork — is it not burnt brick? Did not the Seven Sages lay its foundations? That is Uruk."</em><br><br>`)
+    +(G.finalAnswer?`<div style="margin-top:16px;color:var(--gold)">${lang==='zh'?'你帶走的：':'What you carry:' } <em>"${G.finalAnswer}"</em></div>`:'');
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  // Lang button
+  document.getElementById('lang-btn').textContent='EN';
+  // Close journal on overlay click
+  document.getElementById('modal-overlay').addEventListener('click',e=>{
+    if(e.target===document.getElementById('modal-overlay')){
+      document.getElementById('modal-overlay').style.display='none';
+      document.querySelectorAll('.attr-popup').forEach(p=>p.remove());
+    }
+  });
+  // Keyboard: ESC closes journal
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){
+      closeJournal();
+      document.querySelectorAll('div[style*="position:fixed"][style*="z-index:8"]').forEach(p=>p.remove());
+      document.querySelectorAll('div[style*="position:fixed"][style*="z-index:9"]').forEach(p=>p.remove());
+    }
+  });
+  // Title screen animation
+  const titleImg=document.querySelector('.title-hero-img');
+  if(titleImg){
+    titleImg.style.animation='float-hero 3s ease-in-out infinite';
+    const s=document.createElement('style');
+    s.textContent=`@keyframes float-hero{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-10px) scale(1.03);}}`;
+    document.head.appendChild(s);
+  }
+});
+</script>
 </body>
 </html>

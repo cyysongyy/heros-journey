@@ -434,7 +434,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Georgia',serif;bac
   <!-- TITLE SCREEN -->
   <div id="title-screen" class="screen active">
     <div class="title-stars"></div>
-    <img class="title-hero-img" src="./images/img15.png" alt="Hero" onerror="this.style.display='none'">
+    <img class="title-hero-img" src="./images/01_ordinary_world.png" alt="Hero" onerror="this.style.display='none'">
     <div class="title-zh" id="t-title-zh">英雄旅程</div>
     <div class="title-en">HERO'S JOURNEY</div>
     <div class="title-subtitle" id="t-title-sub">
@@ -447,7 +447,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Georgia',serif;bac
   <!-- MAP SCREEN -->
   <div id="map-screen" class="screen">
     <div id="map-container">
-      <img id="map-bg" src="./images/img0.png" alt="World Map" onerror="this.style.background='#1a1030'">
+      <img id="map-bg" src="./images/00_map.png" alt="World Map" onerror="this.style.background='#1a1030'">
       <img id="map-fog" src="./images/img1.png" alt="Fog" onerror="this.style.display='none'">
       <div class="map-title" id="t-map-title">選擇你的下一個旅程節點</div>
       <div id="map-nodes"></div>
@@ -490,7 +490,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Georgia',serif;bac
       <!-- Dynamic content injected here -->
     </div>
     <div id="dialogue-box">
-      <img id="dialogue-portrait" src="" alt="">
+      <img id="dialogue-portrait" src="" alt="" onerror="this.style.display='none'">
       <div id="dialogue-name"></div>
       <div id="dialogue-text"></div>
       <span id="dialogue-continue" onclick="nextDialogue()">▶ 繼續</span>
@@ -518,7 +518,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Georgia',serif;bac
 
   <!-- ENDING SCREEN -->
   <div id="ending-screen" class="screen">
-    <img class="ending-medal" src="./images/img37.png" alt="Medal" onerror="this.style.display='none'">
+    <img class="ending-medal" src="./images/12_return_elixir.png" alt="Medal" onerror="this.style.display='none'">
     <div class="ending-title-label" id="t-end-label">你的英雄稱號</div>
     <div class="ending-hero-title" id="end-hero-title"></div>
     <div class="ending-description" id="end-description"></div>
@@ -597,17 +597,17 @@ const STAGES = [
     id:1, icon:'🏛️',
     zh:{title:'第一關：平凡的牢籠', sub:'吉爾伽美什的烏魯克城 · 《吉爾伽美什史詩》'},
     en:{title:'Stage 1: The Gilded Cage', sub:"Gilgamesh's Uruk · Epic of Gilgamesh"},
-    bg:'./images/img3.png',
+    bg:'./images/01_ordinary_world.png',
     type:'explore',
-    portrait:'./images/img15.png', portraitName:'吉爾伽美什',
+    portrait:'./images/01_ordinary_world.png', portraitName:'吉爾伽美什',
     dialogues:{
       zh:[
         {who:'旁白', text:'時間：青銅時代黃昏。你是吉爾伽美什——三分之二神明的國王。你擁有一切，卻沒有一個能真正相伴的靈魂。', portrait:'./images/img33.png'},
-        {who:'吉爾伽美什', text:'城市在我腳下，卻不屬於我。我的城牆是世上最高的，但我的心……', portrait:'./images/img15.png'},
+        {who:'吉爾伽美什', text:'城市在我腳下，卻不屬於我。我的城牆是世上最高的，但我的心……', portrait:'./images/01_ordinary_world.png'},
       ],
       en:[
         {who:'Narrator', text:'Bronze Age dusk. You are Gilgamesh — two-thirds god, one-third mortal. You possess everything, yet not a single soul truly accompanies you.', portrait:'./images/img33.png'},
-        {who:'Gilgamesh', text:'The city lies beneath me, yet it does not belong to me. My walls are the tallest in the world, but my heart…', portrait:'./images/img15.png'},
+        {who:'Gilgamesh', text:'The city lies beneath me, yet it does not belong to me. My walls are the tallest in the world, but my heart…', portrait:'./images/01_ordinary_world.png'},
       ]
     },
     hotspots:[
@@ -632,17 +632,17 @@ const STAGES = [
     id:2, icon:'🌊',
     zh:{title:'第二關：召喚的聲音', sub:'恩基杜現身 · 幼發拉底河'},
     en:{title:'Stage 2: The Wild Call', sub:'Enkidu Appears · Euphrates River'},
-    bg:'./images/img4.png',
+    bg:'./images/02_call_to_adventure.png',
     type:'stealth',
     portrait:'./images/img16.png', portraitName:'恩基杜',
     dialogues:{
       zh:[
         {who:'旁白', text:'清晨，幼發拉底河邊。河對岸，一個用草葉遮身的巨人正在喝水——他是恩基杜，神造的野人，從未見過城市的存在。', portrait:'./images/img33.png'},
-        {who:'吉爾伽美什', text:'那不是恐懼，不是欲望——是「終於」。彷彿有什麼東西在很遠的地方輕聲說：「來。」', portrait:'./images/img15.png'},
+        {who:'吉爾伽美什', text:'那不是恐懼，不是欲望——是「終於」。彷彿有什麼東西在很遠的地方輕聲說：「來。」', portrait:'./images/01_ordinary_world.png'},
       ],
       en:[
         {who:'Narrator', text:'Dawn at the Euphrates. Across the river, a giant clothed in leaves drinks water — Enkidu, the wild man made by gods, who has never seen a city.', portrait:'./images/img33.png'},
-        {who:'Gilgamesh', text:'This is not fear, not desire — it is "finally." As if something far away whispers softly: "Come."', portrait:'./images/img15.png'},
+        {who:'Gilgamesh', text:'This is not fear, not desire — it is "finally." As if something far away whispers softly: "Come."', portrait:'./images/01_ordinary_world.png'},
       ]
     },
     soulQuestion:{
@@ -658,7 +658,7 @@ const STAGES = [
     id:3, icon:'⚡',
     zh:{title:'第三關：第一道考驗', sub:'跨越雷霆之門 · 北歐《埃達》+ 但丁《神曲》'},
     en:{title:'Stage 3: The Crossing', sub:"Through the Thunder Gate · Norse Edda + Dante's Inferno"},
-    bg:'./images/img5.png',
+    bg:'./images/03_refusal.png',
     type:'path',
     portrait:'./images/img16.png', portraitName:'恩基杜',
     dialogues:{
@@ -689,7 +689,7 @@ const STAGES = [
     id:4, icon:'⚖️',
     zh:{title:'第四關：導師的試煉', sub:'智者之間 · 《摩訶婆羅多》+ 凱爾特傳說'},
     en:{title:"Stage 4: The Mentor's Fire", sub:"The Wise Ones · Mahabharata + Celtic Legend"},
-    bg:'./images/img6.png',
+    bg:'./images/04_meeting_mentor.png',
     type:'scale',
     portrait:'./images/img23.png', portraitName:'導師',
     dialogues:{
@@ -719,7 +719,7 @@ const STAGES = [
     id:5, icon:'🦁',
     zh:{title:'第五關：深入洞穴', sub:'洪巴巴的領域 · 《吉爾伽美什》+ 希臘神話'},
     en:{title:'Stage 5: Into the Beast', sub:"Humbaba's Domain · Gilgamesh + Greek Mythology"},
-    bg:'./images/img7.png',
+    bg:'./images/05_crossing_threshold.png',
     type:'maze',
     portrait:'./images/img17.png', portraitName:'洪巴巴',
     dialogues:{
@@ -753,18 +753,18 @@ const STAGES = [
     id:6, icon:'🌌',
     zh:{title:'第六關：天上的憤怒', sub:'諸神的審判 · 《吉爾伽美什》+ 《西遊記》天庭'},
     en:{title:'Stage 6: The Wrath of Heaven', sub:'Divine Judgment · Gilgamesh + Journey to the West'},
-    bg:'./images/img8.png',
+    bg:'./images/06_tests_allies_enemies.png',
     type:'rhythm',
     portrait:'./images/img17.png', portraitName:'伊絲塔',
     dialogues:{
       zh:[
         {who:'伊絲塔', text:'「吉爾伽美什，成為我的男人。我將給你黃金的戰車，所有的王都將跪在你面前。」', portrait:'./images/img17.png'},
-        {who:'吉爾伽美什', text:'「你的前任戀人們——哪一個沒有被你摧毀？獅子、馬、牧羊人……我不會是下一個。」', portrait:'./images/img15.png'},
+        {who:'吉爾伽美什', text:'「你的前任戀人們——哪一個沒有被你摧毀？獅子、馬、牧羊人……我不會是下一個。」', portrait:'./images/01_ordinary_world.png'},
         {who:'旁白', text:'這是英雄最危險的時刻：勝利後的傲慢。諸神憤怒了，天牛降臨烏魯克。你必須疏散市民，與恩基杜配合，共同擊敗天牛！', portrait:'./images/img33.png'},
       ],
       en:[
         {who:'Ishtar', text:'"Gilgamesh, be my husband. I will give you a golden chariot; every king shall kneel before you."', portrait:'./images/img17.png'},
-        {who:'Gilgamesh', text:'"Which of your lovers was not destroyed by you? The lion, the horse, the shepherd… I will not be next."', portrait:'./images/img15.png'},
+        {who:'Gilgamesh', text:'"Which of your lovers was not destroyed by you? The lion, the horse, the shepherd… I will not be next."', portrait:'./images/01_ordinary_world.png'},
         {who:'Narrator', text:"This is the hero's most dangerous moment: pride after victory. The gods rage; the Bull of Heaven descends on Uruk. You must evacuate citizens and fight alongside Enkidu!", portrait:'./images/img33.png'},
       ]
     },
@@ -781,17 +781,17 @@ const STAGES = [
     id:7, icon:'💀',
     zh:{title:'第七關：恐懼的名字', sub:'面對死亡 · 北歐奧丁 + 佛陀無常'},
     en:{title:'Stage 7: Fear Has a Name', sub:'Facing Death · Norse Odin + Buddhist Impermanence'},
-    bg:'./images/img9.png',
+    bg:'./images/07_inmost_cave.png',
     type:'wilderness',
     portrait:'./images/img20.png', portraitName:'西杜麗',
     dialogues:{
       zh:[
         {who:'旁白', text:'恩基杜死了。你扔下王冠，離開烏魯克，往世界的盡頭走去。如果他也會死——那你呢？', portrait:'./images/img33.png'},
-        {who:'吉爾伽美什', text:'「我要找到永生。我不能死。」', portrait:'./images/img15.png'},
+        {who:'吉爾伽美什', text:'「我要找到永生。我不能死。」', portrait:'./images/01_ordinary_world.png'},
       ],
       en:[
         {who:'Narrator', text:"Enkidu is dead. You throw down your crown and leave Uruk, walking toward the world's end. If even he could die — what of you?", portrait:'./images/img33.png'},
-        {who:'Gilgamesh', text:'"I will find immortality. I cannot die."', portrait:'./images/img15.png'},
+        {who:'Gilgamesh', text:'"I will find immortality. I cannot die."', portrait:'./images/01_ordinary_world.png'},
       ]
     },
     targets:[
@@ -810,7 +810,7 @@ const STAGES = [
     id:8, icon:'🌊',
     zh:{title:'第八關：永生的秘密', sub:'最深的洞穴 · 烏塔納匹什提的島嶼'},
     en:{title:'Stage 8: The Secret of Immortality', sub:'The Deepest Cave · Isle of Utnapishtim'},
-    bg:'./images/img10.png',
+    bg:'./images/08_the_ordeal.png',
     type:'awake',
     portrait:'./images/img21.png', portraitName:'烏塔納匹什提',
     dialogues:{
@@ -832,7 +832,7 @@ const STAGES = [
     id:9, icon:'🔥',
     zh:{title:'第九關：戰士的死與重生', sub:'鳳凰時刻 · 北歐西格爾德 + 埃及奧西里斯'},
     en:{title:'Stage 9: Death and Fire', sub:'The Phoenix Moment · Norse Sigurd + Egyptian Osiris'},
-    bg:'./images/img11.png',
+    bg:'./images/09_reward.png',
     type:'strategy',
     portrait:'./images/img34.png', portraitName:'鳳凰',
     dialogues:{
@@ -854,7 +854,7 @@ const STAGES = [
     id:10, icon:'⚖️',
     zh:{title:'第十關：靈魂的審判', sub:'真理之廳 · 埃及《亡靈書》+ 希臘奧菲斯'},
     en:{title:'Stage 10: The Hall of Two Truths', sub:'Judgment Hall · Egyptian Book of the Dead + Orpheus'},
-    bg:'./images/img12.png',
+    bg:'./images/10_road_back.png',
     type:'confession',
     portrait:'./images/img19.png', portraitName:'阿努比斯',
     dialogues:{
@@ -880,7 +880,7 @@ const STAGES = [
     id:11, icon:'🌅',
     zh:{title:'第十一關：回頭路上的誘惑', sub:'奧德修斯的海 · 《奧德賽》+ 《西遊記》'},
     en:{title:'Stage 11: The Road of Trials', sub:"Odysseus' Sea · The Odyssey + Journey to the West"},
-    bg:'./images/img13.png',
+    bg:'./images/11_resurrection.png',
     type:'sail',
     portrait:'./images/img22.png', portraitName:'奧菲斯',
     dialogues:{
@@ -902,17 +902,17 @@ const STAGES = [
     id:12, icon:'🌍',
     zh:{title:'第十二關：帶著靈丹回家', sub:'蛻變的英雄 · 吉爾伽美什回到烏魯克'},
     en:{title:'Stage 12: Return with the Elixir', sub:'The Transformed Hero · Gilgamesh Returns to Uruk'},
-    bg:'./images/img14.png',
+    bg:'./images/12_return_elixir.png',
     type:'return',
-    portrait:'./images/img15.png', portraitName:'吉爾伽美什',
+    portrait:'./images/01_ordinary_world.png', portraitName:'吉爾伽美什',
     dialogues:{
       zh:[
         {who:'旁白', text:'你回到了起點——但「起點」不再是起點了。烏魯克城的城牆還在。人民還在。市場還在。但你——已經是另一個人。', portrait:'./images/img33.png'},
-        {who:'吉爾伽美什', text:'「我沒有帶回永生。我沒有帶回靈草。我帶回的，是一個更難解釋的東西：我知道了死亡的真相，而我選擇繼續活著。」', portrait:'./images/img15.png'},
+        {who:'吉爾伽美什', text:'「我沒有帶回永生。我沒有帶回靈草。我帶回的，是一個更難解釋的東西：我知道了死亡的真相，而我選擇繼續活著。」', portrait:'./images/01_ordinary_world.png'},
       ],
       en:[
         {who:'Narrator', text:'You return to where you began — yet the "beginning" is no longer where you began. The walls of Uruk remain. The people remain. But you — you are someone else entirely.', portrait:'./images/img33.png'},
-        {who:'Gilgamesh', text:'"I did not bring back immortality. I did not bring back the herb. What I brought back is harder to explain: I learned the truth of death — and I chose to keep living."', portrait:'./images/img15.png'},
+        {who:'Gilgamesh', text:'"I did not bring back immortality. I did not bring back the herb. What I brought back is harder to explain: I learned the truth of death — and I chose to keep living."', portrait:'./images/01_ordinary_world.png'},
       ]
     },
     hotspots:[
@@ -1128,7 +1128,12 @@ function renderDialogue(){
   document.getElementById('dialogue-name').textContent = d.who;
   document.getElementById('dialogue-text').textContent = d.text;
   const port = document.getElementById('dialogue-portrait');
-  if(d.portrait){ port.src=d.portrait; port.style.display='block'; }
+  if(d.portrait){
+    port.src=d.portrait; port.style.display='block';
+    // Hide gracefully if the portrait art is missing (covers cached failures,
+    // where the browser won't re-fire onerror for a repeated broken src).
+    if(port.complete && port.naturalWidth===0){ port.style.display='none'; }
+  }
   else { port.style.display='none'; }
   document.getElementById('dialogue-continue').textContent = dlgIdx<dlgQueue.length-1?t('cont'):(G.lang==='zh'?'▶ 開始':'▶ Start');
 }

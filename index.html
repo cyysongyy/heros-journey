@@ -28,7 +28,10 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Georgia',serif;bac
 
 /* ── TITLE SCREEN ── */
 #title-screen{
-  background:linear-gradient(180deg,#0a0820 0%,#1a0a30 50%,#0a1a30 100%);
+  background:
+    linear-gradient(180deg,rgba(10,8,32,0.82) 0%,rgba(26,10,48,0.72) 50%,rgba(10,26,48,0.82) 100%),
+    url('./images/img0.png') center/cover no-repeat,
+    linear-gradient(180deg,#0a0820 0%,#1a0a30 50%,#0a1a30 100%);
 }
 .title-stars{position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(circle at 20% 30%, rgba(200,160,80,0.15) 0%, transparent 50%),
   radial-gradient(circle at 80% 20%, rgba(120,80,200,0.15) 0%, transparent 40%);pointer-events:none;}
@@ -75,7 +78,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Georgia',serif;bac
   background:rgba(10,10,30,0.85);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   transition:all 0.3s;position:relative;
-  box-shadow:0 0 12px rgba(201,168,76,0.3);
+  box-shadow:0 0 16px rgba(201,168,76,0.5), inset 0 0 8px rgba(201,168,76,0.1);
 }
 .stage-node.locked .node-ring{border-color:rgba(100,100,120,0.5);background:rgba(5,5,10,0.8);}
 .stage-node.locked .node-ring:hover{transform:none;box-shadow:none;}
@@ -435,7 +438,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Georgia',serif;bac
   <!-- TITLE SCREEN -->
   <div id="title-screen" class="screen active">
     <div class="title-stars"></div>
-    <div style="font-size:80px;margin-bottom:20px;filter:drop-shadow(0 0 20px rgba(201,168,76,0.5))">🌍</div>
+    <img class="title-hero-img" src="./images/img15.png" alt="Hero" onerror="this.style.display='none'">
     <div class="title-zh">英雄旅程</div>
     <div class="title-en">HERO'S JOURNEY</div>
     <div class="title-subtitle">
@@ -448,7 +451,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Georgia',serif;bac
   <!-- MAP SCREEN -->
   <div id="map-screen" class="screen">
     <div id="map-container">
-      <img id="map-bg" src="./images/img0.png" alt="World Map" onerror="this.style.background='#1a1030'">
+      <img id="map-bg" src="./images/img0.png" alt="World Map" onerror="this.style.display='none'">
       <img id="map-fog" src="./images/img1.png" alt="Fog" onerror="this.style.display='none'">
       <div class="map-title" id="t-map-title">選擇你的下一個旅程節點</div>
       <div id="map-nodes"></div>
@@ -2644,7 +2647,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(titleImg){
     titleImg.style.animation='float-hero 3s ease-in-out infinite';
     const s=document.createElement('style');
-    s.textContent=`@keyframes float-hero{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-10px) scale(1.03);}}`;
+    s.textContent='@keyframes float-hero{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.03)}}';
     document.head.appendChild(s);
   }
 });

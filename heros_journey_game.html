@@ -76,6 +76,13 @@
   .roll.ok .verdict{color:#0f2a12;background:var(--green)}
   .roll.ko .verdict{color:#2e1a0c;background:var(--amber)}
   .trial{color:var(--muted);font-size:.9rem;margin-top:8px;letter-spacing:.04em}
+  .meaning{margin-top:16px;border:1px solid #2f2a20;border-radius:10px;background:#141009;overflow:hidden}
+  .meaning>summary{cursor:pointer;padding:12px 16px;color:var(--gold);font-size:.95rem;
+    list-style:none;display:flex;align-items:center;gap:8px;letter-spacing:.03em}
+  .meaning>summary::-webkit-details-marker{display:none}
+  .meaning>summary::before{content:"▸";transition:transform .2s;color:var(--gold-dim)}
+  .meaning[open]>summary::before{transform:rotate(90deg)}
+  .meaning-body{padding:0 18px 16px;color:#c9bda3;line-height:1.85;font-size:1rem}
 
   /* hud */
   .hud{padding:6px 0 18px}
@@ -174,7 +181,8 @@ const T = {
   share:{zh:"分享成績卡",en:"Share Result Card"},
   reflectPh:{zh:"寫下你的答案…（可留白）",en:"Write your answer… (optional)"},
   journalTitle:{zh:"你的英雄旅程",en:"Your Hero's Journey"},
-  download:{zh:"下載我的旅程",en:"Download My Journey"}
+  download:{zh:"下載我的旅程",en:"Download My Journey"},
+  meaningToggle:{zh:"這一關的意涵",en:"What this stage means"}
 };
 const EP = {
   c:{zh:"無畏者",en:"The Fearless",d:{zh:"你以勇氣穿越了所有不可能。",en:"By courage you crossed the impossible."}},
@@ -275,6 +283,20 @@ const PROMPTS=[
  {zh:"你要把這份收穫，帶回哪裡、帶給誰？",en:"Where — and to whom — will you carry what you've gained?"},
  {zh:"經過這一切，你和出發時的自己，有什麼不同？",en:"After all this, how are you different from the one who set out?"},
  {zh:"你想留給這個世界的「禮物」是什麼？",en:"What is the gift you want to leave to the world?"}
+];
+const MEANING=[
+ {zh:"平凡世界是「尚未甦醒的自我」。它安全、熟悉，卻也隱隱令人窒息——因為你還沒成為你能成為的樣子。神話從這裡開始，正因為每段旅程都始於一個「還不知道自己缺了什麼」的起點。",en:"The ordinary world is the self before it awakens — safe, familiar, quietly suffocating, because you have not yet become who you could be. Every myth starts here: at a point that does not yet know what it is missing."},
+ {zh:"召喚是命運的敲門聲，常以「不安」的形式出現：一個機會、一場失落、一個再也壓不住的念頭。它宣告——你舊有的世界，已經容不下正在長大的你。",en:"The call is destiny knocking, usually disguised as restlessness: an opportunity, a loss, a thought you can no longer silence. It announces that your old world can no longer contain the self outgrowing it."},
+ {zh:"抗拒是人性，不是懦弱。恐懼守在門口，是為了確認你「真的想要」。幾乎每個英雄都曾說「不」——重要的不是你有沒有害怕，而是你能否在害怕之後仍然前行。",en:"Refusal is human, not cowardice. Fear guards the threshold to ask whether you truly want this. Nearly every hero first says \"no\" — what matters is not whether you feared, but whether you went on anyway."},
+ {zh:"導師代表「你內在早已知道、卻還不敢相信的智慧」。他可能是一個人、一本書、一句話。真正的禮物從不是那把劍，而是「相信自己走得下去」的勇氣。",en:"The mentor is wisdom you already carry but do not yet dare to trust — a person, a book, a single sentence. The real gift is never the sword, but the courage to believe you can go on."},
+ {zh:"門檻是「不可回頭」的那一刻。跨過去，你便離開了已知世界的規則，進入一個必須重新學習如何生存的地方。真正的改變，永遠發生在舒適圈的邊界之外。",en:"The threshold is the point of no return. To cross it is to leave the rules of the known world for a place where you must learn to survive anew. Real change always happens just past the edge of the comfortable."},
+ {zh:"在陌生的世界裡，你透過一次次小考驗認識自己：誰值得信任、你的底線在哪、你的力量與軟弱何在。敵人往往是你的鏡子，照見你尚未整合的那一面。",en:"In the unfamiliar world, small trials teach you who you are: whom to trust, where your limits lie, where your strength and weakness live. The enemy is often a mirror, showing the part of you not yet made whole."},
+ {zh:"洞穴是「最深的恐懼所居之處」。逼近它需要的不是力量，而是誠實——承認你一直在逃避的那件事。所有的寶藏，都埋在你最不敢去的地方。",en:"The inmost cave is where your deepest fear lives. Approaching it takes not strength but honesty — admitting the thing you keep avoiding. Every treasure is buried in the place you least dare to go."},
+ {zh:"重大考驗是一次「象徵性的死亡」。舊的你——舊的信念、舊的身份——必須在此死去，新的你才能誕生。這是整趟旅程的核心：不經歷死亡，就沒有重生。",en:"The ordeal is a symbolic death. The old you — old beliefs, old identity — must die here so a new self can be born. This is the heart of the journey: without death, there is no rebirth."},
+ {zh:"寶藏很少是「東西」，而是「穿越死亡後才配擁有的東西」：一種能力、一份領悟、一種再也奪不走的自由。你不是找到了它，你是「成為」了能擁有它的人。",en:"The reward is rarely a thing, but something you can only hold after passing through death: a power, an insight, a freedom no one can take. You did not find it — you became the person able to hold it."},
+ {zh:"歸途提醒我們：領悟了還不夠，你必須「帶回來」。真正的英雄不是留在山頂的人，而是願意帶著禮物走回人群的人。逃避回歸，收穫就會腐爛在原地。",en:"The road back reminds us that insight is not enough — you must carry it home. The true hero is not the one who stays on the summit, but the one who brings the gift back to the people. Refuse the return, and the treasure rots where it lies."},
+ {zh:"重生是「最後的淨化」。在故鄉的門檻前，你被要求證明自己真的變了。這一次死而復生，讓你把旅途中學到的一切，永遠刻進了自己的靈魂。",en:"Resurrection is the final purification. At the threshold of home you are asked to prove you have truly changed. This last death-and-return carves all you learned into your soul forever."},
+ {zh:"圓，閉合了。你回到起點，卻已是另一個人。「靈藥」是你能給予他人的東西——你的故事、你的療癒、你的光。英雄旅程真正的意義，從來不只是為了你自己。",en:"The circle closes. You return to the beginning, yet you are someone else. The elixir is what you can now give to others — your story, your healing, your light. The true meaning of the journey was never only for yourself."}
 ];
 const CHECK={
  4:{dc:5,
@@ -406,6 +428,7 @@ function render(){
       head=`<div class="outcome">${tr(c.o)}</div>`;
     }
     ch=`${head}
+      <details class="meaning"><summary>${tr(T.meaningToggle)}</summary><div class="meaning-body">${tr(MEANING[i])}</div></details>
       <div class="reflect">
         <div class="reflect-q">${tr(PROMPTS[i])}</div>
         <textarea class="reflect-in" rows="3" placeholder="${tr(T.reflectPh)}" oninput="journal[${i}]=this.value">${esc(journal[i])}</textarea>
@@ -518,6 +541,7 @@ function downloadJournal(){
   t+='='.repeat(46)+'\n\n';
   for(let k=0;k<S.length;k++){
     t+=(k+1)+'. '+S[k][lang==='zh'?'zh':'en']+' / '+(lang==='zh'?S[k].en:S[k].zh)+'\n';
+    t+='※ '+tr(MEANING[k])+'\n';
     t+='Q: '+tr(PROMPTS[k])+'\n';
     const a=(journal[k]||'').trim();
     t+=(a||(lang==='zh'?'（未填寫）':'(blank)'))+'\n\n';

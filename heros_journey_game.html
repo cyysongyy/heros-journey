@@ -63,6 +63,19 @@
   .jname{color:#e8dfcd;font-size:1.04rem;margin-bottom:4px}
   .jq{color:var(--muted);font-size:.85rem;margin-bottom:6px;line-height:1.5}
   .ja{color:#d9cdb4;font-size:1rem;line-height:1.75;white-space:pre-wrap}
+  .roll{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:4px 0 4px;
+    padding:12px 16px;border-radius:12px;border:1px solid #3a3226;background:#161209;animation:rollin .5s ease}
+  @keyframes rollin{0%{opacity:0;transform:scale(.92)}60%{transform:scale(1.03)}100%{opacity:1;transform:scale(1)}}
+  .roll .die{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+    font-size:1.3rem;font-weight:bold;color:#1a140c;background:var(--gold);animation:shake .5s ease}
+  @keyframes shake{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(10deg)}60%{transform:rotate(-6deg)}80%{transform:rotate(4deg)}}
+  .roll .math{color:var(--muted);font-size:.95rem}
+  .roll .math b{color:var(--ink)}
+  .roll .dc{color:#6b604a;margin-left:6px;font-size:.85rem}
+  .roll .verdict{margin-left:auto;font-weight:bold;letter-spacing:.06em;padding:4px 13px;border-radius:20px;font-size:.9rem}
+  .roll.ok .verdict{color:#0f2a12;background:var(--green)}
+  .roll.ko .verdict{color:#2e1a0c;background:var(--amber)}
+  .trial{color:var(--muted);font-size:.9rem;margin-top:8px;letter-spacing:.04em}
 
   /* hud */
   .hud{padding:6px 0 18px}
@@ -263,7 +276,19 @@ const PROMPTS=[
  {zh:"經過這一切，你和出發時的自己，有什麼不同？",en:"After all this, how are you different from the one who set out?"},
  {zh:"你想留給這個世界的「禮物」是什麼？",en:"What is the gift you want to leave to the world?"}
 ];
-let lang="zh", i=0, stats={c:0,w:0,h:0}, chosen=false, journal={};
+const CHECK={
+ 4:{dc:5,
+   s:{zh:"你毫不遲疑跨過門檻，未知世界為你敞開。",en:"You cross without hesitation; the unknown world opens before you."},
+   f:{zh:"門檻絆得你踉蹌，但你咬牙爬起，仍舊走了過去。",en:"The threshold trips you, but you rise, grit your teeth, and cross all the same."}},
+ 7:{dc:8,
+   s:{zh:"劍鋒精準沒入要害，巨龍在你腳下崩落——你贏了這一戰。",en:"Your blade finds its mark; the dragon falls at your feet — you have won this battle."},
+   f:{zh:"你被烈焰灼傷、被利爪撕裂，卻在最後一刻反手一擊，慘勝求生。",en:"Burned by fire and torn by claw, you strike back at the last instant — a victory bought with blood."}},
+ 10:{dc:9,
+   s:{zh:"最後的試煉燒盡了舊我，你以完整的靈魂站起。",en:"The final trial burns the old self away; you rise with a soul made whole."},
+   f:{zh:"蛻變的劇痛幾乎將你撕裂，但你仍帶著滿身傷痕，重生了。",en:"The agony of change nearly rends you apart — yet, scarred and shaking, you are reborn."}}
+};
+function domStat(e){let b='c',v=e.c||0;if((e.w||0)>v){b='w';v=e.w;}if((e.h||0)>v){b='h';v=e.h;}return b;}
+let lang="zh", i=0, stats={c:0,w:0,h:0}, chosen=false, journal={}, glory=0, scars=0;
 
 const SFX = {
   ctx:null, on:true, master:null, amb:null,
@@ -301,6 +326,9 @@ const SFX = {
     this.osc(233.08,'square',t+0.1,0.9,0.045,{attack:0.02,glideTo:174}); },
   reward(){ if(!this.ctx||!this.on) return; const t=this.t();
     [523.25,659.25,783.99,1046.5].forEach((f,k)=>this.osc(f,'sine',t+k*0.09,0.9,0.05,{attack:0.01})); },
+  roll(ok){ if(!this.ctx||!this.on) return; const t=this.t();
+    if(ok){this.osc(659.25,'triangle',t,0.22,0.06,{attack:0.01});this.osc(987.77,'triangle',t+0.12,0.34,0.05,{attack:0.01});}
+    else{this.osc(196,'sawtooth',t,0.5,0.08,{attack:0.02,glideTo:146.83});} },
   resurrection(){ if(!this.ctx||!this.on) return; const t=this.t();
     this.osc(196,'sine',t,1.4,0.07,{attack:0.5,glideTo:392});
     [392,493.88,587.33].forEach((f,k)=>this.osc(f,'triangle',t+0.4+k*0.1,1.0,0.045,{attack:0.05})); },
@@ -363,7 +391,21 @@ function render(){
   }else{
     const c=s.c[chosen.x];
     const last=i===S.length-1;
-    ch=`<div class="outcome">${tr(c.o)}</div>
+    let head;
+    if(chosen.chk){
+      const k=chosen.chk,ck=CHECK[i];
+      const stName={c:tr(T.cour),w:tr(T.wis),h:tr(T.heart)}[k.st];
+      const verd=k.ok?(lang==='zh'?'成功':'Success'):(lang==='zh'?'慘勝':'Survived');
+      head=`<div class="roll ${k.ok?'ok':'ko'}">
+          <span class="die">${k.die}</span>
+          <span class="math">${lang==='zh'?'骰':'d6'} ${k.die} ＋ ${stName} ${k.sv} ＝ <b>${k.total}</b><span class="dc">${lang==='zh'?'難度':'DC'} ${k.dc}</span></span>
+          <span class="verdict">${verd}</span>
+        </div>
+        <div class="outcome">${tr(k.ok?ck.s:ck.f)}</div>`;
+    }else{
+      head=`<div class="outcome">${tr(c.o)}</div>`;
+    }
+    ch=`${head}
       <div class="reflect">
         <div class="reflect-q">${tr(PROMPTS[i])}</div>
         <textarea class="reflect-in" rows="3" placeholder="${tr(T.reflectPh)}" oninput="journal[${i}]=this.value">${esc(journal[i])}</textarea>
@@ -386,7 +428,7 @@ function render(){
     </div>`;
 }
 function savePrefs(){try{localStorage.setItem('hj_prefs',JSON.stringify({lang,on:SFX.on}));}catch(e){}}
-function saveState(){try{localStorage.setItem('hj_save',JSON.stringify({i,stats}));}catch(e){}}
+function saveState(){try{localStorage.setItem('hj_save',JSON.stringify({i,stats,glory,scars}));}catch(e){}}
 function loadSave(){try{return JSON.parse(localStorage.getItem('hj_save')||'null');}catch(e){return null;}}
 function clearSave(){try{localStorage.removeItem('hj_save');}catch(e){}}
 function computeTop(){const {c,w,h}=stats;if(c>w&&c>h)return 'c';if(w>c&&w>h)return 'w';if(h>c&&h>w)return 'h';return 'x';}
@@ -395,7 +437,15 @@ function saveJournal(){try{localStorage.setItem('hj_journal',JSON.stringify(jour
 function loadJournal(){try{return JSON.parse(localStorage.getItem('hj_journal')||'{}');}catch(e){return {};}}
 function clearJournal(){journal={};try{localStorage.removeItem('hj_journal');}catch(e){}}
 function choose(x){SFX.choose();const s=S[i];const e=s.c[x].e;
-  stats.c+=e.c||0;stats.w+=e.w||0;stats.h+=e.h||0;chosen={x};render();}
+  stats.c+=e.c||0;stats.w+=e.w||0;stats.h+=e.h||0;
+  let chk=null;
+  if(CHECK[i]){
+    const st=domStat(e),die=1+Math.floor(Math.random()*6),sv=stats[st],dc=CHECK[i].dc,total=die+sv,ok=total>=dc;
+    if(ok)glory++;else scars++;
+    chk={st,die,sv,total,dc,ok};
+    setTimeout(()=>SFX.roll(ok),260);
+  }
+  chosen={x,chk};render();}
 function advance(){i++;chosen=false;window.scrollTo({top:0,behavior:'smooth'});
   if(i>=S.length){SFX.ambientStop();SFX.ending();clearSave();}
   else if(i===7)SFX.ordeal();
@@ -406,9 +456,9 @@ function advance(){i++;chosen=false;window.scrollTo({top:0,behavior:'smooth'});
   if(i<S.length)saveState();
   render();}
 function startGame(){SFX.init();SFX.resume();SFX.begin();SFX.ambientStart();
-  i=0;stats={c:0,w:0,h:0};chosen=false;clearSave();clearJournal();saveState();render();}
+  i=0;stats={c:0,w:0,h:0};glory=0;scars=0;chosen=false;clearSave();clearJournal();saveState();render();}
 function continueGame(){SFX.init();SFX.resume();SFX.ambientStart();
-  const s=loadSave();if(s&&typeof s.i==='number'){i=s.i;stats=s.stats||{c:0,w:0,h:0};}
+  const s=loadSave();if(s&&typeof s.i==='number'){i=s.i;stats=s.stats||{c:0,w:0,h:0};glory=s.glory||0;scars=s.scars||0;}
   journal=loadJournal();chosen=false;render();}
 
 function renderTitle(el){
@@ -429,11 +479,15 @@ function renderTitle(el){
 function renderEnd(el){
   const {c,w,h}=stats;
   const ep=EP[computeTop()];
+  const trial=(glory+scars)===0?''
+    :scars===0?(lang==='zh'?`三場生死試煉全數凱旋 · 榮光 ${glory}`:`All three trials triumphant · Glory ${glory}`)
+    :(lang==='zh'?`榮光 ${glory} · 傷痕 ${scars}——你負傷，卻從未倒下`:`Glory ${glory} · Scars ${scars} — wounded, yet you never fell`);
   el.innerHTML=`<div class="ending">
     <div class="act-tag" style="color:var(--green)">${tr(T.endTitle)}</div>
     <div class="disc"><img src="${IMG['12_return_elixir']}" alt=""></div>
     <div class="epithet">${tr(ep)}</div>
     <div class="epi-en">${lang==='zh'?ep.en:ep.zh}</div>
+    ${trial?`<div class="trial">${trial}</div>`:''}
     <div class="fstats"><span>⚔ ${tr(T.cour)} ${c}</span><span>✦ ${tr(T.wis)} ${w}</span><span>♥ ${tr(T.heart)} ${h}</span></div>
     <div class="close">${tr(ep.d)}<br><br>${tr(CLOSE).replace(/\n/g,'<br>')}</div>
     ${journalHtml()}
@@ -460,6 +514,7 @@ function downloadJournal(){
   let t=(lang==='zh'?'英雄的旅程 · 我的旅程':"The Hero's Journey · My Journey")+'\n';
   t+=(lang==='zh'?'稱號':'Epithet')+': '+tr(ep)+' ('+(lang==='zh'?ep.en:ep.zh)+')\n';
   t+=tr(T.cour)+' '+stats.c+'  '+tr(T.wis)+' '+stats.w+'  '+tr(T.heart)+' '+stats.h+'\n';
+  t+=(lang==='zh'?'榮光':'Glory')+' '+glory+'  '+(lang==='zh'?'傷痕':'Scars')+' '+scars+'\n';
   t+='='.repeat(46)+'\n\n';
   for(let k=0;k<S.length;k++){
     t+=(k+1)+'. '+S[k][lang==='zh'?'zh':'en']+' / '+(lang==='zh'?S[k].en:S[k].zh)+'\n';

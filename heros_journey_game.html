@@ -2642,93 +2642,131 @@ function showEnding(){
 // stays a single offline-playable file.
 // ═══════════════════════════════════════════════════════════
 const Music = (function(){
-  let ctx=null, master=null, comp=null, timer=null;
+  let ctx=null, master=null, bus=null, timer=null;
   let muted=false, nextBarTime=0, barIx=0;
   let current='epic', pending='epic';
   const NOTE={A:0,'A#':1,B:2,C:3,'C#':4,D:5,'D#':6,E:7,F:8,'F#':9,G:10,'G#':11};
   const hz=(root,s)=>root*Math.pow(2,s/12);
   const triad=(name,type)=>{const r=NOTE[name],t=type==='min'?3:4;return [r,r+t,r+7];};
 
+  function impulse(sec,decay){
+    const rate=ctx.sampleRate,len=Math.floor(rate*sec),buf=ctx.createBuffer(2,len,rate);
+    for(let c=0;c<2;c++){const d=buf.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay);}
+    return buf;
+  }
   function ensure(){
     if(ctx) return true;
     const AC=window.AudioContext||window.webkitAudioContext;
     if(!AC) return false;
     ctx=new AC();
-    master=ctx.createGain(); master.gain.value=muted?0:0.28;
-    comp=ctx.createDynamicsCompressor();          // tame layered peaks
-    comp.threshold.value=-18; comp.ratio.value=4; comp.attack.value=0.005; comp.release.value=0.25;
-    const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=7200;
+    master=ctx.createGain(); master.gain.value=muted?0:0.30;
+    const comp=ctx.createDynamicsCompressor();
+    comp.threshold.value=-16; comp.ratio.value=3; comp.attack.value=0.006; comp.release.value=0.3;
+    const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=6200;
     master.connect(comp); comp.connect(lp); lp.connect(ctx.destination);
+    // instrument bus -> dry + reverb (lush hall for an epic, less "raw" sound)
+    bus=ctx.createGain(); bus.connect(master);
+    const rev=ctx.createConvolver(); rev.buffer=impulse(2.8,2.2);
+    const wet=ctx.createGain(); wet.gain.value=0.85;
+    bus.connect(rev); rev.connect(wet); wet.connect(master);
     return true;
   }
 
-  // ── instruments (schedule at absolute time t) ──
-  function tone(t,freq,dur,o){
+  // ── warm layered voice: two slightly-detuned oscillators through a lowpass,
+  //    smooth ADSR, optional gentle vibrato — far softer than a bare sawtooth ──
+  function voice(t,freq,dur,o){
     o=o||{};
-    const osc=ctx.createOscillator(); osc.type=o.type||'sawtooth'; osc.frequency.value=freq;
-    if(o.detune) osc.detune.value=o.detune;
-    const g=ctx.createGain(), peak=o.gain!=null?o.gain:0.2, a=o.a!=null?o.a:0.01, r=o.r!=null?o.r:0.14;
+    const peak=o.peak!=null?o.peak:0.14,a=o.a!=null?o.a:0.04,r=o.r!=null?o.r:0.25;
+    const cut=o.cut||2600,type=o.type||'sawtooth';
+    const g=ctx.createGain();
     g.gain.setValueAtTime(0.0001,t);
     g.gain.exponentialRampToValueAtTime(peak,t+a);
-    g.gain.setValueAtTime(peak,t+Math.max(a,dur-r));
+    g.gain.setValueAtTime(peak,t+Math.max(a+0.005,dur-r));
     g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
-    if(o.filter){const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=o.filter;osc.connect(f);f.connect(g);}
-    else osc.connect(g);
-    g.connect(master); osc.start(t); osc.stop(t+dur+0.05);
+    const f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=cut;
+    f.connect(g); g.connect(bus);
+    const base=o.detune||0;
+    const mk=(det)=>{const os=ctx.createOscillator();os.type=type;os.frequency.value=freq;os.detune.value=det;os.connect(f);os.start(t);os.stop(t+dur+0.06);return os;};
+    const o1=mk(base-6),o2=mk(base+6);
+    if(o.vib){const vo=ctx.createOscillator();vo.type='sine';vo.frequency.value=5.2;const vg=ctx.createGain();vg.gain.value=o.vib;vo.connect(vg);vg.connect(o1.detune);vg.connect(o2.detune);vo.start(t);vo.stop(t+dur+0.06);}
   }
-  const stab=(t,tri,dur,gain)=>tri.concat([tri[0]+12]).forEach((s,i)=>tone(t,hz(110,s),dur,{type:'sawtooth',gain:(gain||0.12)/(1+i*0.18),a:0.012,r:0.12,filter:2600,detune:i%2?7:-7}));
-  const pad=(t,tri,dur,gain)=>tri.concat([tri[0]+12]).forEach(s=>{tone(t,hz(110,s),dur,{type:'sawtooth',gain:gain||0.04,a:0.5,r:0.7,filter:1500,detune:-8});tone(t,hz(110,s),dur,{type:'sawtooth',gain:gain||0.04,a:0.5,r:0.7,filter:1500,detune:8});});
-  const bass=(t,semi,dur,gain)=>{tone(t,hz(55,semi),dur,{type:'triangle',gain:gain||0.3,a:0.01,r:0.08});tone(t,hz(55,semi),dur,{type:'sine',gain:(gain||0.3)*0.6,a:0.01,r:0.08});};
-  const lead=(t,semi,dur,gain,base)=>tone(t,hz(base||220,semi),dur,{type:'triangle',gain:gain||0.15,a:0.02,r:0.2,filter:3600});
-  const harp=(t,semi,dur,base)=>tone(t,hz(base||220,semi),dur||0.5,{type:'triangle',gain:0.11,a:0.004,r:0.35});
-  function thump(t,gain){const o=ctx.createOscillator();o.type='sine';const g=ctx.createGain();o.frequency.setValueAtTime(165,t);o.frequency.exponentialRampToValueAtTime(45,t+0.18);g.gain.setValueAtTime(gain||0.6,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.34);o.connect(g);g.connect(master);o.start(t);o.stop(t+0.4);}
-  function crash(t,gain,dur,hp){const len=Math.floor(ctx.sampleRate*(dur||0.3));const buf=ctx.createBuffer(1,len,ctx.sampleRate);const d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,1.5);const n=ctx.createBufferSource();n.buffer=buf;const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=hp||3200;const g=ctx.createGain();g.gain.value=gain||0.12;n.connect(f);f.connect(g);g.connect(master);n.start(t);}
+  const strings=(t,tri,dur,gain)=>tri.concat([tri[0]+12]).forEach(s=>voice(t,hz(110,s),dur,{peak:gain||0.05,a:0.55,r:0.75,cut:1300,type:'sawtooth'}));
+  const brass=(t,tri,dur,gain)=>tri.concat([tri[0]+12]).forEach((s,i)=>voice(t,hz(110,s),dur,{peak:(gain||0.08)/(1+i*0.2),a:0.05,r:0.18,cut:2000,type:'sawtooth',detune:i%2?5:-5}));
+  const melo=(t,semi,dur,gain,base)=>voice(t,hz(base||220,semi),dur,{peak:gain||0.16,a:0.06,r:0.2,cut:3000,type:'triangle',vib:6});
+  const harp=(t,semi,dur,base)=>voice(t,hz(base||220,semi),dur||0.5,{peak:0.1,a:0.006,r:0.45,cut:3200,type:'triangle'});
+  function bassv(t,semi,dur,gain){
+    voice(t,hz(55,semi),dur,{peak:gain||0.24,a:0.02,r:0.14,cut:1300,type:'triangle'});
+    const o=ctx.createOscillator();o.type='sine';o.frequency.value=hz(55,semi);
+    const g=ctx.createGain();g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime((gain||0.24)*0.7,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g);g.connect(bus);o.start(t);o.stop(t+dur+0.05);
+  }
+  function thump(t,gain){const o=ctx.createOscillator();o.type='sine';const g=ctx.createGain();o.frequency.setValueAtTime(160,t);o.frequency.exponentialRampToValueAtTime(45,t+0.18);g.gain.setValueAtTime(gain||0.6,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.34);o.connect(g);g.connect(master);o.start(t);o.stop(t+0.4);}
+  function crash(t,gain,dur,hp){const len=Math.floor(ctx.sampleRate*(dur||0.4));const buf=ctx.createBuffer(1,len,ctx.sampleRate);const d=buf.getChannelData(0);for(let k=0;k<len;k++)d[k]=(Math.random()*2-1)*Math.pow(1-k/len,1.4);const n=ctx.createBufferSource();n.buffer=buf;const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=hp||3000;const g=ctx.createGain();g.gain.value=gain||0.1;n.connect(f);f.connect(g);g.connect(bus);n.start(t);}
 
-  // ── themes: each schedules one full bar given start time t and bar index i ──
+  // ── melodies as bars of [semitone(from base), beatOffset, durBeats] ──
+  // Ode to Joy (Beethoven, public domain) — semitones relative to A(220), key of C
+  const ODE=[
+    [[7,0,1],[7,1,1],[8,2,1],[10,3,1]],
+    [[10,0,1],[8,1,1],[7,2,1],[5,3,1]],
+    [[3,0,1],[3,1,1],[5,2,1],[7,3,1]],
+    [[7,0,1.5],[5,1.5,0.5],[5,2,2]],
+    [[7,0,1],[7,1,1],[8,2,1],[10,3,1]],
+    [[10,0,1],[8,1,1],[7,2,1],[5,3,1]],
+    [[3,0,1],[3,1,1],[5,2,1],[7,3,1]],
+    [[5,0,1.5],[3,1.5,0.5],[3,2,2]]
+  ];
+  // Original heroic line in A minor over Am–F–C–G
+  const HERO=[
+    [[12,0,2],[15,2,1],[12,3,1]],
+    [[17,0,2],[15,2,1],[12,3,1]],
+    [[15,0,1],[14,1,1],[12,2,2]],
+    [[14,0,1],[12,1,1],[10,2,1],[7,3,1]]
+  ];
+  const playMel=(t,i,bars,base,gain,spb)=>{const bar=bars[i%bars.length];for(const [s,off,dur] of bar)melo(t+off*spb,s,dur*spb*0.96,gain,base);};
+
+  // ── themes: schedule one full 4/4 bar given start time t and bar index i ──
   const THEMES={
-    epic:{bpm:132,beats:4,prog:[['A','min'],['F','maj'],['C','maj'],['G','maj']],
-      mel:[12,14,15,14, 12,10,8,7, 3,7,10,12, 14,12,10,7],
+    epic:{bpm:120,beats:4,prog:[['A','min'],['F','maj'],['C','maj'],['G','maj']],
       bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
-        pad(t,tri,spb*4,0.045); stab(t,tri,spb*1.8,0.13); stab(t+spb*2,tri,spb*1.8,0.11);
-        for(let e=0;e<8;e++)bass(t+e*spb/2,rs+(e%2?12:0),spb*0.46,0.3);
-        thump(t,0.72);thump(t+spb*2,0.6);thump(t+spb*1.5,0.3);thump(t+spb*3.5,0.34);
-        if(i%4===0)crash(t,0.13,0.3,3800);
-        for(let b=0;b<4;b++){const n=this.mel[(i%4)*4+b];if(n!=null)lead(t+b*spb,n,spb*0.9,0.15,220);}}},
-    triumph:{bpm:128,beats:4,prog:[['C','maj'],['G','maj'],['A','min'],['F','maj']],
-      mel:[15,19,22,19, 22,19,15,14, 12,15,19,22, 19,15,14,15],
+        strings(t,tri,spb*4,0.05); brass(t,tri,spb*1.9,0.08); brass(t+spb*2,tri,spb*1.9,0.07);
+        for(let e=0;e<8;e++)bassv(t+e*spb/2,rs+(e%2?12:0),spb*0.46,0.24);
+        thump(t,0.7);thump(t+spb*2,0.58);thump(t+spb*1.5,0.28);thump(t+spb*3.5,0.32);
+        if(i%4===0)crash(t,0.1,0.4,3400);
+        playMel(t,i,HERO,220,0.17,spb);}},
+    triumph:{bpm:104,beats:4,prog:[['C','maj'],['G','maj'],['C','maj'],['G','maj'],['C','maj'],['G','maj'],['A','min'],['G','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%this.prog.length],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.055); brass(t,tri,spb*3.8,0.055);
+        for(let e=0;e<4;e++)bassv(t+e*spb,rs+(e%2?12:0),spb*0.9,0.22);
+        thump(t,0.62);thump(t+spb*2,0.5);
+        if(i%4===0)crash(t,0.09,0.45,3200);
+        playMel(t,i,ODE,220,0.2,spb);}},
+    drive:{bpm:148,beats:4,prog:[['A','min'],['G','maj'],['F','maj'],['G','maj']],
       bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
-        pad(t,tri,spb*4,0.05); stab(t,tri,spb*1.8,0.14); stab(t+spb*2,tri,spb*1.7,0.12);
-        for(let e=0;e<8;e++)bass(t+e*spb/2,rs+(e%2?12:0),spb*0.46,0.28);
-        thump(t,0.7);thump(t+spb,0.4);thump(t+spb*2,0.6);thump(t+spb*3,0.42);
-        if(i%4===0)crash(t,0.14,0.35,3600);
-        for(let b=0;b<4;b++){const n=this.mel[(i%4)*4+b];if(n!=null)lead(t+b*spb,n,spb*0.95,0.16,220);}}},
-    drive:{bpm:150,beats:4,prog:[['A','min'],['G','maj'],['F','maj'],['G','maj']],
-      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
-        pad(t,tri,spb*4,0.035); stab(t,tri,spb*0.9,0.1); stab(t+spb*2,tri,spb*0.9,0.09);
-        for(let e=0;e<8;e++)bass(t+e*spb/2,rs,spb*0.44,0.28);
+        strings(t,tri,spb*4,0.04); brass(t,tri,spb*0.9,0.07); brass(t+spb*2,tri,spb*0.9,0.06);
+        for(let e=0;e<8;e++)bassv(t+e*spb/2,rs,spb*0.44,0.24);
         for(let b=0;b<4;b++)thump(t+b*spb,b%2?0.4:0.6);
-        const m=[12,10,8,7,8,10,12,10];for(let e=0;e<8;e++)lead(t+e*spb/2,m[e],spb*0.4,0.1,220);}},
+        const m=[12,10,8,7,8,10,12,14];for(let e=0;e<8;e++)melo(t+e*spb/2,m[e],spb*0.42,0.11,220);}},
     ambient:{bpm:60,beats:4,prog:[['A','min'],['A','min'],['F','maj'],['C','maj']],
       bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
-        pad(t,tri,spb*4,0.05); bass(t,rs,spb*4,0.16);
-        const sc=[0,3,7,10,12];if(Math.random()<0.7)harp(t+spb*(1+Math.floor(Math.random()*3)),sc[Math.floor(Math.random()*sc.length)],1.1,220);}},
+        strings(t,tri,spb*4,0.055); bassv(t,rs,spb*4,0.15);
+        const sc=[0,3,7,10,12];if(Math.random()<0.7)harp(t+spb*(1+Math.floor(Math.random()*3)),sc[Math.floor(Math.random()*sc.length)],1.2,220);}},
     calm:{bpm:72,beats:4,prog:[['A','min'],['E','min'],['F','maj'],['C','maj']],
       mel:[7,12,10,8, 7,5,7,null, 8,10,12,null, 7,5,3,null],
       bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
-        pad(t,tri,spb*4,0.05); bass(t,rs,spb*4,0.18); thump(t,0.28);
+        strings(t,tri,spb*4,0.05); bassv(t,rs,spb*4,0.16); thump(t,0.24);
         for(let b=0;b<4;b++){const n=this.mel[(i%4)*4+b];if(n!=null)harp(t+b*spb,n,spb*0.9,220);}}},
     mystic:{bpm:76,beats:4,prog:[['F','maj'],['C','maj'],['G','maj'],['A','min']],
       bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
-        pad(t,tri,spb*4,0.05); bass(t,rs,spb*4,0.16);
+        strings(t,tri,spb*4,0.05); bassv(t,rs,spb*4,0.15);
         const arp=[tri[0],tri[1],tri[2],tri[1]+12,tri[2],tri[1],tri[0]+12,tri[1]];
         for(let e=0;e<8;e++)harp(t+e*spb/2,arp[e],spb*0.55,220);
-        if(i%2===0)lead(t,tri[0]+12,spb*3,0.1,220);}},
+        if(i%2===0)melo(t,tri[0]+12,spb*3,0.1,220);}},
     tense:{bpm:80,beats:4,prog:[['A','min'],['A','min'],['A','min'],['A','min']],
       bar(t,i){const spb=60/this.bpm;
-        [0,6,7].forEach(s=>tone(t,hz(110,s),spb*4,{type:'sawtooth',gain:0.035,a:0.6,r:0.8,filter:900,detune:6}));
-        bass(t,0,spb*4,0.22); if(i%2===0)thump(t,0.4);
-        if(i%4===3)crash(t+spb*3,0.06,0.5,2500);
-        if(Math.random()<0.4)tone(t+spb*(1+Math.floor(Math.random()*2)),hz(220,[1,6,8][Math.floor(Math.random()*3)]),spb,{type:'triangle',gain:0.06,a:0.05,r:0.4,filter:2000});}}
+        [0,6,7].forEach(s=>voice(t,hz(110,s),spb*4,{peak:0.04,a:0.7,r:0.9,cut:900,type:'sawtooth',detune:6}));
+        bassv(t,0,spb*4,0.2); if(i%2===0)thump(t,0.36);
+        if(i%4===3)crash(t+spb*3,0.05,0.6,2400);
+        if(Math.random()<0.4)melo(t+spb*(1+Math.floor(Math.random()*2)),[1,6,8][Math.floor(Math.random()*3)],spb,0.06,220);}}
   };
 
   function scheduler(){
@@ -2749,7 +2787,7 @@ const Music = (function(){
       if(!timer){ nextBarTime=ctx.currentTime+0.1; barIx=0; timer=setInterval(scheduler,25); }
     },
     set(name){ if(THEMES[name]){ pending=name; if(!timer) current=name; } },
-    toggle(){ muted=!muted; if(master) master.gain.setTargetAtTime(muted?0:0.28, ctx.currentTime, 0.05); if(!muted) this.start(); return muted; },
+    toggle(){ muted=!muted; if(master) master.gain.setTargetAtTime(muted?0:0.30, ctx.currentTime, 0.05); if(!muted) this.start(); return muted; },
     isMuted(){ return muted; },
     running(){ return !!(ctx && ctx.state==='running'); }
   };

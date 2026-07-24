@@ -53,6 +53,12 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Georgia',serif;bac
   padding:6px 16px;background:rgba(0,0,0,0.6);border:1px solid var(--gold);
   color:var(--gold);font-size:12px;cursor:pointer;letter-spacing:1px;border-radius:2px;
 }
+#music-btn{
+  position:fixed;top:16px;right:78px;z-index:1000;
+  padding:6px 10px;background:rgba(0,0,0,0.6);border:1px solid var(--gold);
+  color:var(--gold);font-size:13px;cursor:pointer;line-height:1;border-radius:2px;
+}
+#music-btn.muted{opacity:0.5;}
 
 /* ── MAP SCREEN ── */
 #map-screen{background:#000;}
@@ -426,6 +432,8 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Georgia',serif;bac
 <div id="game">
   <!-- LANG TOGGLE -->
   <button id="lang-btn" onclick="toggleLang()">EN</button>
+  <!-- MUSIC TOGGLE -->
+  <button id="music-btn" onclick="toggleMusic()" title="音樂 / Music">🔊</button>
 
   <!-- NOTIFICATION -->
   <div id="notif"></div>
@@ -957,6 +965,8 @@ function t(key){ return T[L()][key] || T.zh[key] || key; }
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  const scTheme={'title-screen':'epic','map-screen':'ambient','ending-screen':'triumph'};
+  if(scTheme[id] && window.Music) Music.set(scTheme[id]);
 }
 
 function startGame(){
@@ -987,6 +997,13 @@ function toggleLang(){
   document.getElementById('lang-btn').textContent = G.lang==='zh'?'EN':'中';
   updateHUD();
   if(document.getElementById('map-screen').classList.contains('active')) renderMap();
+}
+
+function toggleMusic(){
+  const muted = Music.toggle();
+  const b = document.getElementById('music-btn');
+  b.textContent = muted ? '🔇' : '🔊';
+  b.classList.toggle('muted', muted);
 }
 
 // ── HUD UPDATE ──
@@ -1150,6 +1167,7 @@ function enterStage(num){
   G.stage = num;
   const st = STAGES[num];
   showScreen('stage-screen');
+  if(window.Music) Music.set(STAGE_MOOD[num]||'epic');
   // Background
   document.getElementById('stage-bg').src = st.bg||'';
   // Header
@@ -2618,11 +2636,142 @@ function showEnding(){
 }
 
 // ═══════════════════════════════════════════════════════════
+// PROCEDURAL MUSIC ENGINE  (Web Audio API — no external files)
+// Layered oscillators build cinematic, mostly-epic themes that switch
+// with the screen / stage. Everything is synthesized live so the game
+// stays a single offline-playable file.
+// ═══════════════════════════════════════════════════════════
+const Music = (function(){
+  let ctx=null, master=null, comp=null, timer=null;
+  let muted=false, nextBarTime=0, barIx=0;
+  let current='epic', pending='epic';
+  const NOTE={A:0,'A#':1,B:2,C:3,'C#':4,D:5,'D#':6,E:7,F:8,'F#':9,G:10,'G#':11};
+  const hz=(root,s)=>root*Math.pow(2,s/12);
+  const triad=(name,type)=>{const r=NOTE[name],t=type==='min'?3:4;return [r,r+t,r+7];};
+
+  function ensure(){
+    if(ctx) return true;
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC) return false;
+    ctx=new AC();
+    master=ctx.createGain(); master.gain.value=muted?0:0.20;
+    comp=ctx.createDynamicsCompressor();          // tame layered peaks
+    comp.threshold.value=-18; comp.ratio.value=4; comp.attack.value=0.005; comp.release.value=0.25;
+    const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=7200;
+    master.connect(comp); comp.connect(lp); lp.connect(ctx.destination);
+    return true;
+  }
+
+  // ── instruments (schedule at absolute time t) ──
+  function tone(t,freq,dur,o){
+    o=o||{};
+    const osc=ctx.createOscillator(); osc.type=o.type||'sawtooth'; osc.frequency.value=freq;
+    if(o.detune) osc.detune.value=o.detune;
+    const g=ctx.createGain(), peak=o.gain!=null?o.gain:0.2, a=o.a!=null?o.a:0.01, r=o.r!=null?o.r:0.14;
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(peak,t+a);
+    g.gain.setValueAtTime(peak,t+Math.max(a,dur-r));
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    if(o.filter){const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=o.filter;osc.connect(f);f.connect(g);}
+    else osc.connect(g);
+    g.connect(master); osc.start(t); osc.stop(t+dur+0.05);
+  }
+  const stab=(t,tri,dur,gain)=>tri.concat([tri[0]+12]).forEach((s,i)=>tone(t,hz(110,s),dur,{type:'sawtooth',gain:(gain||0.12)/(1+i*0.18),a:0.012,r:0.12,filter:2600,detune:i%2?7:-7}));
+  const pad=(t,tri,dur,gain)=>tri.concat([tri[0]+12]).forEach(s=>{tone(t,hz(110,s),dur,{type:'sawtooth',gain:gain||0.04,a:0.5,r:0.7,filter:1500,detune:-8});tone(t,hz(110,s),dur,{type:'sawtooth',gain:gain||0.04,a:0.5,r:0.7,filter:1500,detune:8});});
+  const bass=(t,semi,dur,gain)=>{tone(t,hz(55,semi),dur,{type:'triangle',gain:gain||0.3,a:0.01,r:0.08});tone(t,hz(55,semi),dur,{type:'sine',gain:(gain||0.3)*0.6,a:0.01,r:0.08});};
+  const lead=(t,semi,dur,gain,base)=>tone(t,hz(base||220,semi),dur,{type:'triangle',gain:gain||0.15,a:0.02,r:0.2,filter:3600});
+  const harp=(t,semi,dur,base)=>tone(t,hz(base||220,semi),dur||0.5,{type:'triangle',gain:0.11,a:0.004,r:0.35});
+  function thump(t,gain){const o=ctx.createOscillator();o.type='sine';const g=ctx.createGain();o.frequency.setValueAtTime(165,t);o.frequency.exponentialRampToValueAtTime(45,t+0.18);g.gain.setValueAtTime(gain||0.6,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.34);o.connect(g);g.connect(master);o.start(t);o.stop(t+0.4);}
+  function crash(t,gain,dur,hp){const len=Math.floor(ctx.sampleRate*(dur||0.3));const buf=ctx.createBuffer(1,len,ctx.sampleRate);const d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,1.5);const n=ctx.createBufferSource();n.buffer=buf;const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=hp||3200;const g=ctx.createGain();g.gain.value=gain||0.12;n.connect(f);f.connect(g);g.connect(master);n.start(t);}
+
+  // ── themes: each schedules one full bar given start time t and bar index i ──
+  const THEMES={
+    epic:{bpm:132,beats:4,prog:[['A','min'],['F','maj'],['C','maj'],['G','maj']],
+      mel:[12,14,15,14, 12,10,8,7, 3,7,10,12, 14,12,10,7],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        pad(t,tri,spb*4,0.045); stab(t,tri,spb*1.8,0.13); stab(t+spb*2,tri,spb*1.8,0.11);
+        for(let e=0;e<8;e++)bass(t+e*spb/2,rs+(e%2?12:0),spb*0.46,0.3);
+        thump(t,0.72);thump(t+spb*2,0.6);thump(t+spb*1.5,0.3);thump(t+spb*3.5,0.34);
+        if(i%4===0)crash(t,0.13,0.3,3800);
+        for(let b=0;b<4;b++){const n=this.mel[(i%4)*4+b];if(n!=null)lead(t+b*spb,n,spb*0.9,0.15,220);}}},
+    triumph:{bpm:128,beats:4,prog:[['C','maj'],['G','maj'],['A','min'],['F','maj']],
+      mel:[15,19,22,19, 22,19,15,14, 12,15,19,22, 19,15,14,15],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        pad(t,tri,spb*4,0.05); stab(t,tri,spb*1.8,0.14); stab(t+spb*2,tri,spb*1.7,0.12);
+        for(let e=0;e<8;e++)bass(t+e*spb/2,rs+(e%2?12:0),spb*0.46,0.28);
+        thump(t,0.7);thump(t+spb,0.4);thump(t+spb*2,0.6);thump(t+spb*3,0.42);
+        if(i%4===0)crash(t,0.14,0.35,3600);
+        for(let b=0;b<4;b++){const n=this.mel[(i%4)*4+b];if(n!=null)lead(t+b*spb,n,spb*0.95,0.16,220);}}},
+    drive:{bpm:150,beats:4,prog:[['A','min'],['G','maj'],['F','maj'],['G','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        pad(t,tri,spb*4,0.035); stab(t,tri,spb*0.9,0.1); stab(t+spb*2,tri,spb*0.9,0.09);
+        for(let e=0;e<8;e++)bass(t+e*spb/2,rs,spb*0.44,0.28);
+        for(let b=0;b<4;b++)thump(t+b*spb,b%2?0.4:0.6);
+        const m=[12,10,8,7,8,10,12,10];for(let e=0;e<8;e++)lead(t+e*spb/2,m[e],spb*0.4,0.1,220);}},
+    ambient:{bpm:60,beats:4,prog:[['A','min'],['A','min'],['F','maj'],['C','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        pad(t,tri,spb*4,0.05); bass(t,rs,spb*4,0.16);
+        const sc=[0,3,7,10,12];if(Math.random()<0.7)harp(t+spb*(1+Math.floor(Math.random()*3)),sc[Math.floor(Math.random()*sc.length)],1.1,220);}},
+    calm:{bpm:72,beats:4,prog:[['A','min'],['E','min'],['F','maj'],['C','maj']],
+      mel:[7,12,10,8, 7,5,7,null, 8,10,12,null, 7,5,3,null],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        pad(t,tri,spb*4,0.05); bass(t,rs,spb*4,0.18); thump(t,0.28);
+        for(let b=0;b<4;b++){const n=this.mel[(i%4)*4+b];if(n!=null)harp(t+b*spb,n,spb*0.9,220);}}},
+    mystic:{bpm:76,beats:4,prog:[['F','maj'],['C','maj'],['G','maj'],['A','min']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        pad(t,tri,spb*4,0.05); bass(t,rs,spb*4,0.16);
+        const arp=[tri[0],tri[1],tri[2],tri[1]+12,tri[2],tri[1],tri[0]+12,tri[1]];
+        for(let e=0;e<8;e++)harp(t+e*spb/2,arp[e],spb*0.55,220);
+        if(i%2===0)lead(t,tri[0]+12,spb*3,0.1,220);}},
+    tense:{bpm:80,beats:4,prog:[['A','min'],['A','min'],['A','min'],['A','min']],
+      bar(t,i){const spb=60/this.bpm;
+        [0,6,7].forEach(s=>tone(t,hz(110,s),spb*4,{type:'sawtooth',gain:0.035,a:0.6,r:0.8,filter:900,detune:6}));
+        bass(t,0,spb*4,0.22); if(i%2===0)thump(t,0.4);
+        if(i%4===3)crash(t+spb*3,0.06,0.5,2500);
+        if(Math.random()<0.4)tone(t+spb*(1+Math.floor(Math.random()*2)),hz(220,[1,6,8][Math.floor(Math.random()*3)]),spb,{type:'triangle',gain:0.06,a:0.05,r:0.4,filter:2000});}}
+  };
+
+  function scheduler(){
+    if(!ctx) return;
+    while(nextBarTime < ctx.currentTime + 0.25){
+      const th=THEMES[current]||THEMES.epic;
+      try{ th.bar(nextBarTime, barIx); }catch(e){}
+      nextBarTime += (60/th.bpm)*th.beats;
+      barIx++;
+      if(pending!==current){ current=pending; barIx=0; }   // switch on bar boundary
+    }
+  }
+
+  return {
+    start(){
+      if(!ensure()) return;
+      if(ctx.state==='suspended') ctx.resume();
+      if(!timer){ nextBarTime=ctx.currentTime+0.1; barIx=0; timer=setInterval(scheduler,25); }
+    },
+    set(name){ if(THEMES[name]){ pending=name; if(!timer) current=name; } },
+    toggle(){ muted=!muted; if(master) master.gain.setTargetAtTime(muted?0:0.20, ctx.currentTime, 0.05); if(!muted) this.start(); return muted; },
+    isMuted(){ return muted; }
+  };
+})();
+window.Music = Music;   // expose so screen/stage hooks can switch themes
+
+// Which theme each stage uses (epic on the battles & the resurrection)
+const STAGE_MOOD={1:'calm',2:'drive',3:'calm',4:'mystic',5:'drive',6:'epic',7:'tense',8:'epic',9:'triumph',10:'drive',11:'epic',12:'triumph'};
+
+// ═══════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded',()=>{
   // Lang button
   document.getElementById('lang-btn').textContent='EN';
+  // Start music on the first user gesture (browsers block autoplay before that)
+  function startAudioOnce(){
+    Music.start();
+    document.removeEventListener('pointerdown',startAudioOnce);
+    document.removeEventListener('keydown',startAudioOnce);
+  }
+  document.addEventListener('pointerdown',startAudioOnce);
+  document.addEventListener('keydown',startAudioOnce);
   // Close journal on overlay click
   document.getElementById('modal-overlay').addEventListener('click',e=>{
     if(e.target===document.getElementById('modal-overlay')){

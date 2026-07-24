@@ -434,7 +434,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Georgia',serif;bac
   <!-- TITLE SCREEN -->
   <div id="title-screen" class="screen active">
     <div class="title-stars"></div>
-    <img class="title-hero-img" src="./images/01_ordinary_world.png" alt="Hero" onerror="this.style.display='none'">
+    <img class="title-hero-img" src="./images/img15.png" alt="Hero" onerror="this.style.display='none'">
     <div class="title-zh" id="t-title-zh">英雄旅程</div>
     <div class="title-en">HERO'S JOURNEY</div>
     <div class="title-subtitle" id="t-title-sub">
@@ -447,7 +447,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Georgia',serif;bac
   <!-- MAP SCREEN -->
   <div id="map-screen" class="screen">
     <div id="map-container">
-      <img id="map-bg" src="./images/00_map.png" alt="World Map" onerror="this.style.background='#1a1030'">
+      <img id="map-bg" src="./images/img0.png" alt="World Map" onerror="this.style.background='#1a1030'">
       <img id="map-fog" src="./images/img1.png" alt="Fog" onerror="this.style.display='none'">
       <div class="map-title" id="t-map-title">選擇你的下一個旅程節點</div>
       <div id="map-nodes"></div>
@@ -518,7 +518,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Georgia',serif;bac
 
   <!-- ENDING SCREEN -->
   <div id="ending-screen" class="screen">
-    <img class="ending-medal" src="./images/12_return_elixir.png" alt="Medal" onerror="this.style.display='none'">
+    <img class="ending-medal" src="./images/img37.jpg" alt="Medal" onerror="this.style.display='none'">
     <div class="ending-title-label" id="t-end-label">你的英雄稱號</div>
     <div class="ending-hero-title" id="end-hero-title"></div>
     <div class="ending-description" id="end-description"></div>
@@ -597,17 +597,17 @@ const STAGES = [
     id:1, icon:'🏛️',
     zh:{title:'第一關：平凡的牢籠', sub:'吉爾伽美什的烏魯克城 · 《吉爾伽美什史詩》'},
     en:{title:'Stage 1: The Gilded Cage', sub:"Gilgamesh's Uruk · Epic of Gilgamesh"},
-    bg:'./images/01_ordinary_world.png',
+    bg:'./images/img3.jpg',
     type:'explore',
-    portrait:'./images/01_ordinary_world.png', portraitName:'吉爾伽美什',
+    portrait:'./images/img15.png', portraitName:'吉爾伽美什',
     dialogues:{
       zh:[
-        {who:'旁白', text:'時間：青銅時代黃昏。你是吉爾伽美什——三分之二神明的國王。你擁有一切，卻沒有一個能真正相伴的靈魂。', portrait:'./images/img33.png'},
-        {who:'吉爾伽美什', text:'城市在我腳下，卻不屬於我。我的城牆是世上最高的，但我的心……', portrait:'./images/01_ordinary_world.png'},
+        {who:'旁白', text:'時間：青銅時代黃昏。你是吉爾伽美什——三分之二神明的國王。你擁有一切，卻沒有一個能真正相伴的靈魂。', portrait:'./images/img33.jpg'},
+        {who:'吉爾伽美什', text:'城市在我腳下，卻不屬於我。我的城牆是世上最高的，但我的心……', portrait:'./images/img15.png'},
       ],
       en:[
-        {who:'Narrator', text:'Bronze Age dusk. You are Gilgamesh — two-thirds god, one-third mortal. You possess everything, yet not a single soul truly accompanies you.', portrait:'./images/img33.png'},
-        {who:'Gilgamesh', text:'The city lies beneath me, yet it does not belong to me. My walls are the tallest in the world, but my heart…', portrait:'./images/01_ordinary_world.png'},
+        {who:'Narrator', text:'Bronze Age dusk. You are Gilgamesh — two-thirds god, one-third mortal. You possess everything, yet not a single soul truly accompanies you.', portrait:'./images/img33.jpg'},
+        {who:'Gilgamesh', text:'The city lies beneath me, yet it does not belong to me. My walls are the tallest in the world, but my heart…', portrait:'./images/img15.png'},
       ]
     },
     hotspots:[
@@ -624,25 +624,25 @@ const STAGES = [
     ],
     requiredVisits: 3,
     endDialogue:{
-      zh:{who:'夢中使者', text:'「你的孤獨已被天上聽見。明日，荒野中將誕生一個人——他是泥土與野獸的兒子。只有遇見他，你才能知道自己真正是誰。」', portrait:'./images/img33.png'},
-      en:{who:'Dream Messenger', text:'"Your loneliness has been heard in heaven. Tomorrow, a man shall be born in the wild — son of earth and beast. Only by meeting him will you know who you truly are."', portrait:'./images/img33.png'},
+      zh:{who:'夢中使者', text:'「你的孤獨已被天上聽見。明日，荒野中將誕生一個人——他是泥土與野獸的兒子。只有遇見他，你才能知道自己真正是誰。」', portrait:'./images/img33.jpg'},
+      en:{who:'Dream Messenger', text:'"Your loneliness has been heard in heaven. Tomorrow, a man shall be born in the wild — son of earth and beast. Only by meeting him will you know who you truly are."', portrait:'./images/img33.jpg'},
     }
   },
   { // STAGE 2
     id:2, icon:'🌊',
     zh:{title:'第二關：召喚的聲音', sub:'恩基杜現身 · 幼發拉底河'},
     en:{title:'Stage 2: The Wild Call', sub:'Enkidu Appears · Euphrates River'},
-    bg:'./images/02_call_to_adventure.png',
+    bg:'./images/img4.jpg',
     type:'stealth',
-    portrait:'./images/img16.png', portraitName:'恩基杜',
+    portrait:'./images/img16.jpg', portraitName:'恩基杜',
     dialogues:{
       zh:[
-        {who:'旁白', text:'清晨，幼發拉底河邊。河對岸，一個用草葉遮身的巨人正在喝水——他是恩基杜，神造的野人，從未見過城市的存在。', portrait:'./images/img33.png'},
-        {who:'吉爾伽美什', text:'那不是恐懼，不是欲望——是「終於」。彷彿有什麼東西在很遠的地方輕聲說：「來。」', portrait:'./images/01_ordinary_world.png'},
+        {who:'旁白', text:'清晨，幼發拉底河邊。河對岸，一個用草葉遮身的巨人正在喝水——他是恩基杜，神造的野人，從未見過城市的存在。', portrait:'./images/img33.jpg'},
+        {who:'吉爾伽美什', text:'那不是恐懼，不是欲望——是「終於」。彷彿有什麼東西在很遠的地方輕聲說：「來。」', portrait:'./images/img15.png'},
       ],
       en:[
-        {who:'Narrator', text:'Dawn at the Euphrates. Across the river, a giant clothed in leaves drinks water — Enkidu, the wild man made by gods, who has never seen a city.', portrait:'./images/img33.png'},
-        {who:'Gilgamesh', text:'This is not fear, not desire — it is "finally." As if something far away whispers softly: "Come."', portrait:'./images/01_ordinary_world.png'},
+        {who:'Narrator', text:'Dawn at the Euphrates. Across the river, a giant clothed in leaves drinks water — Enkidu, the wild man made by gods, who has never seen a city.', portrait:'./images/img33.jpg'},
+        {who:'Gilgamesh', text:'This is not fear, not desire — it is "finally." As if something far away whispers softly: "Come."', portrait:'./images/img15.png'},
       ]
     },
     soulQuestion:{
@@ -650,25 +650,25 @@ const STAGES = [
       en:'You see your own face on the water. What is the first word you see?',
     },
     endDialogue:{
-      zh:{who:'恩基杜', text:'「你是王。但你的眼睛裡有一種飢渴，和獅子一樣。你在找什麼？」', portrait:'./images/img16.png'},
-      en:{who:'Enkidu', text:'"You are a king. But there is a hunger in your eyes — like a lion\'s. What are you searching for?"', portrait:'./images/img16.png'},
+      zh:{who:'恩基杜', text:'「你是王。但你的眼睛裡有一種飢渴，和獅子一樣。你在找什麼？」', portrait:'./images/img16.jpg'},
+      en:{who:'Enkidu', text:'"You are a king. But there is a hunger in your eyes — like a lion\'s. What are you searching for?"', portrait:'./images/img16.jpg'},
     }
   },
   { // STAGE 3
     id:3, icon:'⚡',
     zh:{title:'第三關：第一道考驗', sub:'跨越雷霆之門 · 北歐《埃達》+ 但丁《神曲》'},
     en:{title:'Stage 3: The Crossing', sub:"Through the Thunder Gate · Norse Edda + Dante's Inferno"},
-    bg:'./images/03_refusal.png',
+    bg:'./images/img5.png',
     type:'path',
-    portrait:'./images/img16.png', portraitName:'恩基杜',
+    portrait:'./images/img16.jpg', portraitName:'恩基杜',
     dialogues:{
       zh:[
-        {who:'長老們', text:'「陛下，不要去雪松山。沒有人回來過。洪巴巴是神指定的守護者，他的吼聲能讓人瘋狂。」', portrait:'./images/img17.png'},
-        {who:'恩基杜', text:'「恐懼與我同在，但我還是去。這就是勇氣。」', portrait:'./images/img16.png'},
+        {who:'長老們', text:'「陛下，不要去雪松山。沒有人回來過。洪巴巴是神指定的守護者，他的吼聲能讓人瘋狂。」', portrait:'./images/img17.jpg'},
+        {who:'恩基杜', text:'「恐懼與我同在，但我還是去。這就是勇氣。」', portrait:'./images/img16.jpg'},
       ],
       en:[
-        {who:'Elders', text:'"My lord, do not go to the Cedar Mountain. No one has returned. Humbaba is the gods\' appointed guardian — his roar can drive men mad."', portrait:'./images/img17.png'},
-        {who:'Enkidu', text:'"Fear walks with me, yet I still go. That is what courage is."', portrait:'./images/img16.png'},
+        {who:'Elders', text:'"My lord, do not go to the Cedar Mountain. No one has returned. Humbaba is the gods\' appointed guardian — his roar can drive men mad."', portrait:'./images/img17.jpg'},
+        {who:'Enkidu', text:'"Fear walks with me, yet I still go. That is what courage is."', portrait:'./images/img16.jpg'},
       ]
     },
     paths:[
@@ -681,25 +681,25 @@ const STAGES = [
     ],
     starPuzzle: true,
     endDialogue:{
-      zh:{who:'恩基杜', text:'「夢1：山崩——那是洪巴巴，他的倒下是我們的勝利。夢2：閃電——神在試探你的心志。夢3：你變成鷹——你的靈魂已在天空了。』」', portrait:'./images/img16.png'},
-      en:{who:'Enkidu', text:'"Dream 1: Mountain collapses — that is Humbaba, his fall is our victory. Dream 2: Lightning — the gods test your resolve. Dream 3: You become an eagle — your soul is already in the sky."', portrait:'./images/img16.png'},
+      zh:{who:'恩基杜', text:'「夢1：山崩——那是洪巴巴，他的倒下是我們的勝利。夢2：閃電——神在試探你的心志。夢3：你變成鷹——你的靈魂已在天空了。』」', portrait:'./images/img16.jpg'},
+      en:{who:'Enkidu', text:'"Dream 1: Mountain collapses — that is Humbaba, his fall is our victory. Dream 2: Lightning — the gods test your resolve. Dream 3: You become an eagle — your soul is already in the sky."', portrait:'./images/img16.jpg'},
     }
   },
   { // STAGE 4
     id:4, icon:'⚖️',
     zh:{title:'第四關：導師的試煉', sub:'智者之間 · 《摩訶婆羅多》+ 凱爾特傳說'},
     en:{title:"Stage 4: The Mentor's Fire", sub:"The Wise Ones · Mahabharata + Celtic Legend"},
-    bg:'./images/04_meeting_mentor.png',
+    bg:'./images/img6.jpg',
     type:'scale',
-    portrait:'./images/img23.png', portraitName:'導師',
+    portrait:'./images/img23.jpg', portraitName:'導師',
     dialogues:{
       zh:[
-        {who:'導師', text:'「我知道你要去殺洪巴巴。但在你殺他之前——你必須回答我一個問題。不，三個問題。用你的心，不是你的嘴。」', portrait:'./images/img23.png'},
-        {who:'旁白', text:'他是所有導師的總和：克里希納、梅林、菩提祖師。他的眼睛有一千歲。', portrait:'./images/img33.png'},
+        {who:'導師', text:'「我知道你要去殺洪巴巴。但在你殺他之前——你必須回答我一個問題。不，三個問題。用你的心，不是你的嘴。」', portrait:'./images/img23.jpg'},
+        {who:'旁白', text:'他是所有導師的總和：克里希納、梅林、菩提祖師。他的眼睛有一千歲。', portrait:'./images/img33.jpg'},
       ],
       en:[
-        {who:'Mentor', text:'"I know you mean to slay Humbaba. But before you do — you must answer me. Not one question. Three. With your heart, not your mouth."', portrait:'./images/img23.png'},
-        {who:'Narrator', text:'He is the sum of all mentors: Krishna, Merlin, Bodhi Patriarch. His eyes hold a thousand years.', portrait:'./images/img33.png'},
+        {who:'Mentor', text:'"I know you mean to slay Humbaba. But before you do — you must answer me. Not one question. Three. With your heart, not your mouth."', portrait:'./images/img23.jpg'},
+        {who:'Narrator', text:'He is the sum of all mentors: Krishna, Merlin, Bodhi Patriarch. His eyes hold a thousand years.', portrait:'./images/img33.jpg'},
       ]
     },
     scaleQuestions:[
@@ -711,30 +711,30 @@ const STAGES = [
        en:{left:'Present Victory', right:'Future Legacy', question:'Which weighs more?'}},
     ],
     endDialogue:{
-      zh:{who:'導師', text:'「你的答案告訴了我你的英雄之路。記住這些字——你在最黑暗的時候，它們是你的燈。」', portrait:'./images/img23.png'},
-      en:{who:'Mentor', text:'"Your answers have shown me your heroic path. Remember these words — in your darkest hour, they will be your light."', portrait:'./images/img23.png'},
+      zh:{who:'導師', text:'「你的答案告訴了我你的英雄之路。記住這些字——你在最黑暗的時候，它們是你的燈。」', portrait:'./images/img23.jpg'},
+      en:{who:'Mentor', text:'"Your answers have shown me your heroic path. Remember these words — in your darkest hour, they will be your light."', portrait:'./images/img23.jpg'},
     }
   },
   { // STAGE 5
     id:5, icon:'🦁',
     zh:{title:'第五關：深入洞穴', sub:'洪巴巴的領域 · 《吉爾伽美什》+ 希臘神話'},
     en:{title:'Stage 5: Into the Beast', sub:"Humbaba's Domain · Gilgamesh + Greek Mythology"},
-    bg:'./images/05_crossing_threshold.png',
+    bg:'./images/img7.png',
     type:'maze',
-    portrait:'./images/img17.png', portraitName:'洪巴巴',
+    portrait:'./images/img17.jpg', portraitName:'洪巴巴',
     dialogues:{
       zh:[
-        {who:'旁白', text:'雪松山的心臟地帶。樹木高如城牆，空氣裡有一種讓人想回頭的氣息。洪巴巴是神指定的守護者——殺他是一種僭越。', portrait:'./images/img33.png'},
-        {who:'恩基杜', text:'「吉爾伽美什，想想你的城市。想想你來這裡的理由。恐懼是真實的——但你比你的恐懼更真實。」', portrait:'./images/img16.png'},
+        {who:'旁白', text:'雪松山的心臟地帶。樹木高如城牆，空氣裡有一種讓人想回頭的氣息。洪巴巴是神指定的守護者——殺他是一種僭越。', portrait:'./images/img33.jpg'},
+        {who:'恩基杜', text:'「吉爾伽美什，想想你的城市。想想你來這裡的理由。恐懼是真實的——但你比你的恐懼更真實。」', portrait:'./images/img16.jpg'},
       ],
       en:[
-        {who:'Narrator', text:'The heart of the Cedar Mountain. Trees tall as city walls; the air carries a scent that makes you want to turn back. Humbaba is the gods\' guardian — to slay him is transgression.', portrait:'./images/img33.png'},
-        {who:'Enkidu', text:'"Gilgamesh, think of your city. Think of why you came here. Fear is real — but you are more real than your fear."', portrait:'./images/img16.png'},
+        {who:'Narrator', text:'The heart of the Cedar Mountain. Trees tall as city walls; the air carries a scent that makes you want to turn back. Humbaba is the gods\' guardian — to slay him is transgression.', portrait:'./images/img33.jpg'},
+        {who:'Enkidu', text:'"Gilgamesh, think of your city. Think of why you came here. Fear is real — but you are more real than your fear."', portrait:'./images/img16.jpg'},
       ]
     },
     endDialogue:{
-      zh:{who:'洪巴巴', text:'「留我一命……我可以成為你的守衛。你為什麼來？是為了榮耀？還是為了逃避你的孤獨？」', portrait:'./images/img17.png'},
-      en:{who:'Humbaba', text:'"Spare my life… I can become your guardian. Why did you come? For glory? Or to escape your loneliness?"', portrait:'./images/img17.png'},
+      zh:{who:'洪巴巴', text:'「留我一命……我可以成為你的守衛。你為什麼來？是為了榮耀？還是為了逃避你的孤獨？」', portrait:'./images/img17.jpg'},
+      en:{who:'Humbaba', text:'"Spare my life… I can become your guardian. Why did you come? For glory? Or to escape your loneliness?"', portrait:'./images/img17.jpg'},
     },
     finalChoice:{
       zh:{
@@ -753,24 +753,24 @@ const STAGES = [
     id:6, icon:'🌌',
     zh:{title:'第六關：天上的憤怒', sub:'諸神的審判 · 《吉爾伽美什》+ 《西遊記》天庭'},
     en:{title:'Stage 6: The Wrath of Heaven', sub:'Divine Judgment · Gilgamesh + Journey to the West'},
-    bg:'./images/06_tests_allies_enemies.png',
+    bg:'./images/img8.jpg',
     type:'rhythm',
-    portrait:'./images/img17.png', portraitName:'伊絲塔',
+    portrait:'./images/img17.jpg', portraitName:'伊絲塔',
     dialogues:{
       zh:[
-        {who:'伊絲塔', text:'「吉爾伽美什，成為我的男人。我將給你黃金的戰車，所有的王都將跪在你面前。」', portrait:'./images/img17.png'},
-        {who:'吉爾伽美什', text:'「你的前任戀人們——哪一個沒有被你摧毀？獅子、馬、牧羊人……我不會是下一個。」', portrait:'./images/01_ordinary_world.png'},
-        {who:'旁白', text:'這是英雄最危險的時刻：勝利後的傲慢。諸神憤怒了，天牛降臨烏魯克。你必須疏散市民，與恩基杜配合，共同擊敗天牛！', portrait:'./images/img33.png'},
+        {who:'伊絲塔', text:'「吉爾伽美什，成為我的男人。我將給你黃金的戰車，所有的王都將跪在你面前。」', portrait:'./images/img17.jpg'},
+        {who:'吉爾伽美什', text:'「你的前任戀人們——哪一個沒有被你摧毀？獅子、馬、牧羊人……我不會是下一個。」', portrait:'./images/img15.png'},
+        {who:'旁白', text:'這是英雄最危險的時刻：勝利後的傲慢。諸神憤怒了，天牛降臨烏魯克。你必須疏散市民，與恩基杜配合，共同擊敗天牛！', portrait:'./images/img33.jpg'},
       ],
       en:[
-        {who:'Ishtar', text:'"Gilgamesh, be my husband. I will give you a golden chariot; every king shall kneel before you."', portrait:'./images/img17.png'},
-        {who:'Gilgamesh', text:'"Which of your lovers was not destroyed by you? The lion, the horse, the shepherd… I will not be next."', portrait:'./images/01_ordinary_world.png'},
-        {who:'Narrator', text:"This is the hero's most dangerous moment: pride after victory. The gods rage; the Bull of Heaven descends on Uruk. You must evacuate citizens and fight alongside Enkidu!", portrait:'./images/img33.png'},
+        {who:'Ishtar', text:'"Gilgamesh, be my husband. I will give you a golden chariot; every king shall kneel before you."', portrait:'./images/img17.jpg'},
+        {who:'Gilgamesh', text:'"Which of your lovers was not destroyed by you? The lion, the horse, the shepherd… I will not be next."', portrait:'./images/img15.png'},
+        {who:'Narrator', text:"This is the hero's most dangerous moment: pride after victory. The gods rage; the Bull of Heaven descends on Uruk. You must evacuate citizens and fight alongside Enkidu!", portrait:'./images/img33.jpg'},
       ]
     },
     endDialogue:{
-      zh:{who:'旁白', text:'天牛死後，諸神宣判：「英雄的代價必須有人付出。」恩基杜生病了。你陪伴他走過了12天。第12天，恩基杜死去。你，第一次哭泣。', portrait:'./images/img33.png'},
-      en:{who:'Narrator', text:'After the Bull of Heaven falls, the gods decree: "The price of heroism must be paid." Enkidu falls ill. You spend 12 days at his side. On the twelfth day, Enkidu dies. You weep — for the first time.', portrait:'./images/img33.png'},
+      zh:{who:'旁白', text:'天牛死後，諸神宣判：「英雄的代價必須有人付出。」恩基杜生病了。你陪伴他走過了12天。第12天，恩基杜死去。你，第一次哭泣。', portrait:'./images/img33.jpg'},
+      en:{who:'Narrator', text:'After the Bull of Heaven falls, the gods decree: "The price of heroism must be paid." Enkidu falls ill. You spend 12 days at his side. On the twelfth day, Enkidu dies. You weep — for the first time.', portrait:'./images/img33.jpg'},
     },
     soulQuestion:{
       zh:'你最感謝恩基杜的一件事是什麼？',
@@ -781,17 +781,17 @@ const STAGES = [
     id:7, icon:'💀',
     zh:{title:'第七關：恐懼的名字', sub:'面對死亡 · 北歐奧丁 + 佛陀無常'},
     en:{title:'Stage 7: Fear Has a Name', sub:'Facing Death · Norse Odin + Buddhist Impermanence'},
-    bg:'./images/07_inmost_cave.png',
+    bg:'./images/img9.jpg',
     type:'wilderness',
-    portrait:'./images/img20.png', portraitName:'西杜麗',
+    portrait:'./images/img20.jpg', portraitName:'西杜麗',
     dialogues:{
       zh:[
-        {who:'旁白', text:'恩基杜死了。你扔下王冠，離開烏魯克，往世界的盡頭走去。如果他也會死——那你呢？', portrait:'./images/img33.png'},
-        {who:'吉爾伽美什', text:'「我要找到永生。我不能死。」', portrait:'./images/01_ordinary_world.png'},
+        {who:'旁白', text:'恩基杜死了。你扔下王冠，離開烏魯克，往世界的盡頭走去。如果他也會死——那你呢？', portrait:'./images/img33.jpg'},
+        {who:'吉爾伽美什', text:'「我要找到永生。我不能死。」', portrait:'./images/img15.png'},
       ],
       en:[
-        {who:'Narrator', text:"Enkidu is dead. You throw down your crown and leave Uruk, walking toward the world's end. If even he could die — what of you?", portrait:'./images/img33.png'},
-        {who:'Gilgamesh', text:'"I will find immortality. I cannot die."', portrait:'./images/01_ordinary_world.png'},
+        {who:'Narrator', text:"Enkidu is dead. You throw down your crown and leave Uruk, walking toward the world's end. If even he could die — what of you?", portrait:'./images/img33.jpg'},
+        {who:'Gilgamesh', text:'"I will find immortality. I cannot die."', portrait:'./images/img15.png'},
       ]
     },
     targets:[
@@ -802,25 +802,25 @@ const STAGES = [
     ],
     siduri: true,
     endDialogue:{
-      zh:{who:'西杜麗', text:'「你為什麼如此消瘦，如此憔悴？你找的永生，你找不到。這就是人類的任務——讓你活著的人愛你。」', portrait:'./images/img20.png'},
-      en:{who:'Siduri', text:'"Why are you so thin, so haggard? The immortality you seek — you will not find it. This is the human task: to be loved by those who are alive."', portrait:'./images/img20.png'},
+      zh:{who:'西杜麗', text:'「你為什麼如此消瘦，如此憔悴？你找的永生，你找不到。這就是人類的任務——讓你活著的人愛你。」', portrait:'./images/img20.jpg'},
+      en:{who:'Siduri', text:'"Why are you so thin, so haggard? The immortality you seek — you will not find it. This is the human task: to be loved by those who are alive."', portrait:'./images/img20.jpg'},
     }
   },
   { // STAGE 8
     id:8, icon:'🌊',
     zh:{title:'第八關：永生的秘密', sub:'最深的洞穴 · 烏塔納匹什提的島嶼'},
     en:{title:'Stage 8: The Secret of Immortality', sub:'The Deepest Cave · Isle of Utnapishtim'},
-    bg:'./images/08_the_ordeal.png',
+    bg:'./images/img10.jpg',
     type:'awake',
     portrait:'./images/img21.png', portraitName:'烏塔納匹什提',
     dialogues:{
       zh:[
         {who:'烏塔納匹什提', text:'「我是唯一被神明賜予永生的人。你問永生的秘密——秘密在一個考驗裡：不要睡著，撐過七天七夜。」', portrait:'./images/img21.png'},
-        {who:'旁白', text:'睡眠是死亡的兄弟。七天七夜——這就是永生的代價。', portrait:'./images/img33.png'},
+        {who:'旁白', text:'睡眠是死亡的兄弟。七天七夜——這就是永生的代價。', portrait:'./images/img33.jpg'},
       ],
       en:[
         {who:'Utnapishtim', text:'"I am the only mortal granted immortality by the gods. You ask the secret — the secret is a test: do not sleep. Endure seven days and seven nights."', portrait:'./images/img21.png'},
-        {who:'Narrator', text:"Sleep is death's brother. Seven days and seven nights — this is the price of immortality.", portrait:'./images/img33.png'},
+        {who:'Narrator', text:"Sleep is death's brother. Seven days and seven nights — this is the price of immortality.", portrait:'./images/img33.jpg'},
       ]
     },
     endDialogue:{
@@ -832,44 +832,44 @@ const STAGES = [
     id:9, icon:'🔥',
     zh:{title:'第九關：戰士的死與重生', sub:'鳳凰時刻 · 北歐西格爾德 + 埃及奧西里斯'},
     en:{title:'Stage 9: Death and Fire', sub:'The Phoenix Moment · Norse Sigurd + Egyptian Osiris'},
-    bg:'./images/09_reward.png',
+    bg:'./images/img11.png',
     type:'strategy',
-    portrait:'./images/img34.png', portraitName:'鳳凰',
+    portrait:'./images/img34.jpg', portraitName:'鳳凰',
     dialogues:{
       zh:[
-        {who:'旁白', text:'時空跳轉。你的靈魂進入新的容器——這次，你是西格爾德，北歐最偉大的英雄，龍的剋星。你站在法夫尼爾的黃金山前。', portrait:'./images/img34.png'},
-        {who:'旁白', text:'龍的皮膚刀槍不入。你不能正面硬攻——你必須挖一條壕溝，躲在裡面，等龍從身上爬過，刺穿它的肚子。策略比蠻力更強大。', portrait:'./images/img33.png'},
+        {who:'旁白', text:'時空跳轉。你的靈魂進入新的容器——這次，你是西格爾德，北歐最偉大的英雄，龍的剋星。你站在法夫尼爾的黃金山前。', portrait:'./images/img34.jpg'},
+        {who:'旁白', text:'龍的皮膚刀槍不入。你不能正面硬攻——你必須挖一條壕溝，躲在裡面，等龍從身上爬過，刺穿它的肚子。策略比蠻力更強大。', portrait:'./images/img33.jpg'},
       ],
       en:[
-        {who:'Narrator', text:'Time shifts. Your soul enters a new vessel — this time, you are Sigurd, the greatest hero of the Norse world, slayer of dragons. You stand before Fafnir\'s golden mountain.', portrait:'./images/img34.png'},
-        {who:'Narrator', text:"The dragon's hide is impenetrable. You cannot fight him head-on — you must dig a trench, hide inside, and stab upward as he passes. Strategy is mightier than force.", portrait:'./images/img33.png'},
+        {who:'Narrator', text:'Time shifts. Your soul enters a new vessel — this time, you are Sigurd, the greatest hero of the Norse world, slayer of dragons. You stand before Fafnir\'s golden mountain.', portrait:'./images/img34.jpg'},
+        {who:'Narrator', text:"The dragon's hide is impenetrable. You cannot fight him head-on — you must dig a trench, hide inside, and stab upward as he passes. Strategy is mightier than force.", portrait:'./images/img33.jpg'},
       ]
     },
     endDialogue:{
-      zh:{who:'旁白', text:'西格爾德殺死法夫尼爾後，沾到龍血，能聽懂鳥語。鳥兒說：「遠方有一個沉睡的女武神，被火焰包圍。你的舊自我在這一關死去——奧西里斯被分屍、重新拼合。死亡不是終點，它是你真正開始的地方。」', portrait:'./images/img34.png'},
-      en:{who:'Narrator', text:"After slaying Fafnir, Sigurd tastes dragon blood and understands birds. They say: 'Far away, a sleeping Valkyrie is surrounded by flames.' Your old self dies in this stage — like Osiris, dismembered and reborn. Death is not the end; it is where you truly begin.", portrait:'./images/img34.png'},
+      zh:{who:'旁白', text:'西格爾德殺死法夫尼爾後，沾到龍血，能聽懂鳥語。鳥兒說：「遠方有一個沉睡的女武神，被火焰包圍。你的舊自我在這一關死去——奧西里斯被分屍、重新拼合。死亡不是終點，它是你真正開始的地方。」', portrait:'./images/img34.jpg'},
+      en:{who:'Narrator', text:"After slaying Fafnir, Sigurd tastes dragon blood and understands birds. They say: 'Far away, a sleeping Valkyrie is surrounded by flames.' Your old self dies in this stage — like Osiris, dismembered and reborn. Death is not the end; it is where you truly begin.", portrait:'./images/img34.jpg'},
     }
   },
   { // STAGE 10
     id:10, icon:'⚖️',
     zh:{title:'第十關：靈魂的審判', sub:'真理之廳 · 埃及《亡靈書》+ 希臘奧菲斯'},
     en:{title:'Stage 10: The Hall of Two Truths', sub:'Judgment Hall · Egyptian Book of the Dead + Orpheus'},
-    bg:'./images/10_road_back.png',
+    bg:'./images/img12.jpg',
     type:'confession',
-    portrait:'./images/img19.png', portraitName:'阿努比斯',
+    portrait:'./images/img19.jpg', portraitName:'阿努比斯',
     dialogues:{
       zh:[
-        {who:'阿努比斯', text:'「你進入了真理之廳。天平的一端是瑪特之羽——真理的重量。另一端，將要放你的心臟。42位法官等待你的告白。」', portrait:'./images/img19.png'},
-        {who:'旁白', text:'這是整個旅程中最誠實的時刻。不是辯解——是如實陳述。', portrait:'./images/img33.png'},
+        {who:'阿努比斯', text:'「你進入了真理之廳。天平的一端是瑪特之羽——真理的重量。另一端，將要放你的心臟。42位法官等待你的告白。」', portrait:'./images/img19.jpg'},
+        {who:'旁白', text:'這是整個旅程中最誠實的時刻。不是辯解——是如實陳述。', portrait:'./images/img33.jpg'},
       ],
       en:[
-        {who:'Anubis', text:'"You enter the Hall of Two Truths. On one side of the scale: the Feather of Ma\'at — the weight of truth. On the other: your heart. Forty-two judges await your confession."', portrait:'./images/img19.png'},
-        {who:'Narrator', text:'This is the most honest moment of the entire journey. Not justification — but truthful declaration.', portrait:'./images/img33.png'},
+        {who:'Anubis', text:'"You enter the Hall of Two Truths. On one side of the scale: the Feather of Ma\'at — the weight of truth. On the other: your heart. Forty-two judges await your confession."', portrait:'./images/img19.jpg'},
+        {who:'Narrator', text:'This is the most honest moment of the entire journey. Not justification — but truthful declaration.', portrait:'./images/img33.jpg'},
       ]
     },
     endDialogue:{
-      zh:{who:'奧菲斯', text:'「你曾經因為愛一個人，而做了一件你知道結果的傻事嗎？」', portrait:'./images/img22.png'},
-      en:{who:'Orpheus', text:'"Have you ever, out of love for someone, done something foolish — knowing the outcome in advance?"', portrait:'./images/img22.png'},
+      zh:{who:'奧菲斯', text:'「你曾經因為愛一個人，而做了一件你知道結果的傻事嗎？」', portrait:'./images/img22.jpg'},
+      en:{who:'Orpheus', text:'"Have you ever, out of love for someone, done something foolish — knowing the outcome in advance?"', portrait:'./images/img22.jpg'},
     },
     orpheusQuestion:{
       zh:'奧菲斯問你：「你曾經因為愛一個人，而做了一件你知道結果的傻事嗎？」',
@@ -880,39 +880,39 @@ const STAGES = [
     id:11, icon:'🌅',
     zh:{title:'第十一關：回頭路上的誘惑', sub:'奧德修斯的海 · 《奧德賽》+ 《西遊記》'},
     en:{title:'Stage 11: The Road of Trials', sub:"Odysseus' Sea · The Odyssey + Journey to the West"},
-    bg:'./images/11_resurrection.png',
+    bg:'./images/img13.jpg',
     type:'sail',
-    portrait:'./images/img22.png', portraitName:'奧菲斯',
+    portrait:'./images/img22.jpg', portraitName:'奧菲斯',
     dialogues:{
       zh:[
-        {who:'旁白', text:'你踏上歸途。但回家的路，比出發的路更難。因為你變了，但那些等著讓你「不要回去」的力量還在。', portrait:'./images/img33.png'},
-        {who:'旁白', text:'三個誘惑島嶼等著你：塞壬之歌（舊日榮耀的回憶）、瑟西的花園（舒適的陷阱）、卡呂普索的洞穴（愛與永生的承諾）。', portrait:'./images/img33.png'},
+        {who:'旁白', text:'你踏上歸途。但回家的路，比出發的路更難。因為你變了，但那些等著讓你「不要回去」的力量還在。', portrait:'./images/img33.jpg'},
+        {who:'旁白', text:'三個誘惑島嶼等著你：塞壬之歌（舊日榮耀的回憶）、瑟西的花園（舒適的陷阱）、卡呂普索的洞穴（愛與永生的承諾）。', portrait:'./images/img33.jpg'},
       ],
       en:[
-        {who:'Narrator', text:'You set sail for home. But the road back is harder than the road out — because you have changed, yet the forces that want you to "never return" remain.', portrait:'./images/img33.png'},
-        {who:'Narrator', text:"Three temptation islands await: Sirens' Song (memories of past glory), Circe's Garden (the comfort trap), Calypso's Cave (the promise of love and immortality).", portrait:'./images/img33.png'},
+        {who:'Narrator', text:'You set sail for home. But the road back is harder than the road out — because you have changed, yet the forces that want you to "never return" remain.', portrait:'./images/img33.jpg'},
+        {who:'Narrator', text:"Three temptation islands await: Sirens' Song (memories of past glory), Circe's Garden (the comfort trap), Calypso's Cave (the promise of love and immortality).", portrait:'./images/img33.jpg'},
       ]
     },
     endDialogue:{
-      zh:{who:'旁白', text:'你抵達了彼岸。三個誘惑，你都通過了。不是因為你不想留下——而是因為你知道為什麼必須回去。', portrait:'./images/img33.png'},
-      en:{who:'Narrator', text:'You reach the far shore. You passed all three temptations — not because you did not want to stay, but because you knew why you had to return.', portrait:'./images/img33.png'},
+      zh:{who:'旁白', text:'你抵達了彼岸。三個誘惑，你都通過了。不是因為你不想留下——而是因為你知道為什麼必須回去。', portrait:'./images/img33.jpg'},
+      en:{who:'Narrator', text:'You reach the far shore. You passed all three temptations — not because you did not want to stay, but because you knew why you had to return.', portrait:'./images/img33.jpg'},
     }
   },
   { // STAGE 12
     id:12, icon:'🌍',
     zh:{title:'第十二關：帶著靈丹回家', sub:'蛻變的英雄 · 吉爾伽美什回到烏魯克'},
     en:{title:'Stage 12: Return with the Elixir', sub:'The Transformed Hero · Gilgamesh Returns to Uruk'},
-    bg:'./images/12_return_elixir.png',
+    bg:'./images/img14.png',
     type:'return',
-    portrait:'./images/01_ordinary_world.png', portraitName:'吉爾伽美什',
+    portrait:'./images/img15.png', portraitName:'吉爾伽美什',
     dialogues:{
       zh:[
-        {who:'旁白', text:'你回到了起點——但「起點」不再是起點了。烏魯克城的城牆還在。人民還在。市場還在。但你——已經是另一個人。', portrait:'./images/img33.png'},
-        {who:'吉爾伽美什', text:'「我沒有帶回永生。我沒有帶回靈草。我帶回的，是一個更難解釋的東西：我知道了死亡的真相，而我選擇繼續活著。」', portrait:'./images/01_ordinary_world.png'},
+        {who:'旁白', text:'你回到了起點——但「起點」不再是起點了。烏魯克城的城牆還在。人民還在。市場還在。但你——已經是另一個人。', portrait:'./images/img33.jpg'},
+        {who:'吉爾伽美什', text:'「我沒有帶回永生。我沒有帶回靈草。我帶回的，是一個更難解釋的東西：我知道了死亡的真相，而我選擇繼續活著。」', portrait:'./images/img15.png'},
       ],
       en:[
-        {who:'Narrator', text:'You return to where you began — yet the "beginning" is no longer where you began. The walls of Uruk remain. The people remain. But you — you are someone else entirely.', portrait:'./images/img33.png'},
-        {who:'Gilgamesh', text:'"I did not bring back immortality. I did not bring back the herb. What I brought back is harder to explain: I learned the truth of death — and I chose to keep living."', portrait:'./images/01_ordinary_world.png'},
+        {who:'Narrator', text:'You return to where you began — yet the "beginning" is no longer where you began. The walls of Uruk remain. The people remain. But you — you are someone else entirely.', portrait:'./images/img33.jpg'},
+        {who:'Gilgamesh', text:'"I did not bring back immortality. I did not bring back the herb. What I brought back is harder to explain: I learned the truth of death — and I chose to keep living."', portrait:'./images/img15.png'},
       ]
     },
     hotspots:[
@@ -933,8 +933,8 @@ const STAGES = [
     },
     requiredVisits: 5,
     endDialogue:{
-      zh:{who:'旁白', text:'吉爾伽美什對船夫說：「爬上城牆，走在上面，看那基礎，看那磚石工事……他知道了：不朽，不在永生。不朽，在你留下的事物。」', portrait:'./images/img33.png'},
-      en:{who:'Narrator', text:'"Climb the wall of Uruk, walk along it, see the foundations, see the brickwork…" He understood at last: immortality is not in living forever. Immortality is in what you leave behind.', portrait:'./images/img33.png'},
+      zh:{who:'旁白', text:'吉爾伽美什對船夫說：「爬上城牆，走在上面，看那基礎，看那磚石工事……他知道了：不朽，不在永生。不朽，在你留下的事物。」', portrait:'./images/img33.jpg'},
+      en:{who:'Narrator', text:'"Climb the wall of Uruk, walk along it, see the foundations, see the brickwork…" He understood at last: immortality is not in living forever. Immortality is in what you leave behind.', portrait:'./images/img33.jpg'},
     }
   },
 ];
@@ -2289,7 +2289,7 @@ function showOrpheusQuestion(num, area){
   const st=STAGES[num];
   const oq=st.orpheusQuestion?.[lang]||st.orpheusQuestion?.zh||'';
   area.innerHTML=`<div style="text-align:center;max-width:480px">
-    <img src="./images/img22.png" alt="Orpheus" style="width:80px;height:80px;border-radius:50%;border:2px solid var(--gold);object-fit:cover;margin-bottom:16px" onerror="this.style.display='none'">
+    <img src="./images/img22.jpg" alt="Orpheus" style="width:80px;height:80px;border-radius:50%;border:2px solid var(--gold);object-fit:cover;margin-bottom:16px" onerror="this.style.display='none'">
     <div style="color:var(--gold-light);font-size:15px;line-height:1.7;margin-bottom:16px">${oq}</div>
     <textarea id="orpheus-input" placeholder="${t('soulPrompt')}" style="width:100%;min-height:70px;padding:10px;background:rgba(255,255,255,0.05);border:1px solid var(--gold);color:var(--text);font-size:14px;font-family:inherit;resize:none;border-radius:2px"></textarea>
     <div style="text-align:right;margin-top:10px">

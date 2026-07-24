@@ -27,7 +27,13 @@
 
 ---
 
-## 生成腳本（選用）
-若用 OpenAI 生圖，可仿照 `gen_all.mjs` 寫一個 `gen_beasts.mjs`，把上面每一列的英文化描述接在既有 STYLE 之後、輸出成 `beast1.png…beast12.png`。（需要你自己的 `OPENAI_API_KEY`，只透過環境變數傳入。）
+## 生成腳本
+已附 **`gen_beasts.mjs`**（仿 `gen_all.mjs`），內含這 12 頭怪物的英文 prompt，一次輸出 `beast1.png…beast12.png`。需要你自己的 OpenAI 金鑰（只透過環境變數傳入）：
+
+```powershell
+$env:OPENAI_API_KEY = "sk-你的金鑰"
+node gen_beasts.mjs ./images 1024x1024 medium
+```
+已存在的檔案會自動跳過。
 
 畫好任何一張，直接丟進 `images/` 覆蓋即可，遊戲會自動用真圖取代佔位 emoji。

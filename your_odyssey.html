@@ -26,6 +26,8 @@ body{
 #lang-btn{right:14px;padding:6px 14px;font-size:12px;}
 #music-btn{right:74px;padding:6px 9px;font-size:14px;line-height:1;}
 #music-btn.muted{opacity:0.5;}
+#home-btn{position:fixed;top:14px;left:14px;z-index:1000;background:rgba(0,0,0,.55);border:1px solid var(--gold);
+  color:var(--gold);text-decoration:none;border-radius:3px;padding:6px 12px;font-size:12px;letter-spacing:1px;}
 
 /* title */
 #title{background:radial-gradient(ellipse at 50% 30%,#1b1240 0%,#0a0820 55%,#06040e 100%);}
@@ -98,6 +100,7 @@ textarea:focus{outline:none;border-color:var(--gold);}
 </style>
 
 <div id="app">
+  <a id="home-btn" href="./index.html" title="選單 / Menu">⌂</a>
   <button id="lang-btn" onclick="toggleLang()">EN</button>
   <button id="music-btn" onclick="toggleMusic()" title="音樂 / Music">🔊</button>
 

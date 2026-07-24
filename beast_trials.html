@@ -1,0 +1,542 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>弒魔英雄旅 · Trials of the Twelve Beasts</title>
+<style>
+:root{--gold:#c9a84c;--gold-light:#e8d48a;--red:#e0503a;--green:#5ac878;--blue:#5a8cff;
+  --panel:#141024;--text:#e7e0d0;--muted:rgba(200,180,140,0.6);}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{background:#07050f;color:var(--text);overflow:hidden;-webkit-tap-highlight-color:transparent;
+  font-family:"Noto Serif TC","Songti TC",Georgia,serif;}
+#app{position:fixed;inset:0;overflow:hidden;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:22px;}
+.screen.active{display:flex;}
+#lang-btn,#music-btn{position:fixed;top:14px;z-index:1000;background:rgba(0,0,0,.55);
+  border:1px solid var(--gold);color:var(--gold);cursor:pointer;border-radius:3px;font-family:inherit;letter-spacing:1px;}
+#lang-btn{right:14px;padding:6px 14px;font-size:12px;} #music-btn{right:74px;padding:6px 9px;font-size:14px;line-height:1;}
+#music-btn.muted{opacity:.5;}
+.btn{padding:14px 40px;background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(120,80,200,.2));
+  border:1px solid var(--gold);color:var(--gold-light);font-size:16px;letter-spacing:3px;cursor:pointer;border-radius:3px;font-family:inherit;transition:all .3s;}
+.btn:hover{background:linear-gradient(135deg,rgba(201,168,76,.4),rgba(120,80,200,.35));box-shadow:0 0 22px rgba(201,168,76,.3);}
+.btn-sm{padding:9px 22px;font-size:13px;letter-spacing:1px;}
+
+/* title */
+#title{background:radial-gradient(ellipse at 50% 30%,#2a0f18 0,#0a0820 55%,#06040e 100%);}
+.stars{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 25% 25%,rgba(224,80,58,.14) 0,transparent 45%),radial-gradient(circle at 78% 22%,rgba(120,90,200,.14) 0,transparent 42%);}
+.hero-circle{width:min(240px,58vw);height:min(240px,58vw);border-radius:50%;object-fit:cover;border:3px solid var(--gold);
+  box-shadow:0 0 50px rgba(201,168,76,.35),inset 0 0 25px rgba(0,0,0,.6);margin-bottom:24px;animation:float 4s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.t-zh{font-size:clamp(28px,7.5vw,44px);color:var(--gold-light);letter-spacing:8px;text-shadow:0 0 24px rgba(201,168,76,.5);text-align:center;}
+.t-en{font-size:13px;letter-spacing:5px;color:var(--muted);margin-top:10px;text-align:center;}
+.t-sub{font-size:13px;color:var(--muted);margin:24px 0 32px;text-align:center;line-height:1.9;max-width:520px;}
+
+/* battle */
+#battle{padding:0;justify-content:flex-start;}
+#b-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.42;}
+#b-veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,4,14,.6),rgba(6,4,14,.45) 45%,rgba(6,4,14,.95));}
+#b-head{position:relative;z-index:2;width:100%;max-width:640px;margin:0 auto;padding:54px 20px 0;text-align:center;}
+.b-count{font-size:11px;letter-spacing:3px;color:var(--gold);opacity:.8;}
+.b-name{font-size:clamp(22px,6vw,30px);color:#ffb9a6;letter-spacing:3px;margin:4px 0 2px;text-shadow:0 0 18px rgba(224,80,58,.5);}
+.b-demon{font-size:11px;color:var(--muted);letter-spacing:1px;}
+
+#b-arena{position:relative;z-index:2;flex:1;width:100%;max-width:640px;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 20px;min-height:0;}
+#beast-art{position:relative;width:min(230px,52vw);height:min(230px,52vw);margin-bottom:6px;}
+#beast-img{width:100%;height:100%;object-fit:cover;border-radius:14px;border:1px solid rgba(224,80,58,.4);box-shadow:0 0 30px rgba(224,80,58,.25);}
+#beast-emoji{display:none;width:100%;height:100%;border-radius:14px;border:1px dashed rgba(201,168,76,.5);
+  background:rgba(20,10,20,.6);align-items:center;justify-content:center;flex-direction:column;font-size:76px;}
+#beast-emoji small{font-size:11px;color:var(--muted);letter-spacing:1px;margin-top:6px;}
+#beast-art.hit{animation:shake .32s;}
+@keyframes shake{0%,100%{transform:translate(0,0)}20%{transform:translate(-8px,3px)}40%{transform:translate(7px,-3px)}60%{transform:translate(-5px,2px)}80%{transform:translate(5px,-1px)}}
+.flash{position:absolute;inset:0;border-radius:14px;background:rgba(255,90,60,.55);opacity:0;pointer-events:none;}
+.flash.go{animation:fl .3s;} @keyframes fl{0%{opacity:.7}100%{opacity:0}}
+
+.hpbar{width:min(260px,70vw);height:9px;background:rgba(255,255,255,.1);border-radius:5px;overflow:hidden;margin:2px auto;}
+.hpbar>div{height:100%;transition:width .35s;}
+.beast-hp>div{background:linear-gradient(90deg,#7a1e14,#e0503a);}
+.hero-hp>div{background:linear-gradient(90deg,#2f7a3a,#5ac878);}
+.hp-num{font-size:11px;color:var(--muted);letter-spacing:1px;}
+
+#hero-row{position:relative;z-index:2;width:100%;max-width:640px;margin:0 auto;padding:2px 20px 0;text-align:center;}
+.hero-name{font-size:12px;color:var(--gold-light);letter-spacing:2px;margin-bottom:2px;}
+.virtues{display:flex;gap:14px;justify-content:center;margin-top:6px;font-size:11px;color:var(--muted);}
+.virtues b{color:var(--gold-light);}
+
+#log{position:relative;z-index:2;width:100%;max-width:640px;margin:6px auto 0;height:52px;overflow:hidden;
+  font-size:12.5px;line-height:1.5;color:#efe4d2;text-align:center;padding:0 20px;}
+#log .old{opacity:.4;}
+
+#actions{position:relative;z-index:3;width:100%;max-width:640px;margin:0 auto;padding:10px 16px 20px;display:flex;gap:10px;}
+.act{flex:1;padding:14px 6px;background:rgba(20,16,36,.82);border:1px solid rgba(201,168,76,.4);color:var(--text);
+  border-radius:6px;cursor:pointer;font-family:inherit;text-align:center;transition:all .18s;}
+.act:hover{border-color:var(--gold);background:rgba(40,32,64,.85);}
+.act:disabled{opacity:.4;cursor:default;}
+.act .ic{font-size:22px;display:block;} .act .nm{font-size:13px;color:var(--gold-light);margin-top:3px;letter-spacing:1px;} .act .ds{font-size:10px;color:var(--muted);margin-top:2px;}
+
+/* interstitial / overlays */
+.overlay{position:absolute;inset:0;z-index:20;background:rgba(6,4,14,.9);display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;}
+.overlay.on{display:flex;}
+.ov-title{font-size:clamp(24px,6vw,34px);letter-spacing:4px;margin-bottom:14px;}
+.ov-win{color:var(--gold-light);text-shadow:0 0 20px rgba(201,168,76,.5);}
+.ov-lose{color:#ff8a72;}
+.ov-text{max-width:540px;font-size:15px;line-height:2;color:#efe4d2;white-space:pre-wrap;margin-bottom:24px;}
+.ov-gain{color:var(--gold);font-size:13px;letter-spacing:1px;margin-bottom:24px;}
+
+/* ending */
+#ending{background:radial-gradient(ellipse at 50% 25%,#2a1030 0,#0a0820 55%,#06040e 100%);overflow-y:auto;justify-content:flex-start;padding-top:54px;}
+.medal{width:150px;height:150px;object-fit:cover;border-radius:50%;border:3px solid var(--gold);box-shadow:0 0 46px rgba(201,168,76,.4);margin-bottom:18px;}
+.arch{font-size:clamp(26px,7vw,38px);color:var(--gold-light);letter-spacing:3px;margin:6px 0 2px;text-shadow:0 0 24px rgba(201,168,76,.5);text-align:center;}
+.arch-en{font-size:13px;letter-spacing:4px;color:var(--muted);margin-bottom:18px;}
+.epic{max-width:600px;font-size:15px;line-height:2.05;color:#efe8d6;white-space:pre-wrap;text-align:center;
+  border-top:1px solid rgba(201,168,76,.25);border-bottom:1px solid rgba(201,168,76,.25);padding:22px 6px;margin-bottom:22px;}
+</style>
+
+<div id="app">
+  <button id="lang-btn" onclick="toggleLang()">EN</button>
+  <button id="music-btn" onclick="toggleMusic()" title="音樂 / Music">🔊</button>
+
+  <section id="title" class="screen active">
+    <div class="stars"></div>
+    <img class="hero-circle" src="./images/img15.png" alt="" onerror="this.style.display='none'">
+    <div class="t-zh" id="tt-zh">弒魔英雄旅</div>
+    <div class="t-en">TRIALS OF THE TWELVE BEASTS</div>
+    <div class="t-sub" id="tt-sub"></div>
+    <button class="btn" onclick="begin()" id="tt-btn">拔劍 · DRAW YOUR SWORD</button>
+  </section>
+
+  <section id="battle" class="screen">
+    <img id="b-bg" src="" alt="">
+    <div id="b-veil"></div>
+    <div id="b-head">
+      <div class="b-count" id="b-count"></div>
+      <div class="b-name" id="b-name"></div>
+      <div class="b-demon" id="b-demon"></div>
+    </div>
+    <div id="b-arena">
+      <div id="beast-art">
+        <img id="beast-img" src="" alt="" onerror="beastImgFail()">
+        <div id="beast-emoji"><span id="beast-emoji-g">👹</span><small id="beast-emoji-t">art pending</small></div>
+        <div class="flash" id="beast-flash"></div>
+      </div>
+      <div class="hpbar beast-hp"><div id="beast-hp-fill"></div></div>
+      <div class="hp-num" id="beast-hp-num"></div>
+    </div>
+    <div id="hero-row">
+      <div class="hero-name" id="hero-name">英雄</div>
+      <div class="hpbar hero-hp"><div id="hero-hp-fill"></div></div>
+      <div class="hp-num" id="hero-hp-num"></div>
+      <div class="virtues">
+        <span>⚔️ <span id="lv-c">勇氣</span> <b id="v-c">8</b></span>
+        <span>🌙 <span id="lv-w">智慧</span> <b id="v-w">8</b></span>
+        <span>❤️ <span id="lv-h">心</span> <b id="v-h">8</b></span>
+      </div>
+    </div>
+    <div id="log"></div>
+    <div id="actions">
+      <button class="act" id="act-atk" onclick="act('atk')"><span class="ic">⚔️</span><span class="nm" id="a-atk">斬擊</span><span class="ds" id="a-atk-d">勇氣傷害</span></button>
+      <button class="act" id="act-wis" onclick="act('wis')"><span class="ic">🌙</span><span class="nm" id="a-wis">洞見</span><span class="ds" id="a-wis-d">看破弱點</span></button>
+      <button class="act" id="act-heart" onclick="act('heart')"><span class="ic">❤️</span><span class="nm" id="a-heart">守心</span><span class="ds" id="a-heart-d">治癒·防禦</span></button>
+    </div>
+
+    <div class="overlay" id="ov-win">
+      <div class="ov-title ov-win" id="ov-win-title">試煉通過</div>
+      <div class="ov-text" id="ov-win-text"></div>
+      <div class="ov-gain" id="ov-win-gain"></div>
+      <button class="btn btn-sm" onclick="nextBeast()" id="ov-win-btn">繼續前行 ▶</button>
+    </div>
+    <div class="overlay" id="ov-lose">
+      <div class="ov-title ov-lose" id="ov-lose-title">英雄倒下了</div>
+      <div class="ov-text" id="ov-lose-text"></div>
+      <button class="btn btn-sm" onclick="retry()" id="ov-lose-btn">重新站起 · RISE AGAIN</button>
+    </div>
+  </section>
+
+  <section id="ending" class="screen">
+    <img class="medal" src="./images/img37.jpg" alt="" onerror="this.style.display='none'">
+    <div class="arch-en" id="e-label">你已成為英雄</div>
+    <div class="arch" id="e-arch"></div>
+    <div class="arch-en" id="e-arch-en"></div>
+    <div class="epic" id="e-epic"></div>
+    <button class="btn btn-sm" onclick="restart()" id="e-btn">再戰一輪 · AGAIN</button>
+  </section>
+</div>
+
+<script>
+let LANG='zh';
+const UI={
+ zh:{sub:'成為英雄的路，是一條斬妖之路。\n十二頭心魔，是你必須親手擊敗的自己。',
+   draw:'拔劍 · DRAW YOUR SWORD', c:'勇氣',w:'智慧',h:'心', hero:'英雄',
+   atk:'斬擊',atkd:'勇氣傷害', wis:'洞見',wisd:'看破弱點', heart:'守心',heartd:'治癒·防禦',
+   win:'試煉通過', cont:'繼續前行 ▶', lose:'英雄倒下了', rise:'重新站起 · RISE AGAIN',
+   became:'你已成為英雄', again:'再戰一輪 · AGAIN',
+   youHit:'你',forDmg:'造成',dmg:'點傷害', beastHit:'重擊你',dealt:'造成',
+   healed:'你凝神守心，回復',hp:'生命', reflect:'的傲光反彈了',regenTxt:'緩緩癒合',
+   enrageTxt:'陷入狂怒！',drainTxt:'汲取了你的生命', pierce:'你看破了牠的防禦！'},
+ en:{sub:'The road to becoming a hero is a road of slaying.\nTwelve inner demons — each one a self you must defeat by your own hand.',
+   draw:'DRAW YOUR SWORD', c:'Courage',w:'Wisdom',h:'Heart', hero:'Hero',
+   atk:'Strike',atkd:'Courage dmg', wis:'Insight',wisd:'pierce weakness', heart:'Ward',heartd:'heal · defend',
+   win:'Trial Passed', cont:'Press On ▶', lose:'The Hero Has Fallen', rise:'RISE AGAIN',
+   became:'You Have Become a Hero', again:'FIGHT AGAIN',
+   youHit:'You',forDmg:'deal',dmg:'damage', beastHit:'strikes you for',dealt:'',
+   healed:'You steady your heart and restore',hp:'HP', reflect:'’s pride reflects',regenTxt:'slowly knits its wounds',
+   enrageTxt:'flies into a rage!',drainTxt:'drains your life', pierce:'You see through its guard!'}
+};
+
+// ── the twelve beasts (art slots: images/beast1.png … beast12.png) ──
+const BEASTS=[
+ {img:'./images/beast1.png',emoji:'😴',bg:'./images/img3.jpg',mood:'drive',hp:90,a:[6,10],regen:4,virtue:'courage',
+  zh:{name:'惰影',demon:'一 · 惰 — 平凡的牢籠',intro:'牠是安逸的化身，用溫柔的重量把你釘在原地。第一個要斬的，永遠是「不想動」的自己。',win:'你踏出了那一步。惰影散去，你的雙腿記起了前進的感覺。'},
+  en:{name:'The Shade of Sloth',demon:'I · Sloth — the Gilded Cage',intro:'It is comfort made flesh, pinning you down with a tender weight. The first self to slay is always the one that will not move.',win:'You took the step. The Shade scatters, and your legs remember how to march.'}},
+ {img:'./images/beast2.png',emoji:'😱',bg:'./images/img4.jpg',mood:'tense',hp:105,a:[8,13],virtue:'courage',
+  zh:{name:'懼魔',demon:'二 · 懼 — 拒絕召喚',intro:'牠沒有實體，卻比任何巨獸更沉。牠低語：「你會失敗。」——而勇氣，正是帶著這聲低語照樣揮劍。',win:'你在發抖，卻沒有後退。懼魔認得這種眼神——那是英雄的眼神。'},
+  en:{name:'The Dread',demon:'II · Fear — Refusal of the Call',intro:'It has no body, yet weighs more than any titan. It whispers, “You will fail.” Courage is swinging the sword anyway.',win:'You trembled, but did not retreat. The Dread knows that look — it is the look of a hero.'}},
+ {img:'./images/beast3.png',emoji:'🐍',bg:'./images/img5.png',mood:'tense',hp:120,a:[9,14],virtue:'wisdom',
+  zh:{name:'惑蛇',demon:'三 · 惑 — 內心的懷疑',intro:'牠盤繞在你心上，吐信問：「你真的配嗎？」懷疑不能靠蠻力斬斷——要用清明的眼看穿牠。',win:'你識破了牠的謊。惑蛇的環一鬆，你第一次清楚聽見自己的聲音。'},
+  en:{name:'The Doubt-Serpent',demon:'III · Doubt — the Inner Whisper',intro:'It coils around your heart, hissing, “Are you truly worthy?” Doubt cannot be cut by force — only seen through by a clear eye.',win:'You saw through its lie. The coils loosen, and for once you hear your own voice clearly.'}},
+ {img:'./images/beast4.png',emoji:'🗿',bg:'./images/img6.jpg',mood:'epic',hp:140,a:[10,15],reflect:0.3,virtue:'wisdom',
+  zh:{name:'傲魔巨像',demon:'四 · 傲 — 拒絕受教',intro:'牠一身鏡甲，你越用力打，牠就用你的力量傷你。傲慢只能被謙卑瓦解——用智慧，別用蠻力。',win:'你放下了硬碰硬。當你低頭，巨像的鏡甲失去了反射的對象，轟然碎裂。'},
+  en:{name:'The Pride-Colossus',demon:'IV · Pride — Refusing to Learn',intro:'Clad in mirror-armor, it wounds you with your own force. Pride is undone only by humility — use wisdom, not brute strength.',win:'You stopped trading blows. As you bow, the mirror finds nothing to reflect, and shatters.'}},
+ {img:'./images/beast5.png',emoji:'👺',bg:'./images/img7.png',mood:'epic',hp:150,a:[10,16],drain:0.4,virtue:'heart',
+  zh:{name:'妒獸',demon:'五 · 妒 — 試煉與盟友',intro:'牠每傷你一次，就從你身上偷走一分生命，長成別人的模樣。嫉妒吃的是你對自己的愛。',win:'你停止和別人比較。失去了養分，妒獸縮回陰影，你的生命重新屬於你自己。'},
+  en:{name:'The Envy-Beast',demon:'V · Envy — Tests & Allies',intro:'Each time it wounds you it steals your life to grow into someone else. Envy feeds on the love you owe yourself.',win:'You stopped comparing. Starved, the beast shrinks back, and your life is your own again.'}},
+ {img:'./images/beast6.png',emoji:'🔥',bg:'./images/img8.jpg',mood:'epic',hp:165,a:[15,21],enrage:1,virtue:'courage',
+  zh:{name:'怒炎',demon:'六 · 怒 — 逼近核心',intro:'牠越受傷越狂暴，燒盡一切理智。憤怒不是敵人——失控的憤怒才是。要在牠爆發前，果斷了結。',win:'你在怒火燒穿你之前，將牠斬斷。你懂了：真正的力量，是能收也能放。'},
+  en:{name:'The Wrath-Flame',demon:'VI · Wrath — Approaching the Core',intro:'The more it is hurt, the more it rages, burning away all reason. Anger is not the enemy — anger unleashed is. End it decisively.',win:'You cut it down before the fire burned through you. Now you know: true power can both strike and stay its hand.'}},
+ {img:'./images/beast7.png',emoji:'🐲',bg:'./images/img9.jpg',mood:'epic',hp:185,a:[14,20],drain:0.5,virtue:'wisdom',
+  zh:{name:'貪淵龍',demon:'七 · 貪 — 洞穴最深處',intro:'牠盤踞在最深的洞裡，吞下一切還嫌不夠，連你的生命也一併吸走。貪婪沒有底——除非你替它畫一條線。',win:'你替慾望劃了界。貪淵龍第一次覺得「夠了」，轟然墜入自己的深淵。'},
+  en:{name:'The Greed-Wyrm',demon:'VII · Greed — the Inmost Cave',intro:'Coiled in the deepest cave, it devours all and still hungers, draining even your life. Greed has no bottom — unless you draw the line.',win:'You drew the line for desire. For the first time the Wyrm feels “enough,” and plunges into its own abyss.'}},
+ {img:'./images/beast8.png',emoji:'👻',bg:'./images/img10.jpg',mood:'epic',hp:195,a:[15,22],regen:6,virtue:'heart',
+  zh:{name:'悔靈',demon:'八 · 悔 — 磨難',intro:'牠是你不肯原諒的過去，一次次撕開快要癒合的傷。悔恨會自我修復——除非你先學會治癒自己。',win:'你終於對過去說了「我原諒你」。悔靈流下最後一滴淚，化為安息。'},
+  en:{name:'The Regret-Wraith',demon:'VIII · Regret — the Ordeal',intro:'It is the past you will not forgive, tearing open wounds just as they heal. Regret mends itself — unless you first learn to heal your own.',win:'At last you tell the past, “I forgive you.” The Wraith sheds a final tear and finds rest.'}},
+ {img:'./images/beast9.png',emoji:'🕸️',bg:'./images/img11.png',mood:'tense',hp:205,a:[16,23],virtue:'heart',
+  zh:{name:'孤魘',demon:'九 · 孤 — 獨自面對',intro:'牠讓你覺得全世界只剩你一人，連治癒的手都握不緊。但英雄要學的，是即使孤獨，也不放棄善待自己。',win:'你想起了愛你的人。孤魘的網一斷，你發現自己從來不是真的孤單。'},
+  en:{name:'The Lonely One',demon:'IX · Loneliness — Facing It Alone',intro:'It makes you feel the whole world has emptied but you, until even your healing hand won’t close. Yet a hero learns to be kind to themselves even in solitude.',win:'You remembered those who love you. The web snaps — you were never truly alone.'}},
+ {img:'./images/beast10.png',emoji:'🌑',bg:'./images/img12.jpg',mood:'epic',hp:230,a:[16,24],regen:11,virtue:'wisdom',
+  zh:{name:'絕望巨影',demon:'十 · 絕望 — 歸途最暗處',intro:'牠是最沉的黑，你打下多少，牠就長回多少，低語：「放棄吧。」擊敗絕望的唯一方法，是比牠更不肯放棄。',win:'你在牠的低語裡，又揮出了一劍，再一劍。絕望終於明白——你不會停。牠潰散了。'},
+  en:{name:'The Despair-Titan',demon:'X · Despair — the Darkest Mile',intro:'It is the heaviest black; whatever you tear down, it regrows, whispering, “Give up.” The only way to beat despair is to refuse to quit longer than it does.',win:'Through its whispers you swung once more, and once more. Despair finally understands — you will not stop. It collapses.'}},
+ {img:'./images/beast11.png',emoji:'⚫',bg:'./images/img13.jpg',mood:'epic',hp:245,a:[18,26],reflect:0.2,virtue:'courage',
+  zh:{name:'虛無',demon:'十一 · 虛無 — 意義的崩塌',intro:'牠問：「這一切有什麼意義？」牠把你的每一擊化為空無，反問回你身上。你必須自己給出答案——用行動，不用言語。',win:'你不再等意義從天而降，而是親手賦予它。虛無無法否定一個仍在行動的人，牠消失了。'},
+  en:{name:'The Void',demon:'XI · The Void — the Collapse of Meaning',intro:'It asks, “What is the point of any of this?” turning each of your blows to nothing and back on you. You must give the answer yourself — in deeds, not words.',win:'You stopped waiting for meaning to fall from the sky and forged it by hand. The Void cannot negate one who still acts. It vanishes.'}},
+ {img:'./images/beast12.png',emoji:'🌓',bg:'./images/img14.png',mood:'epic',hp:290,a:[20,30],enrage:1,drain:0.3,virtue:'all',
+  zh:{name:'心魔 · 你自己',demon:'十二 · 影 — 最後的敵人',intro:'牠戴著你的臉，會你所有的招式，強你所曾軟弱之處。最後一戰，是與那個「你以為的自己」和解——並超越牠。',win:'你沒有殺死牠。你擁抱了牠。當你接納了自己的陰影，光與影合而為一——你，終於完整。'},
+  en:{name:'The Shadow — Yourself',demon:'XII · The Shadow — the Final Foe',intro:'It wears your face, knows your every move, and is strong where you were weak. The last battle is to make peace with the self you thought you were — and surpass it.',win:'You did not kill it. You embraced it. As you accept your own shadow, light and dark become one — and you are, at last, whole.'}}
+];
+
+// ── state ──
+const G={i:0, hero:{maxHP:100,hp:100,courage:8,wisdom:8,heart:8,def:0}, beast:null, bhp:0, busy:false};
+const L=()=>LANG;
+const $=id=>document.getElementById(id);
+const rnd=(lo,hi)=>lo+Math.random()*(hi-lo);
+const clampHP=(v,m)=>Math.max(0,Math.min(m,v));
+
+function applyLang(){
+  const u=UI[LANG];
+  $('lang-btn').textContent=LANG==='zh'?'EN':'中';
+  $('tt-zh').textContent=LANG==='zh'?'弒魔英雄旅':'Trials of the Beasts';
+  $('tt-sub').textContent=u.sub; $('tt-btn').textContent=u.draw;
+  $('lv-c').textContent=u.c; $('lv-w').textContent=u.w; $('lv-h').textContent=u.h;
+  $('hero-name').textContent=u.hero;
+  $('a-atk').textContent=u.atk;$('a-atk-d').textContent=u.atkd;
+  $('a-wis').textContent=u.wis;$('a-wis-d').textContent=u.wisd;
+  $('a-heart').textContent=u.heart;$('a-heart-d').textContent=u.heartd;
+  $('ov-win-title').textContent=u.win;$('ov-win-btn').textContent=u.cont;
+  $('ov-lose-title').textContent=u.lose;$('ov-lose-btn').textContent=u.rise;
+  $('e-label').textContent=u.became;$('e-btn').textContent=u.again;
+  $('beast-emoji-t').textContent=LANG==='zh'?'（待繪 art pending）':'art pending';
+}
+function toggleLang(){LANG=LANG==='zh'?'en':'zh';applyLang();
+  if($('battle').classList.contains('active')&&G.beast){renderBeastText();}}
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');
+  const th={title:'epic',ending:'triumph'};if(th[id]&&window.Music)Music.set(th[id]);}
+
+function begin(){G.i=0;G.hero={maxHP:100,hp:100,courage:8,wisdom:8,heart:8,def:0};show('battle');startBeast();}
+function restart(){$('ov-win').classList.remove('on');$('ov-lose').classList.remove('on');begin();}
+
+function beastImgFail(){$('beast-img').style.display='none';$('beast-emoji').style.display='flex';}
+function renderBeastText(){
+  const b=G.beast,d=b[L()];
+  $('b-count').textContent=(LANG==='zh'?'第 ':'Beast ')+(G.i+1)+' / 12';
+  $('b-name').textContent=d.name; $('b-demon').textContent=d.demon;
+  $('beast-emoji-g').textContent=b.emoji;
+}
+function startBeast(){
+  const b=BEASTS[G.i]; G.beast=b; G.bhp=b.hp; G.hero.def=0; G.busy=false;
+  $('ov-win').classList.remove('on');$('ov-lose').classList.remove('on');
+  $('b-bg').src=b.bg; $('b-bg').onerror=function(){this.style.opacity=0;};
+  const img=$('beast-img'); $('beast-emoji').style.display='none'; img.style.display='block'; img.src=b.img;
+  if(window.Music)Music.set(b.mood);
+  renderBeastText();
+  $('log').innerHTML='';
+  log(L()==='zh'?b.zh.intro:b.en.intro,true);
+  refresh();
+  setButtons(true);
+}
+function refresh(){
+  const b=G.beast,h=G.hero;
+  $('beast-hp-fill').style.width=(clampHP(G.bhp,b.hp)/b.hp*100)+'%';
+  $('beast-hp-num').textContent=Math.max(0,Math.round(G.bhp))+' / '+b.hp;
+  $('hero-hp-fill').style.width=(clampHP(h.hp,h.maxHP)/h.maxHP*100)+'%';
+  $('hero-hp-num').textContent=Math.max(0,Math.round(h.hp))+' / '+h.maxHP;
+  $('v-c').textContent=h.courage;$('v-w').textContent=h.wisdom;$('v-h').textContent=h.heart;
+}
+let logLines=[];
+function log(txt,intro){ logLines.push(txt); if(logLines.length>2)logLines.shift();
+  $('log').innerHTML=logLines.map((l,i)=>`<div class="${i<logLines.length-1?'old':''}">${l}</div>`).join(''); }
+function setButtons(on){['act-atk','act-wis','act-heart'].forEach(id=>$(id).disabled=!on);}
+function beastHit(){const el=$('beast-art');el.classList.remove('hit');void el.offsetWidth;el.classList.add('hit');
+  const f=$('beast-flash');f.classList.remove('go');void f.offsetWidth;f.classList.add('go');}
+
+function act(kind){
+  if(G.busy) return; G.busy=true; setButtons(false);
+  const b=G.beast,h=G.hero,u=UI[LANG];
+  if(kind==='heart'){
+    const amt=Math.round(16+h.heart*1.6); h.hp=clampHP(h.hp+amt,h.maxHP); h.def=0.5;
+    log(`${u.healed} ${amt} ${u.hp} ❤️`);
+  } else {
+    let dmg, pierce=false;
+    if(kind==='atk') dmg=Math.round((14+h.courage*1.4)*rnd(0.85,1.15));
+    else { dmg=Math.round((10+h.wisdom*2.1)*rnd(0.9,1.1)); pierce=true; }
+    G.bhp-=dmg; beastHit();
+    log(`${u.youHit} ${u.forDmg} ${dmg} ${u.dmg}${pierce&&b.reflect?'（'+u.pierce+'）':''}`);
+    if(kind==='atk'&&b.reflect){ const rf=Math.round(dmg*b.reflect); h.hp-=rf;
+      log(`${b[L()].name}${u.reflect} ${rf}`); }
+  }
+  refresh();
+  if(G.bhp<=0){ setTimeout(victory,650); return; }
+  setTimeout(beastTurn,700);
+}
+function beastTurn(){
+  const b=G.beast,h=G.hero,u=UI[LANG];
+  if(b.regen){ G.bhp=Math.min(b.hp,G.bhp+b.regen); }
+  let d=rnd(b.a[0],b.a[1]);
+  let enraged=false;
+  if(b.enrage && G.bhp<b.hp*0.5){ d*=1.6; enraged=true; }
+  if(h.def){ d*=0.5; h.def=0; }
+  d=Math.round(d); h.hp-=d;
+  if(b.drain){ G.bhp=Math.min(b.hp,G.bhp+Math.round(d*b.drain)); }
+  let msg=`${b[L()].name} ${u.beastHit} ${d}${u.dealt?(' '+u.dealt):''} 🗡️`;
+  if(enraged) msg=`${b[L()].name} ${u.enrageTxt} ${b[L()].name} ${u.beastHit} ${d} 🗡️`;
+  log(msg);
+  refresh();
+  if(h.hp<=0){ setTimeout(defeat,650); return; }
+  G.busy=false; setButtons(true);
+}
+
+function victory(){
+  const b=G.beast,h=G.hero,u=UI[LANG];
+  // reward
+  const gains=[];
+  if(b.virtue==='all'){ h.courage+=1;h.wisdom+=1;h.heart+=1; gains.push('⚔️+1 🌙+1 ❤️+1'); }
+  else { h[b.virtue]+=2; gains.push((b.virtue==='courage'?'⚔️ '+u.c:b.virtue==='wisdom'?'🌙 '+u.w:'❤️ '+u.h)+' +2'); }
+  h.maxHP+=8; h.hp=clampHP(h.hp+Math.round(h.maxHP*0.45),h.maxHP);
+  refresh();
+  $('ov-win-text').textContent=(L()==='zh'?b.zh.win:b.en.win);
+  $('ov-win-gain').textContent=(LANG==='zh'?'獲得：':'Gained: ')+gains.join('  ')+(LANG==='zh'?'  ·  生命上限 +8':'  ·  Max HP +8');
+  $('ov-win-btn').textContent=(G.i>=BEASTS.length-1)?(LANG==='zh'?'見證你的英雄 ▶':'Witness Your Hero ▶'):UI[LANG].cont;
+  if(window.Music)Music.set('triumph');
+  $('ov-win').classList.add('on');
+}
+function nextBeast(){
+  $('ov-win').classList.remove('on');
+  G.i++;
+  if(G.i>=BEASTS.length){ ending(); return; }
+  startBeast();
+}
+function defeat(){
+  const u=UI[LANG];
+  $('ov-lose-text').textContent=(LANG==='zh'
+    ?'但英雄的定義，不是從不倒下，而是每一次都重新站起。\n深吸一口氣，再來一次。'
+    :'But a hero is not one who never falls — it is one who rises every time.\nBreathe. Try again.');
+  $('ov-lose').classList.add('on');
+}
+function retry(){ G.hero.hp=G.hero.maxHP; G.hero.def=0; startBeast(); }
+
+// ── ending: name the hero by their strongest virtue ──
+function ending(){
+  const h=G.hero, {courage:c,wisdom:w,heart:hh}=h, mx=Math.max(c,w,hh), spread=mx-Math.min(c,w,hh);
+  let arch;
+  if(spread<=2) arch={zh:'完整的英雄',en:'The Whole Hero',
+    dz:'你斬盡十二頭心魔，勇氣、智慧與心在你身上合而為一。你不偏向任何一種力量——你是完整的那一種英雄。',
+    de:'You slew all twelve demons, and courage, wisdom and heart became one in you. You lean to no single power — you are the whole kind of hero.'};
+  else if(c===mx) arch={zh:'不折的戰士',en:'The Unbroken Warrior',
+    dz:'你以勇氣為刃，一次次走進最怕的黑暗，也一次次重新站起。你留給世界的，是「無論如何都不放棄」的火。',
+    de:'You made courage your blade, walked again and again into the dark you feared, and rose again and again. You leave the world a fire that never gives up.'};
+  else if(w===mx) arch={zh:'洞明的賢者',en:'The Clear-Eyed Sage',
+    dz:'你以智慧為燈，看破了每一頭心魔的謊言。你留給世界的，是一道能照亮他人前路的光。',
+    de:'You made wisdom your lantern and saw through every demon’s lie. You leave the world a light that shows others their way.'};
+  else arch={zh:'溫柔的守護者',en:'The Gentle Guardian',
+    dz:'你以心為盾，穿過所有苦難仍選擇善待自己與他人。你留給世界的，是一份能接住別人的愛。',
+    de:'You made your heart a shield and, through all the suffering, still chose kindness. You leave the world a love that can catch others as they fall.'};
+  $('e-arch').textContent=arch.zh; $('e-arch-en').textContent=arch.en;
+  const body=(LANG==='zh')
+    ?`十二頭心魔，皆已伏於你的劍下。\n那些你曾以為會擊垮你的東西，如今成了你力量的一部分。\n\n${arch.dz}\n\n⚔️ ${UI.zh.c} ${c}　🌙 ${UI.zh.w} ${w}　❤️ ${UI.zh.h} ${hh}`
+    :`All twelve demons have fallen beneath your blade.\nThe very things you thought would break you are now part of your strength.\n\n${arch.de}\n\n⚔️ ${UI.en.c} ${c}　🌙 ${UI.en.w} ${w}　❤️ ${UI.en.h} ${hh}`;
+  $('e-epic').textContent=body;
+  show('ending');
+}
+
+// ── music (shared engine) ──
+const Music = (function(){
+  let ctx=null, master=null, bus=null, timer=null;
+  let muted=false, nextBarTime=0, barIx=0;
+  let current='epic', pending='epic';
+  const NOTE={A:0,'A#':1,B:2,C:3,'C#':4,D:5,'D#':6,E:7,F:8,'F#':9,G:10,'G#':11};
+  const hz=(root,s)=>root*Math.pow(2,s/12);
+  const triad=(name,type)=>{const r=NOTE[name],t=type==='min'?3:4;return [r,r+t,r+7];};
+
+  function impulse(sec,decay){
+    const rate=ctx.sampleRate,len=Math.floor(rate*sec),buf=ctx.createBuffer(2,len,rate);
+    for(let c=0;c<2;c++){const d=buf.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay);}
+    return buf;
+  }
+  function ensure(){
+    if(ctx) return true;
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC) return false;
+    ctx=new AC();
+    master=ctx.createGain(); master.gain.value=muted?0:0.30;
+    const comp=ctx.createDynamicsCompressor();
+    comp.threshold.value=-16; comp.ratio.value=3; comp.attack.value=0.006; comp.release.value=0.3;
+    const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=6200;
+    master.connect(comp); comp.connect(lp); lp.connect(ctx.destination);
+    // instrument bus -> dry + reverb (lush hall for an epic, less "raw" sound)
+    bus=ctx.createGain(); bus.connect(master);
+    const rev=ctx.createConvolver(); rev.buffer=impulse(2.8,2.2);
+    const wet=ctx.createGain(); wet.gain.value=0.85;
+    bus.connect(rev); rev.connect(wet); wet.connect(master);
+    return true;
+  }
+
+  // ── warm layered voice: two slightly-detuned oscillators through a lowpass,
+  //    smooth ADSR, optional gentle vibrato — far softer than a bare sawtooth ──
+  function voice(t,freq,dur,o){
+    o=o||{};
+    const peak=o.peak!=null?o.peak:0.14,a=o.a!=null?o.a:0.04,r=o.r!=null?o.r:0.25;
+    const cut=o.cut||2600,type=o.type||'sawtooth';
+    const g=ctx.createGain();
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(peak,t+a);
+    g.gain.setValueAtTime(peak,t+Math.max(a+0.005,dur-r));
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    const f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=cut;
+    f.connect(g); g.connect(bus);
+    const base=o.detune||0;
+    const mk=(det)=>{const os=ctx.createOscillator();os.type=type;os.frequency.value=freq;os.detune.value=det;os.connect(f);os.start(t);os.stop(t+dur+0.06);return os;};
+    const o1=mk(base-6),o2=mk(base+6);
+    if(o.vib){const vo=ctx.createOscillator();vo.type='sine';vo.frequency.value=5.2;const vg=ctx.createGain();vg.gain.value=o.vib;vo.connect(vg);vg.connect(o1.detune);vg.connect(o2.detune);vo.start(t);vo.stop(t+dur+0.06);}
+  }
+  const strings=(t,tri,dur,gain)=>tri.concat([tri[0]+12]).forEach(s=>voice(t,hz(110,s),dur,{peak:gain||0.05,a:0.55,r:0.75,cut:1300,type:'sawtooth'}));
+  const brass=(t,tri,dur,gain)=>tri.concat([tri[0]+12]).forEach((s,i)=>voice(t,hz(110,s),dur,{peak:(gain||0.08)/(1+i*0.2),a:0.05,r:0.18,cut:2000,type:'sawtooth',detune:i%2?5:-5}));
+  const melo=(t,semi,dur,gain,base)=>voice(t,hz(base||220,semi),dur,{peak:gain||0.16,a:0.06,r:0.2,cut:3000,type:'triangle',vib:6});
+  const harp=(t,semi,dur,base)=>voice(t,hz(base||220,semi),dur||0.5,{peak:0.1,a:0.006,r:0.45,cut:3200,type:'triangle'});
+  function bassv(t,semi,dur,gain){
+    voice(t,hz(55,semi),dur,{peak:gain||0.24,a:0.02,r:0.14,cut:1300,type:'triangle'});
+    const o=ctx.createOscillator();o.type='sine';o.frequency.value=hz(55,semi);
+    const g=ctx.createGain();g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime((gain||0.24)*0.7,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g);g.connect(bus);o.start(t);o.stop(t+dur+0.05);
+  }
+  function thump(t,gain){const o=ctx.createOscillator();o.type='sine';const g=ctx.createGain();o.frequency.setValueAtTime(160,t);o.frequency.exponentialRampToValueAtTime(45,t+0.18);g.gain.setValueAtTime(gain||0.6,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.34);o.connect(g);g.connect(master);o.start(t);o.stop(t+0.4);}
+  function crash(t,gain,dur,hp){const len=Math.floor(ctx.sampleRate*(dur||0.4));const buf=ctx.createBuffer(1,len,ctx.sampleRate);const d=buf.getChannelData(0);for(let k=0;k<len;k++)d[k]=(Math.random()*2-1)*Math.pow(1-k/len,1.4);const n=ctx.createBufferSource();n.buffer=buf;const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=hp||3000;const g=ctx.createGain();g.gain.value=gain||0.1;n.connect(f);f.connect(g);g.connect(bus);n.start(t);}
+
+  // ── melodies as bars of [semitone(from base), beatOffset, durBeats] ──
+  // Ode to Joy (Beethoven, public domain) — semitones relative to A(220), key of C
+  const ODE=[
+    [[7,0,1],[7,1,1],[8,2,1],[10,3,1]],
+    [[10,0,1],[8,1,1],[7,2,1],[5,3,1]],
+    [[3,0,1],[3,1,1],[5,2,1],[7,3,1]],
+    [[7,0,1.5],[5,1.5,0.5],[5,2,2]],
+    [[7,0,1],[7,1,1],[8,2,1],[10,3,1]],
+    [[10,0,1],[8,1,1],[7,2,1],[5,3,1]],
+    [[3,0,1],[3,1,1],[5,2,1],[7,3,1]],
+    [[5,0,1.5],[3,1.5,0.5],[3,2,2]]
+  ];
+  // Original heroic line in A minor over Am–F–C–G
+  const HERO=[
+    [[12,0,2],[15,2,1],[12,3,1]],
+    [[17,0,2],[15,2,1],[12,3,1]],
+    [[15,0,1],[14,1,1],[12,2,2]],
+    [[14,0,1],[12,1,1],[10,2,1],[7,3,1]]
+  ];
+  const playMel=(t,i,bars,base,gain,spb)=>{const bar=bars[i%bars.length];for(const [s,off,dur] of bar)melo(t+off*spb,s,dur*spb*0.96,gain,base);};
+
+  // ── themes: schedule one full 4/4 bar given start time t and bar index i ──
+  const THEMES={
+    epic:{bpm:120,beats:4,prog:[['A','min'],['F','maj'],['C','maj'],['G','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.05); brass(t,tri,spb*1.9,0.08); brass(t+spb*2,tri,spb*1.9,0.07);
+        for(let e=0;e<8;e++)bassv(t+e*spb/2,rs+(e%2?12:0),spb*0.46,0.24);
+        thump(t,0.7);thump(t+spb*2,0.58);thump(t+spb*1.5,0.28);thump(t+spb*3.5,0.32);
+        if(i%4===0)crash(t,0.1,0.4,3400);
+        playMel(t,i,HERO,220,0.17,spb);}},
+    triumph:{bpm:104,beats:4,prog:[['C','maj'],['G','maj'],['C','maj'],['G','maj'],['C','maj'],['G','maj'],['A','min'],['G','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%this.prog.length],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.055); brass(t,tri,spb*3.8,0.055);
+        for(let e=0;e<4;e++)bassv(t+e*spb,rs+(e%2?12:0),spb*0.9,0.22);
+        thump(t,0.62);thump(t+spb*2,0.5);
+        if(i%4===0)crash(t,0.09,0.45,3200);
+        playMel(t,i,ODE,220,0.2,spb);}},
+    drive:{bpm:148,beats:4,prog:[['A','min'],['G','maj'],['F','maj'],['G','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.04); brass(t,tri,spb*0.9,0.07); brass(t+spb*2,tri,spb*0.9,0.06);
+        for(let e=0;e<8;e++)bassv(t+e*spb/2,rs,spb*0.44,0.24);
+        for(let b=0;b<4;b++)thump(t+b*spb,b%2?0.4:0.6);
+        const m=[12,10,8,7,8,10,12,14];for(let e=0;e<8;e++)melo(t+e*spb/2,m[e],spb*0.42,0.11,220);}},
+    ambient:{bpm:60,beats:4,prog:[['A','min'],['A','min'],['F','maj'],['C','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.055); bassv(t,rs,spb*4,0.15);
+        const sc=[0,3,7,10,12];if(Math.random()<0.7)harp(t+spb*(1+Math.floor(Math.random()*3)),sc[Math.floor(Math.random()*sc.length)],1.2,220);}},
+    calm:{bpm:72,beats:4,prog:[['A','min'],['E','min'],['F','maj'],['C','maj']],
+      mel:[7,12,10,8, 7,5,7,null, 8,10,12,null, 7,5,3,null],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.05); bassv(t,rs,spb*4,0.16); thump(t,0.24);
+        for(let b=0;b<4;b++){const n=this.mel[(i%4)*4+b];if(n!=null)harp(t+b*spb,n,spb*0.9,220);}}},
+    mystic:{bpm:76,beats:4,prog:[['F','maj'],['C','maj'],['G','maj'],['A','min']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.05); bassv(t,rs,spb*4,0.15);
+        const arp=[tri[0],tri[1],tri[2],tri[1]+12,tri[2],tri[1],tri[0]+12,tri[1]];
+        for(let e=0;e<8;e++)harp(t+e*spb/2,arp[e],spb*0.55,220);
+        if(i%2===0)melo(t,tri[0]+12,spb*3,0.1,220);}},
+    tense:{bpm:80,beats:4,prog:[['A','min'],['A','min'],['A','min'],['A','min']],
+      bar(t,i){const spb=60/this.bpm;
+        [0,6,7].forEach(s=>voice(t,hz(110,s),spb*4,{peak:0.04,a:0.7,r:0.9,cut:900,type:'sawtooth',detune:6}));
+        bassv(t,0,spb*4,0.2); if(i%2===0)thump(t,0.36);
+        if(i%4===3)crash(t+spb*3,0.05,0.6,2400);
+        if(Math.random()<0.4)melo(t+spb*(1+Math.floor(Math.random()*2)),[1,6,8][Math.floor(Math.random()*3)],spb,0.06,220);}}
+  };
+
+  function scheduler(){
+    if(!ctx) return;
+    while(nextBarTime < ctx.currentTime + 0.25){
+      const th=THEMES[current]||THEMES.epic;
+      try{ th.bar(nextBarTime, barIx); }catch(e){}
+      nextBarTime += (60/th.bpm)*th.beats;
+      barIx++;
+      if(pending!==current){ current=pending; barIx=0; }   // switch on bar boundary
+    }
+  }
+
+  return {
+    start(){
+      if(!ensure()) return;
+      if(ctx.state==='suspended') ctx.resume();
+      if(!timer){ nextBarTime=ctx.currentTime+0.1; barIx=0; timer=setInterval(scheduler,25); }
+    },
+    set(name){ if(THEMES[name]){ pending=name; if(!timer) current=name; } },
+    toggle(){ muted=!muted; if(master) master.gain.setTargetAtTime(muted?0:0.30, ctx.currentTime, 0.05); if(!muted) this.start(); return muted; },
+    isMuted(){ return muted; },
+    running(){ return !!(ctx && ctx.state==='running'); }
+  };
+})();
+window.Music=Music;
+function toggleMusic(){const m=Music.toggle();const b=$('music-btn');b.textContent=m?'🔇':'🔊';b.classList.toggle('muted',m);}
+let silentEl=null;
+function unlockAudio(){
+  if(!silentEl){silentEl=document.createElement('audio');silentEl.setAttribute('playsinline','');silentEl.loop=true;silentEl.volume=0.001;silentEl.src='data:audio/wav;base64,UklGRqQHAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YYAHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';}
+  silentEl.play().catch(()=>{});
+  Music.start();
+  if(Music.running()){['pointerdown','touchstart','touchend','mousedown','click','keydown'].forEach(ev=>document.removeEventListener(ev,unlockAudio));}
+}
+['pointerdown','touchstart','touchend','mousedown','click','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio));
+
+applyLang();
+</script>

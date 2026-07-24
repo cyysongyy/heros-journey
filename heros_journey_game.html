@@ -2654,7 +2654,7 @@ const Music = (function(){
     const AC=window.AudioContext||window.webkitAudioContext;
     if(!AC) return false;
     ctx=new AC();
-    master=ctx.createGain(); master.gain.value=muted?0:0.20;
+    master=ctx.createGain(); master.gain.value=muted?0:0.28;
     comp=ctx.createDynamicsCompressor();          // tame layered peaks
     comp.threshold.value=-18; comp.ratio.value=4; comp.attack.value=0.005; comp.release.value=0.25;
     const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=7200;
@@ -2749,8 +2749,9 @@ const Music = (function(){
       if(!timer){ nextBarTime=ctx.currentTime+0.1; barIx=0; timer=setInterval(scheduler,25); }
     },
     set(name){ if(THEMES[name]){ pending=name; if(!timer) current=name; } },
-    toggle(){ muted=!muted; if(master) master.gain.setTargetAtTime(muted?0:0.20, ctx.currentTime, 0.05); if(!muted) this.start(); return muted; },
-    isMuted(){ return muted; }
+    toggle(){ muted=!muted; if(master) master.gain.setTargetAtTime(muted?0:0.28, ctx.currentTime, 0.05); if(!muted) this.start(); return muted; },
+    isMuted(){ return muted; },
+    running(){ return !!(ctx && ctx.state==='running'); }
   };
 })();
 window.Music = Music;   // expose so screen/stage hooks can switch themes
@@ -2764,14 +2765,28 @@ const STAGE_MOOD={1:'calm',2:'drive',3:'calm',4:'mystic',5:'drive',6:'epic',7:'t
 document.addEventListener('DOMContentLoaded',()=>{
   // Lang button
   document.getElementById('lang-btn').textContent='EN';
-  // Start music on the first user gesture (browsers block autoplay before that)
-  function startAudioOnce(){
+  // Start music on the first user gesture (browsers block autoplay before that).
+  // iOS also mutes Web Audio when the ring/silent switch is on unless an
+  // HTMLMediaElement is active, so we loop a silent <audio> to flip the audio
+  // session to the "playback" category. Retries on several gesture types until
+  // the AudioContext is actually running.
+  let silentEl=null;
+  function unlockAudio(){
+    if(!silentEl){
+      silentEl=document.createElement('audio');
+      silentEl.setAttribute('playsinline','');
+      silentEl.loop=true; silentEl.volume=0.001;
+      silentEl.src='data:audio/wav;base64,UklGRqQHAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YYAHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
+    }
+    silentEl.play().catch(()=>{});
     Music.start();
-    document.removeEventListener('pointerdown',startAudioOnce);
-    document.removeEventListener('keydown',startAudioOnce);
+    if(Music.running()){
+      ['pointerdown','touchstart','touchend','mousedown','click','keydown']
+        .forEach(ev=>document.removeEventListener(ev,unlockAudio));
+    }
   }
-  document.addEventListener('pointerdown',startAudioOnce);
-  document.addEventListener('keydown',startAudioOnce);
+  ['pointerdown','touchstart','touchend','mousedown','click','keydown']
+    .forEach(ev=>document.addEventListener(ev,unlockAudio));
   // Close journal on overlay click
   document.getElementById('modal-overlay').addEventListener('click',e=>{
     if(e.target===document.getElementById('modal-overlay')){

@@ -62,6 +62,10 @@ body{
   overflow-y:auto;padding:22px 20px 30px;-webkit-overflow-scrolling:touch;}
 .narr{font-size:clamp(15px,4.2vw,18px);line-height:1.95;color:#efe8d6;margin-bottom:22px;
   text-shadow:0 1px 6px rgba(0,0,0,.7);white-space:pre-wrap;}
+.myth-echo{font-size:13px;line-height:1.85;color:#cbb98a;background:rgba(201,168,76,0.07);border-left:2px solid var(--gold);padding:10px 14px;border-radius:0 4px 4px 0;margin-bottom:12px;}
+.myth-echo .mlabel{display:block;font-size:11px;letter-spacing:2px;color:var(--gold);margin-bottom:4px;}
+.myth-quote{font-style:italic;font-size:13.5px;color:#e8dcc0;text-align:center;margin-bottom:20px;line-height:1.7;}
+.myth-quote .msrc{display:block;font-style:normal;font-size:11px;color:var(--muted);margin-top:5px;letter-spacing:1px;}
 .prompt{font-size:14px;color:var(--gold-light);letter-spacing:.5px;margin:6px 0 10px;line-height:1.7;}
 textarea{width:100%;min-height:96px;background:rgba(0,0,0,0.4);border:1px solid rgba(201,168,76,0.4);
   color:var(--text);font-family:inherit;font-size:15px;line-height:1.7;padding:12px 14px;border-radius:4px;resize:vertical;}
@@ -388,6 +392,13 @@ function renderStage(keepInput){
   const body=document.getElementById('stage-body');
   body.innerHTML='';
   const narr=document.createElement('div'); narr.className='narr fadein'; narr.textContent=d.narr; body.appendChild(narr);
+  const m=mythEcho(G.i);
+  const echo=document.createElement('div'); echo.className='myth-echo';
+  echo.innerHTML=`<span class="mlabel">🏛️ ${LANG==='zh'?'神話回聲':'MYTHIC ECHO'}</span>${LANG==='zh'?m.ez:m.ee}`;
+  body.appendChild(echo);
+  const mq=document.createElement('div'); mq.className='myth-quote';
+  mq.innerHTML=`「${LANG==='zh'?m.qz:m.qe}」<span class="msrc">— ${LANG==='zh'?m.sz:m.se}</span>`;
+  body.appendChild(mq);
   const pr=document.createElement('div'); pr.className='prompt'; pr.textContent=d.prompt; body.appendChild(pr);
   const ta=document.createElement('textarea'); ta.id='answer'; ta.placeholder=u.write; ta.value=prev;
   ta.addEventListener('input',()=>{ta.style.borderColor='';const w=document.getElementById('write-warn');if(w)w.textContent='';});
@@ -654,6 +665,46 @@ const Music = (function(){
     running(){ return !!(ctx && ctx.state==='running'); }
   };
 })();
+// ═══ Cross-mythic echoes for the twelve stages (public-domain sources) ═══
+const MYTH=[
+ {ez:'奧德修斯困於伊薩卡的宮殿，吉爾伽美什困於烏魯克的高牆——每個英雄都始於一個還不知道自己不滿足的家。',
+  ee:"Odysseus in his hall, Gilgamesh behind Uruk's walls — every hero begins in a home not yet aware of its own restlessness.",
+  qz:'凡人心中，沒有比故鄉更甜美的東西。',qe:'Nothing is sweeter than one’s own home.',sz:'荷馬《奧德賽》',se:'Homer, Odyssey'},
+ {ez:'特洛伊的號角召喚奧德修斯，天神的夢召喚吉爾伽美什去尋找恩基杜——召喚從不喧嘩，只是不肯離去。',
+  ee:'The horn of Troy called Odysseus; a dream called Gilgamesh to seek Enkidu — the call is never loud, it merely refuses to leave.',
+  qz:'千里之行，始於足下。',qe:'A journey of a thousand miles begins with a single step.',sz:'老子《道德經》',se:'Laozi, Tao Te Ching'},
+ {ez:'連奧德修斯都曾裝瘋以逃避出征——恐懼會替每個英雄找到一百個留下的理由。',
+  ee:'Even Odysseus once feigned madness to escape the war — fear finds every hero a hundred reasons to stay.',
+  qz:'怯懦者在真正死亡之前，已死過許多次。',qe:'Cowards die many times before their deaths.',sz:'莎士比亞《凱撒大帝》',se:'Shakespeare, Julius Caesar'},
+ {ez:'雅典娜化身指引奧德修斯，須菩提祖師授孫悟空七十二變——導師從不替你走路，只交給你一把劍。',
+  ee:'Athena in disguise guided Odysseus; a sage taught the Monkey King his transformations — a mentor never walks for you, only hands you a sword.',
+  qz:'智慧始於承認自己的無知。',qe:'The beginning of wisdom is the admission of one’s ignorance.',sz:'蘇格拉底',se:'Socrates'},
+ {ez:'奧德修斯揚帆離開已知的海岸，孫悟空一個筋斗躍出花果山——跨過門檻，身後的世界便永遠不同。',
+  ee:'Odysseus sailed past the known shore; the Monkey King leapt beyond his mountain — cross the threshold, and the world behind you changes forever.',
+  qz:'在人生旅程的中途，我發現自己身處一座幽暗的森林。',qe:'Midway upon the journey of our life, I found myself within a forest dark.',sz:'但丁《神曲》',se:'Dante, The Divine Comedy'},
+ {ez:'奧德修斯與同伴共渡風暴，也親手識破背叛——最難纏的敵人，往往戴著你自己的臉。',
+  ee:'Odysseus braved storms with his crew and unmasked betrayal — the fiercest enemy often wears your own face.',
+  qz:'烈火試真金，逆境試強者。',qe:'Fire tests gold; adversity tests the brave.',sz:'塞內卡',se:'Seneca'},
+ {ez:'奧德修斯下入冥府與亡魂對話，吉爾伽美什潛入雪松林的黑暗——最深的洞穴，藏著你最不願面對的真相。',
+  ee:'Odysseus descended to the land of the dead; Gilgamesh entered the dark of the Cedar Forest — the deepest cave holds the truth you least wish to face.',
+  qz:'當你凝視深淵，深淵也凝視著你。',qe:'When you gaze long into the abyss, the abyss gazes back into you.',sz:'尼采',se:'Nietzsche'},
+ {ez:'奧德修斯獨活於漩渦與獨眼巨人之口，吉爾伽美什在恩基杜之死前第一次落淚——舊的你，死在這裡。',
+  ee:'Odysseus survived the whirlpool and the Cyclops’s maw; Gilgamesh first wept at Enkidu’s death — here, the old you dies.',
+  qz:'那沒有殺死我的，使我更強大。',qe:'What does not kill me makes me stronger.',sz:'尼采',se:'Nietzsche'},
+ {ez:'西格弗里德屠龍而得黃金，孫悟空以苦練換得取經之志——真正的寶物，往往不是黃金，而是奪不走的清明。',
+  ee:'Sigurd slew the dragon for its gold; the Monkey King earned the resolve to seek the sutras — the true treasure is seldom gold, but a clarity none can steal.',
+  qz:'認識你自己。',qe:'Know thyself.',sz:'德爾斐神諭',se:'the Oracle at Delphi'},
+ {ez:'奧德修斯歷經十年才踏上歸途——帶著收穫回家，往往比出發更難。',
+  ee:'It took Odysseus ten years to turn homeward — to carry the gift back is often harder than to set out.',
+  qz:'人不能兩次踏進同一條河。',qe:'No man ever steps in the same river twice.',sz:'赫拉克利特',se:'Heraclitus'},
+ {ez:'鳳凰於灰燼中重生，奧西里斯自碎片中復整——最後一道試煉，是成為那個從灰燼裡站起的新的你。',
+  ee:'The phoenix rises from ash; Osiris is made whole from scattered pieces — the final test is to become the new self that rises from the ashes.',
+  qz:'置之死地而後生。',qe:'Cast them where there is no retreat, and they will live.',sz:'《孫子兵法》',se:'Sun Tzu, The Art of War'},
+ {ez:'奧德修斯終於重返伊薩卡，吉爾伽美什帶著「凡人終有一死、而城牆長存」的領悟回到烏魯克——英雄的圓滿，是成為他人的一盞燈。',
+  ee:'Odysseus reached Ithaca at last; Gilgamesh returned to Uruk knowing mortals die but the walls endure — the hero’s completion is to become a lamp for others.',
+  qz:'爬上烏魯克的城牆，走在上面，細看它的根基。',qe:'Climb the wall of Uruk; walk upon it, and inspect its foundation.',sz:'《吉爾伽美什史詩》',se:'The Epic of Gilgamesh'},
+];
+const mythEcho=i=>MYTH[((i%12)+12)%12];
 window.Music = Music;
 
 function toggleMusic(){

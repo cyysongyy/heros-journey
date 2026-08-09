@@ -1,0 +1,439 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>奧德賽 · 內在航程 · The Odyssey Within</title>
+<style>
+:root{--gold:#c9a84c;--gold-light:#e8d48a;--green:#5ac878;--text:#e7e0d0;--muted:rgba(200,180,140,0.62);}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{background:#07050f;color:var(--text);font-family:"Noto Serif TC","Songti TC",Georgia,serif;overflow:hidden;-webkit-tap-highlight-color:transparent;}
+#app{position:fixed;inset:0;overflow:hidden;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;}
+.screen.active{display:flex;}
+.screen.center{justify-content:center;text-align:center;padding:24px;}
+#lang-btn,#music-btn,#home-btn{position:fixed;top:14px;z-index:1000;background:rgba(0,0,0,.55);border:1px solid var(--gold);color:var(--gold);cursor:pointer;border-radius:3px;font-family:inherit;letter-spacing:1px;text-decoration:none;}
+#home-btn{left:14px;padding:6px 12px;font-size:12px;}
+#lang-btn{right:14px;padding:6px 14px;font-size:12px;} #music-btn{right:74px;padding:6px 9px;font-size:14px;line-height:1;} #music-btn.muted{opacity:.5;}
+.btn{padding:14px 40px;background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(60,110,200,.2));border:1px solid var(--gold);color:var(--gold-light);font-size:16px;letter-spacing:3px;cursor:pointer;border-radius:3px;font-family:inherit;transition:all .3s;}
+.btn:hover{background:linear-gradient(135deg,rgba(201,168,76,.4),rgba(60,110,200,.35));box-shadow:0 0 22px rgba(201,168,76,.3);}
+.btn-sm{padding:9px 22px;font-size:13px;letter-spacing:1px;}
+
+#title{background:radial-gradient(ellipse at 50% 32%,#0e2038 0,#0a0820 55%,#06040e 100%);}
+.t-zh{font-size:clamp(28px,7.5vw,44px);color:var(--gold-light);letter-spacing:6px;text-shadow:0 0 24px rgba(201,168,76,.5);}
+.t-en{font-size:13px;letter-spacing:5px;color:var(--muted);margin:10px 0 22px;}
+.t-sub{font-size:13px;color:var(--muted);line-height:1.9;max-width:520px;margin-bottom:30px;}
+
+#journey{background:radial-gradient(ellipse at 50% 20%,#0e1c34 0,#0a0820 60%,#06040e 100%);justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+#bg{position:fixed;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;opacity:0.5;transition:opacity .6s;}
+#veil{position:fixed;inset:0;z-index:1;background:linear-gradient(180deg,rgba(6,4,14,0.42) 0%,rgba(6,4,14,0.32) 34%,rgba(6,4,14,0.9) 80%);}
+#ringwrap,#body{position:relative;z-index:2;}
+#ringwrap{margin-top:24px;flex-shrink:0;}
+svg#ring{width:min(220px,58vw);height:auto;display:block;}
+#ring .ringpath{fill:none;stroke:rgba(201,168,76,0.30);stroke-width:2.5;}
+#ring .thresh{stroke:rgba(201,168,76,0.28);stroke-width:1.5;stroke-dasharray:5 5;}
+#ring .axis{fill:rgba(200,180,140,0.45);font-size:12px;font-family:inherit;}
+#ring .center-zh{fill:var(--gold);font-size:19px;font-weight:700;font-family:inherit;letter-spacing:2px;}
+#ring .dot{fill:rgba(200,180,140,0.35);}
+#ring .dot.done{fill:rgba(201,168,76,0.7);}
+#ring .dot.active{fill:var(--gold-light);}
+
+#body{width:100%;max-width:640px;margin:0 auto;padding:10px 22px 120px;}
+.ph-zone{font-size:11px;letter-spacing:3px;color:var(--gold);text-align:center;}
+.ph-title{font-size:clamp(19px,5vw,25px);color:var(--gold-light);letter-spacing:1px;text-align:center;margin:2px 0 12px;}
+.narr{font-size:clamp(14px,4vw,16px);line-height:1.95;color:#efe8d6;margin-bottom:12px;text-align:center;}
+.myth-echo{font-size:12.5px;line-height:1.8;color:#cbb98a;background:rgba(201,168,76,.07);border-left:2px solid var(--gold);padding:9px 13px;border-radius:0 4px 4px 0;margin-bottom:10px;}
+.myth-echo .mlabel{display:block;font-size:10px;letter-spacing:2px;color:var(--gold);margin-bottom:3px;}
+.myth-quote{font-style:italic;font-size:13px;color:#e8dcc0;text-align:center;margin-bottom:18px;line-height:1.7;}
+.myth-quote .msrc{display:block;font-style:normal;font-size:11px;color:var(--muted);margin-top:4px;}
+.prompt{font-size:14px;color:var(--gold-light);letter-spacing:.5px;margin:6px 0 10px;line-height:1.7;text-align:center;}
+textarea{width:100%;min-height:88px;background:rgba(0,0,0,.4);border:1px solid rgba(201,168,76,.4);color:var(--text);font-family:inherit;font-size:15px;line-height:1.7;padding:12px 14px;border-radius:4px;resize:vertical;}
+textarea:focus{outline:none;border-color:var(--gold);}
+#write-warn{color:#ff8a72;font-size:12px;margin-top:6px;min-height:16px;letter-spacing:.5px;}
+.choose-label{font-size:13px;color:var(--muted);margin:16px 0 8px;text-align:center;}
+.choices{display:flex;flex-direction:column;gap:10px;}
+.choice{text-align:left;padding:13px 16px;background:rgba(20,16,36,.72);border:1px solid rgba(201,168,76,.32);color:var(--text);border-radius:4px;cursor:pointer;font-family:inherit;font-size:14.5px;line-height:1.6;transition:all .2s;}
+.choice:hover{border-color:var(--gold);background:rgba(40,32,64,.8);transform:translateX(3px);}
+.choice .tag{display:block;font-size:11px;color:var(--gold);opacity:.85;margin-top:6px;letter-spacing:1px;}
+#hud{position:fixed;left:0;right:0;bottom:0;z-index:3;background:linear-gradient(180deg,transparent,rgba(6,4,14,.92) 45%);padding:12px 18px 14px;display:none;}
+#hud.on{display:block;}
+.hud-inner{max-width:640px;margin:0 auto;display:flex;gap:16px;justify-content:center;font-size:12px;color:var(--muted);}
+.hud-inner b{color:var(--gold-light);}
+
+#ending{background:radial-gradient(ellipse at 50% 25%,#0e2038 0,#0a0820 55%,#06040e 100%);overflow-y:auto;justify-content:flex-start;padding:54px 24px 40px;}
+.end-illus{width:130px;height:130px;object-fit:cover;border-radius:50%;border:3px solid var(--gold);box-shadow:0 0 40px rgba(201,168,76,.4);margin:0 auto 18px;display:block;}
+.arch{font-size:clamp(24px,6.5vw,34px);color:var(--gold-light);letter-spacing:2px;text-align:center;text-shadow:0 0 24px rgba(201,168,76,.5);margin-bottom:2px;}
+.arch-en{font-size:13px;letter-spacing:4px;color:var(--muted);text-align:center;margin-bottom:18px;}
+.epic{max-width:600px;font-size:15px;line-height:2.05;color:#efe8d6;white-space:pre-wrap;text-align:center;border-top:1px solid rgba(201,168,76,.25);border-bottom:1px solid rgba(201,168,76,.25);padding:22px 6px;margin-bottom:20px;}
+.adv-label{font-size:12px;letter-spacing:4px;color:var(--gold);text-align:center;margin-bottom:12px;}
+.advice{max-width:600px;width:100%;display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
+.advice .line{font-size:14px;line-height:1.7;color:#efe8d6;background:rgba(201,168,76,.07);border-left:2px solid var(--gold);padding:9px 14px;border-radius:0 4px 4px 0;}
+</style>
+
+<div id="app">
+  <a id="home-btn" href="./index.html" title="選單 / Menu">⌂</a>
+  <button id="music-btn" onclick="toggleMusic()" title="音樂 / Music">🔊</button>
+  <button id="lang-btn" onclick="toggleLang()">EN</button>
+
+  <section id="title" class="screen center active">
+    <div class="t-zh" id="tt-zh">奧德賽 · 內在航程</div>
+    <div class="t-en">THE ODYSSEY WITHIN</div>
+    <div class="t-sub" id="tt-sub"></div>
+    <button class="btn" onclick="begin()" id="tt-btn">啟航 · SET SAIL</button>
+  </section>
+
+  <section id="journey" class="screen">
+    <img id="bg" src="" alt=""><div id="veil"></div>
+    <div id="ringwrap">
+      <svg id="ring" viewBox="0 0 300 300" aria-hidden="true">
+        <circle class="ringpath" cx="150" cy="150" r="110"></circle>
+        <line class="thresh" x1="40" y1="150" x2="260" y2="150"></line>
+        <text class="axis" x="150" y="120" text-anchor="middle" id="ax-known">已知</text>
+        <text class="axis" x="150" y="188" text-anchor="middle" id="ax-unknown">未知</text>
+        <text class="center-zh" x="150" y="158" text-anchor="middle" id="ring-center">奧德賽</text>
+        <g id="dots"></g>
+      </svg>
+    </div>
+    <div id="body"></div>
+  </section>
+
+  <div id="hud"><div class="hud-inner">
+    <span>⚔️ <span id="l-c">勇氣</span> <b id="v-c">10</b></span>
+    <span>🌙 <span id="l-w">智慧</span> <b id="v-w">10</b></span>
+    <span>❤️ <span id="l-h">心</span> <b id="v-h">10</b></span>
+  </div></div>
+
+  <section id="ending" class="screen">
+    <img class="end-illus" src="./images/img14.png" alt="" onerror="this.onerror=null;this.src='./images/img37.png'">
+    <div class="adv-label" id="e-label">你的歸鄉稱號</div>
+    <div class="arch" id="e-arch"></div>
+    <div class="arch-en" id="e-arch-en"></div>
+    <div class="epic" id="e-epic"></div>
+    <div class="adv-label" id="e-adv-label"></div>
+    <div class="advice" id="e-advice"></div>
+    <button class="btn btn-sm" onclick="restart()" id="e-btn">再航一次 · AGAIN</button>
+  </section>
+</div>
+
+<script>
+let LANG='zh';
+const UI={
+ zh:{sub:'奧德修斯用十年回家——那也是一趟向內的航程。\n十二段冒險，十二道內在的門檻。',begin:'啟航 · SET SAIL',
+   c:'勇氣',w:'智慧',h:'心',choose:'然後，選擇你面對它的方式：',write:'（在這裡寫下你的答案）',needWrite:'請先寫下你的答案，再選擇 ✍️',
+   known:'已知',unknown:'未知',center:'奧德賽',endLabel:'你的歸鄉稱號',advLabel:'給航者的建議',again:'再航一次 · AGAIN'},
+ en:{sub:'Odysseus took ten years to come home — that too was a journey inward.\nTwelve adventures, twelve inner thresholds.',begin:'SET SAIL',
+   c:'Courage',w:'Wisdom',h:'Heart',choose:'Then choose how you meet it:',write:'(write your answer here)',needWrite:'Write your answer first, then choose ✍️',
+   known:'Known',unknown:'Unknown',center:'Odyssey',endLabel:'Your Homecoming Title',advLabel:'A Word for the Voyager',again:'SAIL AGAIN'}
+};
+// 12 episodes; ody = preferred art, fb = fallback (existing images) until art is added
+const LV=[
+ {ody:'./images/ody1_troy.png',fb:'./images/img4.jpg',mood:'epic',
+  zh:{t:'一 · 特洛伊的餘燼（已知）',n:'十年戰爭終結，特洛伊在你身後燃燒。你贏了——卻只想回家。',e:'勝利之後，最難的是放下勝利。',q:'告訴我，繆思，那位歷盡艱辛的人。',s:'荷馬《奧德賽》',pr:'你此刻最想「回去」的，是什麼？（一個地方、一個人、一種狀態）',ch:[{t:'一個我離開太久的人。',a:{heart:2},w:'思念'},{t:'一個我遺失的自己。',a:{wisdom:1,heart:1},w:'尋回自我'},{t:'一份久違的平靜。',a:{wisdom:2},w:'渴望安寧'}]},
+  en:{t:'I · The Ashes of Troy (Known)',n:'The ten-year war is over; Troy burns behind you. You won — yet you only want to go home.',e:'After victory, the hardest thing is to lay victory down.',q:'Tell me, Muse, of the man of many turns.',s:'Homer, Odyssey',pr:'What do you most want to "return to" right now? (a place, a person, a state)',ch:[{t:'Someone I left for too long.',a:{heart:2},w:'longing'},{t:'A self I have lost.',a:{wisdom:1,heart:1},w:'reclaiming self'},{t:'A peace I have missed.',a:{wisdom:2},w:'toward calm'}]}},
+ {ody:'./images/ody2_lotus.png',fb:'./images/img5.png',mood:'mystic',
+  zh:{t:'二 · 洛托斯食者（離開）',n:'島民請你吃下忘憂的蓮花——一口，你就會忘記家、忘記痛，永遠留下。',e:'最溫柔的陷阱，是讓你「不再想走」。',q:'吃了蓮花的人，便不願再返航。',s:'《奧德賽》',pr:'現實中，你用什麼在麻痺自己、逃避該面對的事？',ch:[{t:'用忙碌填滿，不去感受。',a:{courage:1,wisdom:1},w:'看見逃避'},{t:'用娛樂與拖延麻痺。',a:{wisdom:1},w:'誠實'},{t:'我決定戒掉那口「蓮花」。',a:{courage:2},w:'清醒'}]},
+  en:{t:'II · The Lotus-Eaters (Departure)',n:'The islanders offer the lotus of forgetting — one taste and you forget home, forget pain, and stay forever.',e:'The gentlest trap is the one that makes you stop wanting to leave.',q:'Those who ate the lotus no longer wished to sail home.',s:'Odyssey',pr:'In real life, what do you use to numb yourself and avoid what you should face?',ch:[{t:'Filling time with busyness, not feeling.',a:{courage:1,wisdom:1},w:'seeing the escape'},{t:'Numbing with distraction and delay.',a:{wisdom:1},w:'honesty'},{t:'I choose to give up that "lotus".',a:{courage:2},w:'waking'}]}},
+ {ody:'./images/ody3_cyclops.png',fb:'./images/img9.jpg',mood:'tense',
+  zh:{t:'三 · 獨眼巨人（跨界流浪）',n:'你被困在獨眼巨人的洞穴。硬拚必死；你自稱「無人」，以智慧與烈酒逃出生天。',e:'打不過的，就用智慧繞過。',q:'他們會說，是「無人」害了我。',s:'奧德修斯',pr:'你正面對哪個「硬碰硬會輸」的難題？可以怎麼智取？',ch:[{t:'換個角度、以智取勝。',a:{wisdom:2},w:'智取'},{t:'先保全自己，再圖後計。',a:{wisdom:1,heart:1},w:'忍與謀'},{t:'但別因得意而洩露真名。',a:{courage:1,wisdom:1},w:'戒驕'}]},
+  en:{t:'III · The Cyclops (the Unknown)',n:'Trapped in the Cyclops’s cave, brute force means death. You call yourself "Nobody" and escape by wit and strong wine.',e:'What you cannot overpower, outwit.',q:'They will say it was "Nobody" who harmed me.',s:'Odysseus',pr:'What problem are you facing that you cannot win head-on? How might you outwit it?',ch:[{t:'Shift the angle; win by wits.',a:{wisdom:2},w:'cunning'},{t:'Preserve myself first, then plan.',a:{wisdom:1,heart:1},w:'patience & guile'},{t:'And never reveal my name in pride.',a:{courage:1,wisdom:1},w:'humility'}]}},
+ {ody:'./images/ody4_aeolus.png',fb:'./images/img12.jpg',mood:'drive',
+  zh:{t:'四 · 風神的皮袋（跨界流浪）',n:'風神贈你封住逆風的皮袋，家鄉已在眼前——同伴卻因疑心偷偷解開，狂風把你吹回原點。',e:'疑心，能吹散幾乎到手的幸福。',q:'家鄉已近，我們卻功虧一簣。',s:'《奧德賽》',pr:'你曾因懷疑或失控，親手毀掉快要成功的事嗎？從中學到什麼？',ch:[{t:'學會信任與交託。',a:{heart:2},w:'信任'},{t:'學會守住情緒的皮袋。',a:{courage:1,wisdom:1},w:'自制'},{t:'再近，也不鬆懈到最後。',a:{courage:2},w:'堅持到底'}]},
+  en:{t:'IV · Aeolus’ Bag of Winds',n:'Aeolus gives you a bag sealing the contrary winds; home is in sight — but your crew, suspicious, open it, and the gale blows you back to the start.',e:'Suspicion can scatter a happiness almost in hand.',q:'Home was near, and we lost it all.',s:'Odyssey',pr:'Have you ever, through doubt or losing control, ruined something on the verge of success? What did you learn?',ch:[{t:'To trust and to let go.',a:{heart:2},w:'trust'},{t:'To seal my own "bag" of emotion.',a:{courage:1,wisdom:1},w:'self-control'},{t:'No matter how close, stay vigilant.',a:{courage:2},w:'seeing it through'}]}},
+ {ody:'./images/ody5_circe.png',fb:'./images/img6.jpg',mood:'mystic',
+  zh:{t:'五 · 女巫瑟茜（跨界流浪）',n:'女巫瑟茜以魔藥把你的同伴變成豬。你以智慧與意志抵住魔法，讓他們變回人形。',e:'慾望能讓人失去人的模樣。',q:'他們有豬的身體，卻仍記得人的心。',s:'《奧德賽》',pr:'哪一種慾望或習慣，最容易讓你「不像自己」？',ch:[{t:'我看見它，並選擇不被它支配。',a:{courage:2},w:'自主'},{t:'我對自己的軟弱多一分慈悲。',a:{heart:2},w:'慈悲'},{t:'我用覺察馴服它。',a:{wisdom:2},w:'覺察'}]},
+  en:{t:'V · Circe',n:'The sorceress Circe turns your crew into swine. By wit and will you resist her magic and win them back their human form.',e:'Desire can strip a person of their human shape.',q:'They had the bodies of swine, but still the hearts of men.',s:'Odyssey',pr:'Which desire or habit most easily makes you "not yourself"?',ch:[{t:'I see it, and choose not to be ruled by it.',a:{courage:2},w:'self-mastery'},{t:'I meet my weakness with more compassion.',a:{heart:2},w:'compassion'},{t:'I tame it with awareness.',a:{wisdom:2},w:'awareness'}]}},
+ {ody:'./images/ody6_underworld.png',fb:'./images/img10.jpg',mood:'tense',
+  zh:{t:'六 · 冥府之旅（轉化 · 最深）',n:'為了知道歸路，你航向世界盡頭，走入亡者之國，與逝去的靈魂對話。',e:'要前行，有時得先回頭面對死亡。',q:'我來，為了向逝者問一條生路。',s:'《奧德賽》',pr:'若能與一位逝去的人（或過去的自己）對話，你最想說什麼、或問什麼？',ch:[{t:'我想說一句來不及說的話。',a:{heart:2},w:'和解'},{t:'我想問，我走的路對嗎。',a:{wisdom:2},w:'求道'},{t:'我帶著他們的祝福，繼續前行。',a:{courage:1,heart:1},w:'承接'}]},
+  en:{t:'VI · The Underworld (deepest point)',n:'To learn the way home, you sail to the world’s edge and enter the land of the dead to speak with departed souls.',e:'To go forward, sometimes you must first turn back and face death.',q:'I came to ask the dead for a road to the living.',s:'Odyssey',pr:'If you could speak with one who has died (or your past self), what would you say or ask?',ch:[{t:'Words I never got to say.',a:{heart:2},w:'reconciliation'},{t:'To ask whether my road is right.',a:{wisdom:2},w:'seeking'},{t:'I carry their blessing onward.',a:{courage:1,heart:1},w:'receiving'}]}},
+ {ody:'./images/ody7_sirens.png',fb:'./images/img7.png',mood:'mystic',
+  zh:{t:'七 · 賽蓮之歌（跨界流浪）',n:'賽蓮以最甜美的歌聲誘人觸礁。你讓同伴塞住耳朵，把自己綁在桅杆上——聽，但不沉淪。',e:'有些誘惑，要「聽見」卻不「靠近」。',q:'把我綁緊，讓我聽，卻無法走向她們。',s:'奧德修斯',pr:'哪一種「甜美卻致命」的誘惑，你需要為自己設下界線？',ch:[{t:'我替自己綁上桅杆（設界線）。',a:{wisdom:1,courage:1},w:'設界'},{t:'我承認它的吸引，但不跟隨。',a:{wisdom:2},w:'清明'},{t:'我請信任的人幫我把關。',a:{heart:2},w:'互相守望'}]},
+  en:{t:'VII · The Sirens',n:'The Sirens sing sweetly to wreck all who pass. You plug your crew’s ears and bind yourself to the mast — to hear, yet not be lost.',e:'Some temptations you must hear, but not approach.',q:'Bind me tight, that I may listen but not go to them.',s:'Odysseus',pr:'What "sweet but deadly" temptation do you need to set a boundary around?',ch:[{t:'I bind myself to the mast (set a limit).',a:{wisdom:1,courage:1},w:'boundaries'},{t:'I admit its pull, but do not follow.',a:{wisdom:2},w:'clarity'},{t:'I ask trusted others to help guard me.',a:{heart:2},w:'mutual watch'}]}},
+ {ody:'./images/ody8_scylla.png',fb:'./images/img8.jpg',mood:'epic',
+  zh:{t:'八 · 斯庫拉與卡律布狄斯（跨界流浪）',n:'一邊是吞船的漩渦，一邊是六頭海怪。沒有兩全，你必須選擇犧牲較少的那條路。',e:'成熟，是學會選擇「較小的惡」。',q:'寧失六人，不沉全船。',s:'《奧德賽》',pr:'你正卡在什麼樣的兩難？你會如何取捨？',ch:[{t:'我接受沒有完美的選擇。',a:{wisdom:2},w:'務實'},{t:'我為我的選擇負起責任。',a:{courage:2},w:'擔當'},{t:'我把傷害降到最低。',a:{heart:1,wisdom:1},w:'權衡'}]},
+  en:{t:'VIII · Scylla & Charybdis',n:'On one side a ship-swallowing whirlpool, on the other a six-headed monster. There is no clean escape; you must choose the lesser loss.',e:'Maturity is learning to choose the lesser evil.',q:'Better six men lost than the whole ship sunk.',s:'Odyssey',pr:'What dilemma are you stuck in? How will you choose?',ch:[{t:'I accept there is no perfect choice.',a:{wisdom:2},w:'pragmatism'},{t:'I take responsibility for my choice.',a:{courage:2},w:'ownership'},{t:'I minimize the harm.',a:{heart:1,wisdom:1},w:'weighing'}]}},
+ {ody:'./images/ody9_helios.png',fb:'./images/img12.jpg',mood:'tense',
+  zh:{t:'九 · 太陽神的牛（跨界流浪）',n:'飢餓的同伴不顧警告，宰了太陽神的聖牛。眾神震怒，風暴摧毀了船——只有你獨活。',e:'一時的放縱，可能毀掉整艘船。',q:'他們吃下的，是自己的歸途。',s:'《奧德賽》',pr:'你曾因一時的貪快或放縱，付出過什麼代價？',ch:[{t:'我學會為長遠而忍。',a:{wisdom:2},w:'自律'},{t:'我學會承擔後果、重新開始。',a:{courage:2},w:'重建'},{t:'我更懂得敬畏界線。',a:{wisdom:1,heart:1},w:'敬畏'}]},
+  en:{t:'IX · The Cattle of Helios',n:'Your starving crew ignore the warning and slay the Sun-god’s sacred cattle. The gods rage; a storm destroys the ship — you alone survive.',e:'A moment’s indulgence can sink the whole ship.',q:'What they devoured was their own way home.',s:'Odyssey',pr:'What price have you paid for a moment’s greed or indulgence?',ch:[{t:'I learned to wait for the long game.',a:{wisdom:2},w:'discipline'},{t:'I learned to bear the cost and begin again.',a:{courage:2},w:'rebuilding'},{t:'I hold limits in deeper respect.',a:{wisdom:1,heart:1},w:'reverence'}]}},
+ {ody:'./images/ody10_calypso.png',fb:'./images/img11.png',mood:'calm',
+  zh:{t:'十 · 卡呂普索之島（轉化）',n:'女神卡呂普索愛你，願給你永生與安逸，只要你留下。七年後，你仍選擇——回家，哪怕會死。',e:'放下永生與安逸，才是真正的英雄。',q:'我仍日夜盼望，回到我的故土。',s:'奧德修斯',pr:'你願意為了「真正重要的東西」，放下哪一份安逸？',ch:[{t:'放下安全但空洞的舒適。',a:{courage:2},w:'選擇真實'},{t:'為所愛，甘冒風險。',a:{heart:2},w:'為愛啟程'},{t:'我認清什麼才是我的家。',a:{wisdom:2},w:'認得歸屬'}]},
+  en:{t:'X · Calypso’s Island (Transformation)',n:'The goddess Calypso loves you and offers immortality and ease if you stay. After seven years, you still choose — home, even if it costs your life.',e:'To lay down immortality and comfort — that is the true hero.',q:'Still, night and day, I long to return to my own land.',s:'Odysseus',pr:'For what truly matters, which comfort are you willing to give up?',ch:[{t:'A safe but hollow comfort.',a:{courage:2},w:'choosing the real'},{t:'For love, I’ll risk it.',a:{heart:2},w:'setting out for love'},{t:'I see clearly what my home is.',a:{wisdom:2},w:'knowing home'}]}},
+ {ody:'./images/ody11_phaeacia.png',fb:'./images/img12.jpg',mood:'triumph',
+  zh:{t:'十一 · 費阿克斯人（返回）',n:'好心的費阿克斯人設宴款待。你終於卸下偽裝，親口說出這一路的血淚——說完，他們用船把你送回家。',e:'說出自己的故事，才能真正被送回。',q:'我是奧德修斯——請聽我的故事。',s:'《奧德賽》',pr:'若要對信任的人說出你這一路的旅程，你會怎麼開頭？',ch:[{t:'我終於敢說出真實的自己。',a:{courage:1,heart:1},w:'坦露'},{t:'我把苦難說成了智慧。',a:{wisdom:2},w:'轉譯苦難'},{t:'我讓別人真正認識我。',a:{heart:2},w:'被看見'}]},
+  en:{t:'XI · The Phaeacians (Return)',n:'The kind Phaeacians feast you. At last you drop your disguise and tell the whole hard tale — and they give you a ship home.',e:'Only by telling your story are you truly carried home.',q:'I am Odysseus — hear now my tale.',s:'Odyssey',pr:'If you told a trusted person your whole journey, how would you begin?',ch:[{t:'I finally dare to speak my true self.',a:{courage:1,heart:1},w:'opening up'},{t:'I turn my suffering into wisdom.',a:{wisdom:2},w:'translating pain'},{t:'I let others truly know me.',a:{heart:2},w:'being seen'}]}},
+ {ody:'./images/ody12_ithaca.png',fb:'./images/img14.png',mood:'triumph',
+  zh:{t:'十二 · 重返伊薩卡（返回 · 完成）',n:'你以乞丐之姿回到伊薩卡，拉開了無人能開的巨弓——你不只是回家，你重新成為了自己。',e:'真正的返鄉，是帶著轉化回到日常。',q:'這是我的家；我，終於回來了。',s:'《奧德賽》',pr:'這趟旅程之後，你想把哪一份「轉化」帶回你的日常生活？',ch:[{t:'用更溫柔的方式對待所愛。',a:{heart:2},w:'溫柔'},{t:'把領悟活成每天的行動。',a:{wisdom:1,courage:1},w:'落實'},{t:'成為別人的一盞燈。',a:{heart:1,wisdom:1},w:'照亮'}]},
+  en:{t:'XII · Return to Ithaca (Completion)',n:'You return to Ithaca as a beggar and string the great bow no one else can bend — you do not merely come home; you become yourself again.',e:'True homecoming is carrying the transformation back into daily life.',q:'This is my home; I have come back at last.',s:'Odyssey',pr:'After this voyage, which transformation do you want to carry into your daily life?',ch:[{t:'Treat those I love more gently.',a:{heart:2},w:'tenderness'},{t:'Live the insight as daily action.',a:{wisdom:1,courage:1},w:'made real'},{t:'Be a lamp for others.',a:{heart:1,wisdom:1},w:'lighting others'}]}}
+];
+
+const G={i:0,attrs:{courage:10,wisdom:10,heart:10},answers:[],traits:[]};
+const L=()=>LANG,$=id=>document.getElementById(id),clamp=v=>Math.max(0,Math.min(20,v));
+
+function initRing(){
+  const g=$('dots');if(g.childElementCount)return;
+  for(let k=0;k<12;k++){const a=(k*30)*Math.PI/180,x=150+110*Math.sin(a),y=150-110*Math.cos(a);
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');c.setAttribute('cx',x.toFixed(1));c.setAttribute('cy',y.toFixed(1));c.setAttribute('r','5');c.setAttribute('class','dot');c.id='dot-'+k;g.appendChild(c);}
+}
+function setRing(i){for(let k=0;k<12;k++){const d=$('dot-'+k);if(!d)continue;d.setAttribute('class','dot'+(k<i?' done':'')+(k===i?' active':''));d.setAttribute('r',k===i?'8':'5');}}
+
+function applyLang(){
+  const u=UI[LANG];
+  $('lang-btn').textContent=LANG==='zh'?'EN':'中';
+  $('tt-zh').textContent=LANG==='zh'?'奧德賽 · 內在航程':'The Odyssey Within';
+  $('tt-sub').textContent=u.sub;$('tt-btn').textContent=u.begin;
+  $('l-c').textContent=u.c;$('l-w').textContent=u.w;$('l-h').textContent=u.h;
+  $('ax-known').textContent=u.known;$('ax-unknown').textContent=u.unknown;$('ring-center').textContent=u.center;
+  $('e-label').textContent=u.endLabel;$('e-btn').textContent=u.again;
+}
+function toggleLang(){LANG=LANG==='zh'?'en':'zh';applyLang();if($('journey').classList.contains('active'))renderLevel(true);}
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');
+  const th={title:'epic',journey:'mystic',ending:'triumph'};if(th[id]&&window.Music)Music.set(th[id]);}
+function begin(){G.i=0;G.attrs={courage:10,wisdom:10,heart:10};G.answers=[];G.traits=[];initRing();show('journey');$('hud').classList.add('on');renderLevel();}
+function restart(){$('hud').classList.remove('on');show('title');}
+function updateHUD(){$('v-c').textContent=G.attrs.courage;$('v-w').textContent=G.attrs.wisdom;$('v-h').textContent=G.attrs.heart;}
+
+function renderLevel(keep){
+  const lv=LV[G.i],d=lv[L()],u=UI[LANG];
+  const bg=$('bg');bg.onerror=function(){this.onerror=null;this.src=lv.fb;};bg.onload=function(){this.style.opacity=0.5;};bg.src=lv.ody;
+  setRing(G.i);updateHUD();
+  if(window.Music)Music.set(lv.mood);
+  const prev=keep?($('answer')?$('answer').value:''):'';
+  const body=$('body');body.innerHTML='';
+  const zone=document.createElement('div');zone.className='ph-zone';zone.textContent=(LANG==='zh'?'第 ':'Stop ')+(G.i+1)+' / 12';body.appendChild(zone);
+  const tt=document.createElement('div');tt.className='ph-title';tt.textContent=d.t;body.appendChild(tt);
+  const narr=document.createElement('div');narr.className='narr';narr.textContent=d.n;body.appendChild(narr);
+  const echo=document.createElement('div');echo.className='myth-echo';echo.innerHTML=`<span class="mlabel">🏛️ ${LANG==='zh'?'神話回聲':'MYTHIC ECHO'}</span>${d.e}`;body.appendChild(echo);
+  const mq=document.createElement('div');mq.className='myth-quote';mq.innerHTML=`「${d.q}」<span class="msrc">— ${d.s}</span>`;body.appendChild(mq);
+  const pr=document.createElement('div');pr.className='prompt';pr.textContent=d.pr;body.appendChild(pr);
+  const ta=document.createElement('textarea');ta.id='answer';ta.placeholder=u.write;ta.value=prev;
+  ta.addEventListener('input',()=>{ta.style.borderColor='';$('write-warn').textContent='';});body.appendChild(ta);
+  const warn=document.createElement('div');warn.id='write-warn';body.appendChild(warn);
+  const cl=document.createElement('div');cl.className='choose-label';cl.textContent=u.choose;body.appendChild(cl);
+  const cw=document.createElement('div');cw.className='choices';
+  d.ch.forEach((c,idx)=>{const b=document.createElement('button');b.className='choice';b.innerHTML=`${c.t}<span class="tag">✦ ${c.w}</span>`;b.onclick=()=>choose(idx);cw.appendChild(b);});
+  body.appendChild(cw);
+  $('journey').scrollTop=0;
+}
+function choose(idx){
+  const lv=LV[G.i],d=lv[L()],c=d.ch[idx];
+  const ta=$('answer'),ans=(ta?.value||'').trim();
+  if(!ans){$('write-warn').textContent=UI[LANG].needWrite;if(ta){ta.style.borderColor='#e0503a';ta.focus();ta.scrollIntoView({behavior:'smooth',block:'center'});}return;}
+  G.answers[G.i]=ans;G.traits[G.i]=c.w;
+  for(const k in c.a)G.attrs[k]=clamp(G.attrs[k]+c.a[k]);
+  updateHUD();G.i++;
+  if(G.i>=LV.length)finish();else renderLevel();
+}
+
+function archetype(){
+  const {courage:c,wisdom:w,heart:h}=G.attrs,mx=Math.max(c,w,h),spread=mx-Math.min(c,w,h);
+  if(spread<=2)return{zh:'完整的歸鄉者',en:'The Whole Returner',dz:'勇氣、智慧與心在你之內達成平衡。你不只回到伊薩卡——你回到了完整的自己。',de:'Courage, wisdom and heart balanced within you. You returned not only to Ithaca — but to a whole self.'};
+  if(c===mx)return{zh:'不屈的航者',en:'The Unyielding Voyager',dz:'風暴、海怪、誘惑都無法讓你放棄歸途。你的勇氣，是穿越十年的錨。',de:'No storm, monster or temptation made you abandon the way home. Your courage was the anchor across ten years.'};
+  if(w===mx)return{zh:'足智的奧德修斯',en:'The Cunning One',dz:'你以智慧繞過打不過的巨人、聽而不沉於賽蓮。真正的英雄，靠的是心智。',de:'You outwitted giants you could not fight and heard the Sirens without being lost. The true hero wins by mind.'};
+  return{zh:'思鄉的歸人',en:'The Homeward Heart',dz:'你放下永生與安逸，只為回到所愛。你的心，始終指向家的方向。',de:'You laid down immortality and ease only to return to those you love. Your heart always pointed home.'};
+}
+function forgeEpic(){
+  const a=G.answers,zh=LANG==='zh',t=s=>{s=(s||'').trim();return s.length>30?s.slice(0,28)+'…':s;};
+  const arch=archetype();const o=[];
+  if(zh){
+    o.push('這是一趟十年的航程，也是一趟向內的旅程。');o.push('');
+    if(a[0])o.push(`你渴望回到：「${t(a[0])}」`);
+    if(a[3]||a[4])o.push(`你抵住了誘惑：「${t(a[4]||a[3])}」`);
+    if(a[5])o.push(`在冥府，你說出：「${t(a[5])}」`);
+    if(a[9])o.push(`你為所重視的，放下了「${t(a[9])}」。`);
+    if(a[11])o.push(`最終你帶回：「${t(a[11])}」`);
+    o.push('');o.push('於是眾神為你命名——');o.push(`「${arch.zh}」。`);o.push(arch.dz);
+  }else{
+    o.push('This was a ten-year voyage — and a journey inward.');o.push('');
+    if(a[0])o.push(`You longed to return to: "${t(a[0])}"`);
+    if(a[3]||a[4])o.push(`You resisted the lure: "${t(a[4]||a[3])}"`);
+    if(a[5])o.push(`In the underworld you said: "${t(a[5])}"`);
+    if(a[9])o.push(`For what mattered, you let go of "${t(a[9])}".`);
+    if(a[11])o.push(`At last you carried home: "${t(a[11])}"`);
+    o.push('');o.push('And so the gods name you —');o.push(`"${arch.en}".`);o.push(arch.de);
+  }
+  return{arch,text:o.join('\n')};
+}
+function buildAdvice(){
+  const a=G.answers,zh=LANG==='zh',out=[],t=s=>{s=(s||'').trim();return s.length>30?s.slice(0,28)+'…':s;};
+  if(a[0])out.push(zh?`你最想回到的「${t(a[0])}」——別讓航程耽誤了它，今天就靠近一步。`:`The "${t(a[0])}" you long for — don’t let the voyage delay it; take one step toward it today.`);
+  if(a[1])out.push(zh?`你用來麻痺自己的「${t(a[1])}」，其實你已經看見它了。`:`The "${t(a[1])}" you numb yourself with — you already see it now.`);
+  if(a[11])out.push(zh?`把「${t(a[11])}」活進日常，你的伊薩卡才真正屬於你。`:`Live out "${t(a[11])}" daily — only then is your Ithaca truly yours.`);
+  const {courage:c,wisdom:w,heart:h}=G.attrs,mx=Math.max(c,w,h),mn=Math.min(c,w,h);
+  const nm=v=>zh?(v===c?'勇氣':v===w?'智慧':'心'):(v===c?'courage':v===w?'wisdom':'heart');
+  if(out.length>3)out.length=3;
+  out.push(zh?`你的「${nm(mx)}」帶你穿過了風暴；也記得溫柔地餵養你的「${nm(mn)}」。`:`Your ${nm(mx)} carried you through the storm — remember to nourish your ${nm(mn)} too.`);
+  return out;
+}
+function finish(){
+  const {arch,text}=forgeEpic();
+  $('e-arch').textContent=arch.zh;$('e-arch-en').textContent=arch.en;$('e-epic').textContent=text;
+  $('e-adv-label').textContent=UI[LANG].advLabel;
+  $('e-advice').innerHTML=buildAdvice().map(l=>`<div class="line">✦ ${l}</div>`).join('');
+  $('e-label').textContent=UI[LANG].endLabel;
+  $('hud').classList.remove('on');show('ending');
+}
+
+// ═══ music (shared engine) ═══
+const Music = (function(){
+  let ctx=null, master=null, bus=null, timer=null;
+  let muted=false, nextBarTime=0, barIx=0;
+  let current='epic', pending='epic';
+  const NOTE={A:0,'A#':1,B:2,C:3,'C#':4,D:5,'D#':6,E:7,F:8,'F#':9,G:10,'G#':11};
+  const hz=(root,s)=>root*Math.pow(2,s/12);
+  const triad=(name,type)=>{const r=NOTE[name],t=type==='min'?3:4;return [r,r+t,r+7];};
+
+  function impulse(sec,decay){
+    const rate=ctx.sampleRate,len=Math.floor(rate*sec),buf=ctx.createBuffer(2,len,rate);
+    for(let c=0;c<2;c++){const d=buf.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay);}
+    return buf;
+  }
+  function ensure(){
+    if(ctx) return true;
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC) return false;
+    ctx=new AC();
+    master=ctx.createGain(); master.gain.value=muted?0:0.30;
+    const comp=ctx.createDynamicsCompressor();
+    comp.threshold.value=-16; comp.ratio.value=3; comp.attack.value=0.006; comp.release.value=0.3;
+    const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=6200;
+    master.connect(comp); comp.connect(lp); lp.connect(ctx.destination);
+    // instrument bus -> dry + reverb (lush hall for an epic, less "raw" sound)
+    bus=ctx.createGain(); bus.connect(master);
+    const rev=ctx.createConvolver(); rev.buffer=impulse(2.8,2.2);
+    const wet=ctx.createGain(); wet.gain.value=0.85;
+    bus.connect(rev); rev.connect(wet); wet.connect(master);
+    return true;
+  }
+
+  // ── warm layered voice: two slightly-detuned oscillators through a lowpass,
+  //    smooth ADSR, optional gentle vibrato — far softer than a bare sawtooth ──
+  function voice(t,freq,dur,o){
+    o=o||{};
+    const peak=o.peak!=null?o.peak:0.14,a=o.a!=null?o.a:0.04,r=o.r!=null?o.r:0.25;
+    const cut=o.cut||2600,type=o.type||'sawtooth';
+    const g=ctx.createGain();
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(peak,t+a);
+    g.gain.setValueAtTime(peak,t+Math.max(a+0.005,dur-r));
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    const f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=cut;
+    f.connect(g); g.connect(bus);
+    const base=o.detune||0;
+    const mk=(det)=>{const os=ctx.createOscillator();os.type=type;os.frequency.value=freq;os.detune.value=det;os.connect(f);os.start(t);os.stop(t+dur+0.06);return os;};
+    const o1=mk(base-6),o2=mk(base+6);
+    if(o.vib){const vo=ctx.createOscillator();vo.type='sine';vo.frequency.value=5.2;const vg=ctx.createGain();vg.gain.value=o.vib;vo.connect(vg);vg.connect(o1.detune);vg.connect(o2.detune);vo.start(t);vo.stop(t+dur+0.06);}
+  }
+  const strings=(t,tri,dur,gain)=>tri.concat([tri[0]+12]).forEach(s=>voice(t,hz(110,s),dur,{peak:gain||0.05,a:0.55,r:0.75,cut:1300,type:'sawtooth'}));
+  const brass=(t,tri,dur,gain)=>tri.concat([tri[0]+12]).forEach((s,i)=>voice(t,hz(110,s),dur,{peak:(gain||0.08)/(1+i*0.2),a:0.05,r:0.18,cut:2000,type:'sawtooth',detune:i%2?5:-5}));
+  const melo=(t,semi,dur,gain,base)=>voice(t,hz(base||220,semi),dur,{peak:gain||0.16,a:0.06,r:0.2,cut:3000,type:'triangle',vib:6});
+  const harp=(t,semi,dur,base)=>voice(t,hz(base||220,semi),dur||0.5,{peak:0.1,a:0.006,r:0.45,cut:3200,type:'triangle'});
+  function bassv(t,semi,dur,gain){
+    voice(t,hz(55,semi),dur,{peak:gain||0.24,a:0.02,r:0.14,cut:1300,type:'triangle'});
+    const o=ctx.createOscillator();o.type='sine';o.frequency.value=hz(55,semi);
+    const g=ctx.createGain();g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime((gain||0.24)*0.7,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g);g.connect(bus);o.start(t);o.stop(t+dur+0.05);
+  }
+  function thump(t,gain){const o=ctx.createOscillator();o.type='sine';const g=ctx.createGain();o.frequency.setValueAtTime(160,t);o.frequency.exponentialRampToValueAtTime(45,t+0.18);g.gain.setValueAtTime(gain||0.6,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.34);o.connect(g);g.connect(master);o.start(t);o.stop(t+0.4);}
+  function crash(t,gain,dur,hp){const len=Math.floor(ctx.sampleRate*(dur||0.4));const buf=ctx.createBuffer(1,len,ctx.sampleRate);const d=buf.getChannelData(0);for(let k=0;k<len;k++)d[k]=(Math.random()*2-1)*Math.pow(1-k/len,1.4);const n=ctx.createBufferSource();n.buffer=buf;const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=hp||3000;const g=ctx.createGain();g.gain.value=gain||0.1;n.connect(f);f.connect(g);g.connect(bus);n.start(t);}
+
+  // ── melodies as bars of [semitone(from base), beatOffset, durBeats] ──
+  // Ode to Joy (Beethoven, public domain) — semitones relative to A(220), key of C
+  const ODE=[
+    [[7,0,1],[7,1,1],[8,2,1],[10,3,1]],
+    [[10,0,1],[8,1,1],[7,2,1],[5,3,1]],
+    [[3,0,1],[3,1,1],[5,2,1],[7,3,1]],
+    [[7,0,1.5],[5,1.5,0.5],[5,2,2]],
+    [[7,0,1],[7,1,1],[8,2,1],[10,3,1]],
+    [[10,0,1],[8,1,1],[7,2,1],[5,3,1]],
+    [[3,0,1],[3,1,1],[5,2,1],[7,3,1]],
+    [[5,0,1.5],[3,1.5,0.5],[3,2,2]]
+  ];
+  // Original heroic line in A minor over Am–F–C–G
+  const HERO=[
+    [[12,0,2],[15,2,1],[12,3,1]],
+    [[17,0,2],[15,2,1],[12,3,1]],
+    [[15,0,1],[14,1,1],[12,2,2]],
+    [[14,0,1],[12,1,1],[10,2,1],[7,3,1]]
+  ];
+  const playMel=(t,i,bars,base,gain,spb)=>{const bar=bars[i%bars.length];for(const [s,off,dur] of bar)melo(t+off*spb,s,dur*spb*0.96,gain,base);};
+
+  // ── themes: schedule one full 4/4 bar given start time t and bar index i ──
+  const THEMES={
+    epic:{bpm:120,beats:4,prog:[['A','min'],['F','maj'],['C','maj'],['G','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.05); brass(t,tri,spb*1.9,0.08); brass(t+spb*2,tri,spb*1.9,0.07);
+        for(let e=0;e<8;e++)bassv(t+e*spb/2,rs+(e%2?12:0),spb*0.46,0.24);
+        thump(t,0.7);thump(t+spb*2,0.58);thump(t+spb*1.5,0.28);thump(t+spb*3.5,0.32);
+        if(i%4===0)crash(t,0.1,0.4,3400);
+        playMel(t,i,HERO,220,0.17,spb);}},
+    triumph:{bpm:104,beats:4,prog:[['C','maj'],['G','maj'],['C','maj'],['G','maj'],['C','maj'],['G','maj'],['A','min'],['G','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%this.prog.length],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.055); brass(t,tri,spb*3.8,0.055);
+        for(let e=0;e<4;e++)bassv(t+e*spb,rs+(e%2?12:0),spb*0.9,0.22);
+        thump(t,0.62);thump(t+spb*2,0.5);
+        if(i%4===0)crash(t,0.09,0.45,3200);
+        playMel(t,i,ODE,220,0.2,spb);}},
+    drive:{bpm:148,beats:4,prog:[['A','min'],['G','maj'],['F','maj'],['G','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.04); brass(t,tri,spb*0.9,0.07); brass(t+spb*2,tri,spb*0.9,0.06);
+        for(let e=0;e<8;e++)bassv(t+e*spb/2,rs,spb*0.44,0.24);
+        for(let b=0;b<4;b++)thump(t+b*spb,b%2?0.4:0.6);
+        const m=[12,10,8,7,8,10,12,14];for(let e=0;e<8;e++)melo(t+e*spb/2,m[e],spb*0.42,0.11,220);}},
+    ambient:{bpm:60,beats:4,prog:[['A','min'],['A','min'],['F','maj'],['C','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.055); bassv(t,rs,spb*4,0.15);
+        const sc=[0,3,7,10,12];if(Math.random()<0.7)harp(t+spb*(1+Math.floor(Math.random()*3)),sc[Math.floor(Math.random()*sc.length)],1.2,220);}},
+    calm:{bpm:72,beats:4,prog:[['A','min'],['E','min'],['F','maj'],['C','maj']],
+      mel:[7,12,10,8, 7,5,7,null, 8,10,12,null, 7,5,3,null],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.05); bassv(t,rs,spb*4,0.16); thump(t,0.24);
+        for(let b=0;b<4;b++){const n=this.mel[(i%4)*4+b];if(n!=null)harp(t+b*spb,n,spb*0.9,220);}}},
+    mystic:{bpm:76,beats:4,prog:[['F','maj'],['C','maj'],['G','maj'],['A','min']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.05); bassv(t,rs,spb*4,0.15);
+        const arp=[tri[0],tri[1],tri[2],tri[1]+12,tri[2],tri[1],tri[0]+12,tri[1]];
+        for(let e=0;e<8;e++)harp(t+e*spb/2,arp[e],spb*0.55,220);
+        if(i%2===0)melo(t,tri[0]+12,spb*3,0.1,220);}},
+    tense:{bpm:80,beats:4,prog:[['A','min'],['A','min'],['A','min'],['A','min']],
+      bar(t,i){const spb=60/this.bpm;
+        [0,6,7].forEach(s=>voice(t,hz(110,s),spb*4,{peak:0.04,a:0.7,r:0.9,cut:900,type:'sawtooth',detune:6}));
+        bassv(t,0,spb*4,0.2); if(i%2===0)thump(t,0.36);
+        if(i%4===3)crash(t+spb*3,0.05,0.6,2400);
+        if(Math.random()<0.4)melo(t+spb*(1+Math.floor(Math.random()*2)),[1,6,8][Math.floor(Math.random()*3)],spb,0.06,220);}}
+  };
+
+  function scheduler(){
+    if(!ctx) return;
+    while(nextBarTime < ctx.currentTime + 0.25){
+      const th=THEMES[current]||THEMES.epic;
+      try{ th.bar(nextBarTime, barIx); }catch(e){}
+      nextBarTime += (60/th.bpm)*th.beats;
+      barIx++;
+      if(pending!==current){ current=pending; barIx=0; }   // switch on bar boundary
+    }
+  }
+
+  return {
+    start(){
+      if(!ensure()) return;
+      if(ctx.state==='suspended') ctx.resume();
+      if(!timer){ nextBarTime=ctx.currentTime+0.1; barIx=0; timer=setInterval(scheduler,25); }
+    },
+    set(name){ if(THEMES[name]){ pending=name; if(!timer) current=name; } },
+    toggle(){ muted=!muted; if(master) master.gain.setTargetAtTime(muted?0:0.30, ctx.currentTime, 0.05); if(!muted) this.start(); return muted; },
+    isMuted(){ return muted; },
+    running(){ return !!(ctx && ctx.state==='running'); }
+  };
+})();
+window.Music=Music;
+window.Music=Music;
+function toggleMusic(){const m=Music.toggle();const b=$('music-btn');b.textContent=m?'🔇':'🔊';b.classList.toggle('muted',m);}
+let silentEl=null;
+function unlockAudio(){
+  if(!silentEl){silentEl=document.createElement('audio');silentEl.setAttribute('playsinline','');silentEl.loop=true;silentEl.volume=0.001;silentEl.src='data:audio/wav;base64,UklGRqQHAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YYAHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';}
+  silentEl.play().catch(()=>{});
+  Music.set('epic');Music.start();
+  if(Music.running()){['pointerdown','touchstart','touchend','mousedown','click','keydown'].forEach(ev=>document.removeEventListener(ev,unlockAudio));}
+}
+['pointerdown','touchstart','touchend','mousedown','click','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio));
+
+applyLang();
+</script>

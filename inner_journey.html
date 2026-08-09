@@ -25,6 +25,9 @@ body{background:#07050f;color:var(--text);font-family:"Noto Serif TC","Songti TC
 
 /* journey */
 #journey{background:radial-gradient(ellipse at 50% 20%,#121834 0,#0a0820 60%,#06040e 100%);justify-content:flex-start;}
+#bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.28;transition:opacity .6s;}
+#veil{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 26%,rgba(10,8,32,0.5),rgba(6,4,14,0.92) 82%);}
+#ringwrap,#body{position:relative;z-index:2;}
 #ringwrap{margin-top:50px;flex-shrink:0;}
 svg#ring{width:min(300px,80vw);height:auto;display:block;}
 #ring .rlabel{fill:var(--muted);font-size:15px;font-family:inherit;font-weight:700;}
@@ -60,6 +63,7 @@ textarea:focus{outline:none;border-color:var(--gold);}
 
 /* ending */
 #ending{background:radial-gradient(ellipse at 50% 25%,#141a3a 0,#0a0820 55%,#06040e 100%);overflow-y:auto;justify-content:flex-start;padding:54px 24px 40px;}
+.end-illus{width:130px;height:130px;object-fit:cover;border-radius:50%;border:3px solid var(--gold);box-shadow:0 0 40px rgba(201,168,76,.4);margin:0 auto 18px;display:block;}
 .arch{font-size:clamp(26px,7vw,36px);color:var(--gold-light);letter-spacing:3px;text-align:center;text-shadow:0 0 24px rgba(201,168,76,.5);margin-bottom:2px;}
 .arch-en{font-size:13px;letter-spacing:4px;color:var(--muted);text-align:center;margin-bottom:18px;}
 .epic{max-width:600px;font-size:15px;line-height:2.05;color:#efe8d6;white-space:pre-wrap;text-align:center;border-top:1px solid rgba(201,168,76,.25);border-bottom:1px solid rgba(201,168,76,.25);padding:22px 6px;margin-bottom:20px;}
@@ -81,6 +85,8 @@ textarea:focus{outline:none;border-color:var(--gold);}
   </section>
 
   <section id="journey" class="screen">
+    <img id="bg" src="" alt="">
+    <div id="veil"></div>
     <div id="ringwrap">
       <svg id="ring" viewBox="0 0 300 300" aria-hidden="true">
         <circle class="ringpath" cx="150" cy="150" r="100"></circle>
@@ -107,6 +113,7 @@ textarea:focus{outline:none;border-color:var(--gold);}
   </div></div>
 
   <section id="ending" class="screen">
+    <img class="end-illus" src="./images/img37.png" alt="" onerror="this.style.display='none'">
     <div class="adv-label" id="e-label">你的內在稱號</div>
     <div class="arch" id="e-arch"></div>
     <div class="arch-en" id="e-arch-en"></div>
@@ -166,6 +173,8 @@ const PH=[
       choices:[{t:'Treat those around me more gently.',a:{heart:2},w:'gentler with others'},{t:'Live the insight as small daily acts.',a:{wisdom:1,courage:1},w:'made daily'},{t:'Be a lamp in someone’s darkness.',a:{heart:1,wisdom:1},w:'lighting others'}]}}
 ];
 const ANGLES=[50,90,180,270,310];
+// per-station background illustrations (reuse the twelve scene images)
+const BG=['./images/img4.jpg','./images/img7.png','./images/img8.jpg','./images/img13.jpg','./images/img14.png'];
 
 const G={i:0,attrs:{courage:10,wisdom:10,heart:10},answers:[],traits:[]};
 const L=()=>LANG,$=id=>document.getElementById(id),clamp=v=>Math.max(0,Math.min(20,v));
@@ -197,6 +206,7 @@ function moveMarker(i){
 }
 function renderPhase(keep){
   const p=PH[G.i],d=p[L()],u=UI[LANG];
+  const bg=$('bg'); bg.src=BG[G.i]; bg.onerror=function(){this.style.opacity=0;}; bg.onload=function(){this.style.opacity=0.28;};
   moveMarker(G.i);updateHUD();
   const prev=keep?($('answer')?$('answer').value:''):'';
   const body=$('body');body.innerHTML='';

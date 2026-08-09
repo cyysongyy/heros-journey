@@ -10,6 +10,43 @@
 
 ---
 
+## 一次複製給 Gemini · One block to paste into Gemini
+
+> 貼上後可請它「逐一生成，每張 1024×1024 正方形」/ Paste and ask it to "generate each one, 1024×1024 square."
+
+```
+A cohesive set of 12 square (1024x1024) monster illustrations for a hero's "inner demons" game. Shared style for all: antique fantasy storybook illustration, ink and watercolor, warm earthy muted tones, aged parchment feel, painterly and detailed, cinematic soft lighting. A single ominous creature centered in the frame against a simple dark background. NO text, NO words, NO letters anywhere. Generate them one by one:
+
+1. sloth — The Shade of Sloth: a sluggish, heavy shadow-creature, half-melted and slumped across soft bedding and piled pillows, thick and tar-like, half-closed drowsy eyes, wreathed in a warm but drowning mist.
+
+2. dread — The Dread: a bodiless phantom of fear, a churning mass of grey-black smoke condensing into a vague menacing face with hollow glowing eyes, the smoke trailing off into many reaching hands, cold and oppressive.
+
+3. doubt — The Doubt-Serpent: a coiling dark-green serpent whose scales reflect fractured mirror-images, a forked tongue, sly bewitching eyes, its body wound around a single softly glowing heart.
+
+4. pride — The Pride-Colossus: a towering colossus in mirror-smooth metal armor, head held high and looking down with arrogance, its polished mirror armor faintly reflecting the viewer's own figure.
+
+5. envy — The Envy-Beast: a greedy green demon-beast with many grasping hands, each hand snatching stolen light, its shape half-mimicking other beings, its face full of longing and resentment.
+
+6. wrath — The Wrath-Flame: a raging bull-demon made of fire and molten lava, flames flaring higher with its fury, blazing red eyes, breathing fire, charging forward in a violent posture.
+
+7. greed — The Greed-Wyrm: an enormous dragon coiled atop a mountain of gold, its cavernous maw perpetually gaping to devour, jewels embedded between its scales yet still starving, faint glimmers in the deep cave.
+
+8. regret — The Regret-Wraith: a translucent, head-bowed weeping ghost, an old wound on its body that keeps splitting open and seeping pale light, drifting broken fragments of the past around it.
+
+9. loneliness — The Lonely One: a lonely huddled figure wrapped in a vast spiderweb, surrounded by endless empty darkness with a single faint distant light, cold and estranged.
+
+10. despair — The Despair-Titan: a colossal, sky-blotting black shadow that endlessly regenerates and cannot be dispersed, heavy and drooping, a dense blackness that swallows the light around it, immensely oppressive.
+
+11. void — The Void: a floating sphere and rift of pure black void, its edges warping and devouring everything around it, absolute emptiness at its center, points of starlight being sucked in and vanishing.
+
+12. shadow — The Shadow (the hero's own self): a dark mirror-image identical to the protagonist — the same young hero in a green hooded cloak, but formed entirely of shadow with coldly glowing eyes, standing in confrontation, half in light and half in dark.
+```
+
+生好後用下表的檔名（`beast1.png … beast12.png`，順序同上）放進 `images/` 即可。
+Save with the filenames below (`beast1.png … beast12.png`, same order) into `images/`.
+
+---
+
 | 檔名 | 名稱 | 代表 | 佔位 | 形象描述（可作繪圖 prompt） |
 |---|---|---|---|---|
 | `beast1.png` | 惰影 The Shade of Sloth | 惰・平凡的牢籠 | 😴 | 一團慵懶沉重的暗影生物，半融化般癱在柔軟的床榻與枕堆上，濃稠如焦油，眼神半闔、昏昏欲睡；周身散發溫暖卻令人沉溺的霧氣。 |

@@ -1,8 +1,8 @@
 # 英雄旅程 · The Hero's Journey
 
-坎伯（Joseph Campbell）／佛格勒十二階段的視覺化專案：**一個入口，四種玩法**，共享同一套水彩美術、史詩音樂，以及跨文化的神話隱喻（奧德賽、吉爾伽美什、西遊記、北歐…皆公有領域）。
+坎伯（Joseph Campbell）／佛格勒十二階段的視覺化專案：**一個入口，五種玩法**，共享同一套水彩美術、史詩音樂，以及跨文化的神話隱喻（奧德賽、吉爾伽美什、西遊記、北歐…皆公有領域）。
 
-A visualization of Campbell / Vogler's twelve stages of the Hero's Journey: **one entrance, four ways to play**, sharing one set of watercolor art, an epic synth score, and cross-cultural mythic echoes (Odyssey, Gilgamesh, Journey to the West, Norse… all public domain).
+A visualization of Campbell / Vogler's twelve stages of the Hero's Journey: **one entrance, five ways to play**, sharing one set of watercolor art, an epic synth score, and cross-cultural mythic echoes (Odyssey, Gilgamesh, Journey to the West, Norse… all public domain).
 
 ▶ **Play online / 線上遊玩：https://cyysongyy.github.io/heros-journey/**
 
@@ -15,7 +15,7 @@ A visualization of Campbell / Vogler's twelve stages of the Hero's Journey: **on
 
 ---
 
-## 四種玩法怎麼玩 · How to Play
+## 五種玩法怎麼玩 · How to Play
 
 ### 📖 故事模式 · Story Mode — `heros_journey_game.html`
 
@@ -57,18 +57,28 @@ A visualization of Campbell / Vogler's twelve stages of the Hero's Journey: **on
 
 <br clear="all">
 
+### 🌀 內在英雄之旅 · The Inner Journey — `inner_journey.html`
+
+<img src="screenshots/inner.png" width="240" align="right" alt="The Inner Journey">
+
+**中文**：向內的旅程，走的是英雄之旅的**圓環**——**召喚 → 離開原地 → 跨界流浪 → 轉化 → 返回**，跨越「已知」與「未知」的門檻。畫面上有一個**會隨進度轉動的圓環圖**。每一站給你一題**向內的提問**（寫下你的答案，必填），再選擇你面對它的方式。結局編成一段**內在旅程的史詩**、給你一個內在原型（內在的勇者／覺醒的智者／慈悲的守護者／完整的自己）與**正向建議**。
+
+**EN**: The journey inward follows the Hero's Journey **circle** — **Call → Departure → Wandering the Unknown → Transformation → Return** — crossing the threshold of Known and Unknown. An on-screen **ring diagram turns as you progress**. Each station asks an **inward question** (write your answer — required) and a choice. The ending forges an **inner epic**, an inner archetype (Inner Warrior / Awakened / Compassionate / Whole Self), and a positive **word for you**.
+
+<br clear="all">
+
 ---
 
 ## 檔案 · Files
 
-- `index.html` — 入口選單 / menu hub (links the four modes, with music)
-- `heros_journey_game.html` · `your_odyssey.html` · `beast_trials.html` · `deck_trials.html` — 四種玩法 / the four modes (each a standalone offline file)
+- `index.html` — 入口選單 / menu hub (links the five modes, with music)
+- `heros_journey_game.html` · `your_odyssey.html` · `beast_trials.html` · `deck_trials.html` · `inner_journey.html` — 五種玩法 / the five modes (each a standalone offline file)
 - `images/` — 圖像資源 / art (12 scene backgrounds, portraits `img15…img37`, twelve demons `beast1…beast12`, medal)
 - `BEASTS.md` — 十二心魔美術清單／生圖說明 / beast art manifest & prompts
 - `gen_all.mjs` · `gen_portraits.mjs` · `gen_beasts.mjs` · `gen_image.mjs` — 產生美術的腳本 / art-generation scripts
 
-> 四種玩法各自獨立、無共用存檔；共用的是 `images/` 與世界觀。缺圖時以佔位（emoji／隱藏）處理，仍可正常遊玩。
-> The four modes are independent (no shared save); they share only `images/` and the theme. Missing art falls back to placeholders (emoji/hidden) and the game still plays.
+> 五種玩法各自獨立、無共用存檔；共用的是 `images/` 與世界觀。缺圖時以佔位（emoji／隱藏）處理，仍可正常遊玩。
+> The five modes are independent (no shared save); they share only `images/` and the theme. Missing art falls back to placeholders (emoji/hidden) and the game still plays.
 
 ## 重新生成 / 產生新圖 · Regenerating Art
 

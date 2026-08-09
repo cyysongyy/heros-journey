@@ -1,0 +1,459 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>內在英雄之旅 · The Inner Journey</title>
+<style>
+:root{--gold:#c9a84c;--gold-light:#e8d48a;--green:#5ac878;--text:#e7e0d0;--muted:rgba(200,180,140,0.62);}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{background:#07050f;color:var(--text);font-family:"Noto Serif TC","Songti TC",Georgia,serif;overflow:hidden;-webkit-tap-highlight-color:transparent;}
+#app{position:fixed;inset:0;overflow:hidden;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;}
+.screen.active{display:flex;}
+.screen.center{justify-content:center;text-align:center;padding:24px;}
+#lang-btn,#music-btn,#home-btn{position:fixed;top:14px;z-index:1000;background:rgba(0,0,0,.55);border:1px solid var(--gold);color:var(--gold);cursor:pointer;border-radius:3px;font-family:inherit;letter-spacing:1px;text-decoration:none;}
+#home-btn{left:14px;padding:6px 12px;font-size:12px;}
+#lang-btn{right:14px;padding:6px 14px;font-size:12px;} #music-btn{right:74px;padding:6px 9px;font-size:14px;line-height:1;} #music-btn.muted{opacity:.5;}
+.btn{padding:14px 40px;background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(120,80,200,.2));border:1px solid var(--gold);color:var(--gold-light);font-size:16px;letter-spacing:3px;cursor:pointer;border-radius:3px;font-family:inherit;transition:all .3s;}
+.btn:hover{background:linear-gradient(135deg,rgba(201,168,76,.4),rgba(120,80,200,.35));box-shadow:0 0 22px rgba(201,168,76,.3);}
+.btn-sm{padding:9px 22px;font-size:13px;letter-spacing:1px;}
+
+/* title */
+#title{background:radial-gradient(ellipse at 50% 32%,#141a3a 0,#0a0820 55%,#06040e 100%);}
+.t-zh{font-size:clamp(30px,8vw,46px);color:var(--gold-light);letter-spacing:8px;text-shadow:0 0 24px rgba(201,168,76,.5);}
+.t-en{font-size:13px;letter-spacing:5px;color:var(--muted);margin:10px 0 22px;}
+.t-sub{font-size:13px;color:var(--muted);line-height:1.9;max-width:520px;margin-bottom:30px;}
+
+/* journey */
+#journey{background:radial-gradient(ellipse at 50% 20%,#121834 0,#0a0820 60%,#06040e 100%);justify-content:flex-start;}
+#ringwrap{margin-top:50px;flex-shrink:0;}
+svg#ring{width:min(300px,80vw);height:auto;display:block;}
+#ring .rlabel{fill:var(--muted);font-size:15px;font-family:inherit;font-weight:700;}
+#ring .rlabel.active{fill:var(--gold-light);}
+#ring .axis{fill:rgba(200,180,140,0.45);font-size:12px;font-family:inherit;}
+#ring .center-zh{fill:var(--gold);font-size:20px;font-weight:700;font-family:inherit;letter-spacing:2px;}
+#ring .ringpath{fill:none;stroke:rgba(201,168,76,0.35);stroke-width:3;}
+#ring .thresh{stroke:rgba(201,168,76,0.30);stroke-width:2;stroke-dasharray:5 5;}
+#ring #ring-marker{fill:var(--gold-light);filter:drop-shadow(0 0 6px rgba(232,212,138,.9));}
+#ring #ring-marker-pulse{fill:none;stroke:var(--gold-light);opacity:.5;}
+
+#body{flex:1;width:100%;max-width:640px;margin:0 auto;overflow-y:auto;padding:14px 22px 30px;-webkit-overflow-scrolling:touch;}
+.ph-zone{font-size:11px;letter-spacing:3px;color:var(--gold);text-align:center;}
+.ph-title{font-size:clamp(20px,5.5vw,26px);color:var(--gold-light);letter-spacing:2px;text-align:center;margin:2px 0 14px;}
+.narr{font-size:clamp(14px,4vw,16px);line-height:1.95;color:#efe8d6;margin-bottom:12px;text-align:center;}
+.myth-echo{font-size:12.5px;line-height:1.8;color:#cbb98a;background:rgba(201,168,76,.07);border-left:2px solid var(--gold);padding:9px 13px;border-radius:0 4px 4px 0;margin-bottom:10px;}
+.myth-echo .mlabel{display:block;font-size:10px;letter-spacing:2px;color:var(--gold);margin-bottom:3px;}
+.myth-quote{font-style:italic;font-size:13px;color:#e8dcc0;text-align:center;margin-bottom:18px;line-height:1.7;}
+.myth-quote .msrc{display:block;font-style:normal;font-size:11px;color:var(--muted);margin-top:4px;}
+.prompt{font-size:14px;color:var(--gold-light);letter-spacing:.5px;margin:6px 0 10px;line-height:1.7;text-align:center;}
+textarea{width:100%;min-height:90px;background:rgba(0,0,0,.4);border:1px solid rgba(201,168,76,.4);color:var(--text);font-family:inherit;font-size:15px;line-height:1.7;padding:12px 14px;border-radius:4px;resize:vertical;}
+textarea:focus{outline:none;border-color:var(--gold);}
+#write-warn{color:#ff8a72;font-size:12px;margin-top:6px;min-height:16px;letter-spacing:.5px;}
+.choose-label{font-size:13px;color:var(--muted);margin:16px 0 8px;text-align:center;}
+.choices{display:flex;flex-direction:column;gap:10px;}
+.choice{text-align:left;padding:13px 16px;background:rgba(20,16,36,.72);border:1px solid rgba(201,168,76,.32);color:var(--text);border-radius:4px;cursor:pointer;font-family:inherit;font-size:14.5px;line-height:1.6;transition:all .2s;}
+.choice:hover{border-color:var(--gold);background:rgba(40,32,64,.8);transform:translateX(3px);}
+.choice .tag{display:block;font-size:11px;color:var(--gold);opacity:.85;margin-top:6px;letter-spacing:1px;}
+#hud{position:fixed;left:0;right:0;bottom:0;z-index:3;background:linear-gradient(180deg,transparent,rgba(6,4,14,.92) 45%);padding:12px 18px 14px;display:none;}
+#hud.on{display:block;}
+.hud-inner{max-width:640px;margin:0 auto;display:flex;gap:16px;justify-content:center;font-size:12px;color:var(--muted);}
+.hud-inner b{color:var(--gold-light);}
+
+/* ending */
+#ending{background:radial-gradient(ellipse at 50% 25%,#141a3a 0,#0a0820 55%,#06040e 100%);overflow-y:auto;justify-content:flex-start;padding:54px 24px 40px;}
+.arch{font-size:clamp(26px,7vw,36px);color:var(--gold-light);letter-spacing:3px;text-align:center;text-shadow:0 0 24px rgba(201,168,76,.5);margin-bottom:2px;}
+.arch-en{font-size:13px;letter-spacing:4px;color:var(--muted);text-align:center;margin-bottom:18px;}
+.epic{max-width:600px;font-size:15px;line-height:2.05;color:#efe8d6;white-space:pre-wrap;text-align:center;border-top:1px solid rgba(201,168,76,.25);border-bottom:1px solid rgba(201,168,76,.25);padding:22px 6px;margin-bottom:20px;}
+.adv-label{font-size:12px;letter-spacing:4px;color:var(--gold);text-align:center;margin-bottom:12px;}
+.advice{max-width:600px;width:100%;display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
+.advice .line{font-size:14px;line-height:1.7;color:#efe8d6;background:rgba(201,168,76,.07);border-left:2px solid var(--gold);padding:9px 14px;border-radius:0 4px 4px 0;}
+</style>
+
+<div id="app">
+  <a id="home-btn" href="./index.html" title="選單 / Menu">⌂</a>
+  <button id="music-btn" onclick="toggleMusic()" title="音樂 / Music">🔊</button>
+  <button id="lang-btn" onclick="toggleLang()">EN</button>
+
+  <section id="title" class="screen center active">
+    <div class="t-zh" id="tt-zh">內在英雄之旅</div>
+    <div class="t-en">THE INNER JOURNEY</div>
+    <div class="t-sub" id="tt-sub"></div>
+    <button class="btn" onclick="begin()" id="tt-btn">向內啟程 · BEGIN</button>
+  </section>
+
+  <section id="journey" class="screen">
+    <div id="ringwrap">
+      <svg id="ring" viewBox="0 0 300 300" aria-hidden="true">
+        <circle class="ringpath" cx="150" cy="150" r="100"></circle>
+        <line class="thresh" x1="50" y1="150" x2="250" y2="150"></line>
+        <text class="axis" x="150" y="132" text-anchor="middle" id="ax-known">已知</text>
+        <text class="axis" x="150" y="176" text-anchor="middle" id="ax-unknown">未知</text>
+        <text class="center-zh" x="150" y="216" text-anchor="middle" id="ring-center">英雄之旅</text>
+        <text class="rlabel" id="ring-0" x="226" y="92" text-anchor="middle"></text>
+        <text class="rlabel" id="ring-1" x="252" y="154" text-anchor="middle"></text>
+        <text class="rlabel" id="ring-2" x="150" y="262" text-anchor="middle"></text>
+        <text class="rlabel" id="ring-3" x="48" y="154" text-anchor="middle"></text>
+        <text class="rlabel" id="ring-4" x="74" y="92" text-anchor="middle"></text>
+        <circle id="ring-marker-pulse" cx="150" cy="50" r="10"></circle>
+        <circle id="ring-marker" cx="150" cy="50" r="6"></circle>
+      </svg>
+    </div>
+    <div id="body"></div>
+  </section>
+
+  <div id="hud"><div class="hud-inner">
+    <span>⚔️ <span id="l-c">勇氣</span> <b id="v-c">10</b></span>
+    <span>🌙 <span id="l-w">智慧</span> <b id="v-w">10</b></span>
+    <span>❤️ <span id="l-h">心</span> <b id="v-h">10</b></span>
+  </div></div>
+
+  <section id="ending" class="screen">
+    <div class="adv-label" id="e-label">你的內在稱號</div>
+    <div class="arch" id="e-arch"></div>
+    <div class="arch-en" id="e-arch-en"></div>
+    <div class="epic" id="e-epic"></div>
+    <div class="adv-label" id="e-adv-label"></div>
+    <div class="advice" id="e-advice"></div>
+    <button class="btn btn-sm" onclick="restart()" id="e-btn">再走一次 · AGAIN</button>
+  </section>
+</div>
+
+<script>
+let LANG='zh';
+const UI={
+ zh:{sub:'真正的旅程，不是走向遠方，而是走向內心。\n跨越「已知」與「未知」的門檻，遇見、並超越你自己。',begin:'向內啟程 · BEGIN',
+   c:'勇氣',w:'智慧',h:'心',choose:'然後，選擇你面對它的方式：',write:'（在這裡寫下你的答案）',needWrite:'請先寫下你的答案，再選擇 ✍️',
+   known:'已知',unknown:'未知',center:'英雄之旅',endLabel:'你的內在稱號',advLabel:'給你的建議',again:'再走一次 · AGAIN'},
+ en:{sub:'The truest journey goes not outward, but inward.\nCross the threshold of the Known and the Unknown — meet, and surpass, yourself.',begin:'JOURNEY INWARD',
+   c:'Courage',w:'Wisdom',h:'Heart',choose:'Then choose how you meet it:',write:'(write your answer here)',needWrite:'Write your answer first, then choose ✍️',
+   known:'Known',unknown:'Unknown',center:'The Journey',endLabel:'Your Inner Title',advLabel:'A Word for You',again:'WALK AGAIN'}
+};
+// five stations of the circle (short ring labels + full titles), mapped to MYTH echoes
+const PH=[
+ {ring:{zh:'召喚',en:'Call'},myth:1,
+  zh:{title:'一 · 召喚（已知）',narr:'你站在熟悉的世界裡，卻聽見一個來自內心深處、微弱卻固執的聲音。',
+      prompt:'此刻，你內心深處在呼喚你去面對、或完成什麼？',
+      choices:[{t:'一個我一直壓抑的渴望。',a:{heart:2},w:'傾聽渴望'},{t:'一個我逃避已久的問題。',a:{courage:2},w:'直視問題'},{t:'一種想活得更真實的衝動。',a:{wisdom:1,heart:1},w:'嚮往真實'}]},
+  en:{title:'I · The Call (Known)',narr:'You stand in the familiar world, yet hear a faint, stubborn voice from deep within.',
+      prompt:'Right now, what is your inner self calling you to face or complete?',
+      choices:[{t:'A longing I have kept suppressed.',a:{heart:2},w:'hearing the longing'},{t:'A question I have long avoided.',a:{courage:2},w:'facing the question'},{t:'An urge to live more truly.',a:{wisdom:1,heart:1},w:'toward the true'}]}},
+ {ring:{zh:'離開',en:'Depart'},myth:4,
+  zh:{title:'二 · 離開原地（已知→未知）',narr:'每一次向內的旅程，都要先放下一些「已知」——熟悉的身份、習慣，或安全感。',
+      prompt:'你必須放下哪一個「已知」，才能真正啟程？',
+      choices:[{t:'放下別人對我的期待。',a:{courage:2},w:'卸下期待'},{t:'放下「我應該沒事」的假裝。',a:{heart:2},w:'誠實面對'},{t:'放下對結果的掌控。',a:{wisdom:2},w:'學會放手'}]},
+  en:{title:'II · Departure (Known → Unknown)',narr:'Every inward journey begins by releasing something "known" — a familiar identity, habit, or sense of safety.',
+      prompt:'Which "known" must you release to truly set out?',
+      choices:[{t:'Others’ expectations of me.',a:{courage:2},w:'shedding expectation'},{t:'The pretense that "I’m fine".',a:{heart:2},w:'honest at last'},{t:'My grip on the outcome.',a:{wisdom:2},w:'learning to release'}]}},
+ {ring:{zh:'流浪',en:'Wander'},myth:5,
+  zh:{title:'三 · 跨界流浪（未知）',narr:'你踏入了未知。這裡沒有地圖，只有你與你自己。',
+      prompt:'在這片未知裡，你遇見了自己的哪一面？（也許是恐懼、脆弱，或從未承認的渴望）',
+      choices:[{t:'我的恐懼，比我以為的更巨大。',a:{wisdom:1,heart:1},w:'看見恐懼'},{t:'我的脆弱，也是我的柔軟。',a:{heart:2},w:'接納脆弱'},{t:'我比自己想的更有力量。',a:{courage:2},w:'發現力量'}]},
+  en:{title:'III · Wandering the Unknown',narr:'You step into the unknown. There is no map here — only you, and yourself.',
+      prompt:'In this unknown, which side of yourself did you meet? (a fear, a softness, an unadmitted longing)',
+      choices:[{t:'My fear is larger than I thought.',a:{wisdom:1,heart:1},w:'seeing the fear'},{t:'My fragility is also my tenderness.',a:{heart:2},w:'accepting frailty'},{t:'I am stronger than I believed.',a:{courage:2},w:'finding strength'}]}},
+ {ring:{zh:'轉化',en:'Transform'},myth:10,
+  zh:{title:'四 · 轉化（未知·最深處）',narr:'在旅程的最深處，舊的你安靜地死去，某樣新的東西開始生長。',
+      prompt:'在這最深的地方，你領悟了什麼、或蛻變成了什麼？',
+      choices:[{t:'我學會了對自己慈悲。',a:{heart:2},w:'慈悲'},{t:'我看清了什麼才真正重要。',a:{wisdom:2},w:'清明'},{t:'我決定不再向恐懼低頭。',a:{courage:2},w:'無畏'}]},
+  en:{title:'IV · Transformation (the deepest point)',narr:'At the journey’s deepest point, the old you quietly dies, and something new begins to grow.',
+      prompt:'Here, in the deepest place, what did you realize — or become?',
+      choices:[{t:'I learned compassion for myself.',a:{heart:2},w:'compassion'},{t:'I saw what truly matters.',a:{wisdom:2},w:'clarity'},{t:'I chose to bow to fear no more.',a:{courage:2},w:'fearlessness'}]}},
+ {ring:{zh:'返回',en:'Return'},myth:11,
+  zh:{title:'五 · 返回（未知→已知）',narr:'轉化之後，你必須回到日常——那個「已知」的世界。但你已不是離開時的你。',
+      prompt:'你要如何把這份內在的轉化，帶回你的日常生活？',
+      choices:[{t:'用更溫柔的方式對待身邊的人。',a:{heart:2},w:'溫柔待人'},{t:'把領悟活成每天的小行動。',a:{wisdom:1,courage:1},w:'落實於日常'},{t:'成為別人黑暗裡的一盞燈。',a:{heart:1,wisdom:1},w:'照亮他人'}]},
+  en:{title:'V · Return (Unknown → Known)',narr:'After transformation, you must return to the everyday — the "known" world. But you are no longer who you were.',
+      prompt:'How will you carry this inner transformation back into your daily life?',
+      choices:[{t:'Treat those around me more gently.',a:{heart:2},w:'gentler with others'},{t:'Live the insight as small daily acts.',a:{wisdom:1,courage:1},w:'made daily'},{t:'Be a lamp in someone’s darkness.',a:{heart:1,wisdom:1},w:'lighting others'}]}}
+];
+const ANGLES=[50,90,180,270,310];
+
+const G={i:0,attrs:{courage:10,wisdom:10,heart:10},answers:[],traits:[]};
+const L=()=>LANG,$=id=>document.getElementById(id),clamp=v=>Math.max(0,Math.min(20,v));
+
+function applyLang(){
+  const u=UI[LANG];
+  $('lang-btn').textContent=LANG==='zh'?'EN':'中';
+  $('tt-zh').textContent=LANG==='zh'?'內在英雄之旅':'The Inner Journey';
+  $('tt-sub').textContent=u.sub;$('tt-btn').textContent=u.begin;
+  $('l-c').textContent=u.c;$('l-w').textContent=u.w;$('l-h').textContent=u.h;
+  $('ax-known').textContent=u.known;$('ax-unknown').textContent=u.unknown;$('ring-center').textContent=u.center;
+  $('e-label').textContent=u.endLabel;$('e-btn').textContent=u.again;
+  for(let k=0;k<5;k++)$('ring-'+k).textContent=PH[k].ring[LANG==='zh'?'zh':'en'];
+}
+function toggleLang(){LANG=LANG==='zh'?'en':'zh';applyLang();
+  if($('journey').classList.contains('active'))renderPhase(true);}
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');
+  const th={title:'mystic',journey:'mystic',ending:'triumph'};if(th[id]&&window.Music)Music.set(th[id]);}
+function begin(){G.i=0;G.attrs={courage:10,wisdom:10,heart:10};G.answers=[];G.traits=[];show('journey');$('hud').classList.add('on');renderPhase();}
+function restart(){$('hud').classList.remove('on');show('title');}
+
+function updateHUD(){$('v-c').textContent=G.attrs.courage;$('v-w').textContent=G.attrs.wisdom;$('v-h').textContent=G.attrs.heart;}
+function moveMarker(i){
+  const a=ANGLES[i]*Math.PI/180, cx=150+100*Math.sin(a), cy=150-100*Math.cos(a);
+  $('ring-marker').setAttribute('cx',cx.toFixed(1));$('ring-marker').setAttribute('cy',cy.toFixed(1));
+  $('ring-marker-pulse').setAttribute('cx',cx.toFixed(1));$('ring-marker-pulse').setAttribute('cy',cy.toFixed(1));
+  for(let k=0;k<5;k++)$('ring-'+k).classList.toggle('active',k===i);
+}
+function renderPhase(keep){
+  const p=PH[G.i],d=p[L()],u=UI[LANG];
+  moveMarker(G.i);updateHUD();
+  const prev=keep?($('answer')?$('answer').value:''):'';
+  const body=$('body');body.innerHTML='';
+  const zone=document.createElement('div');zone.className='ph-zone';zone.textContent=(LANG==='zh'?'第 ':'Station ')+(G.i+1)+' / 5';body.appendChild(zone);
+  const tt=document.createElement('div');tt.className='ph-title';tt.textContent=d.title;body.appendChild(tt);
+  const narr=document.createElement('div');narr.className='narr';narr.textContent=d.narr;body.appendChild(narr);
+  const m=mythEcho(p.myth);
+  const echo=document.createElement('div');echo.className='myth-echo';
+  echo.innerHTML=`<span class="mlabel">🏛️ ${LANG==='zh'?'神話回聲':'MYTHIC ECHO'}</span>${LANG==='zh'?m.ez:m.ee}`;body.appendChild(echo);
+  const mq=document.createElement('div');mq.className='myth-quote';
+  mq.innerHTML=`「${LANG==='zh'?m.qz:m.qe}」<span class="msrc">— ${LANG==='zh'?m.sz:m.se}</span>`;body.appendChild(mq);
+  const pr=document.createElement('div');pr.className='prompt';pr.textContent=d.prompt;body.appendChild(pr);
+  const ta=document.createElement('textarea');ta.id='answer';ta.placeholder=u.write;ta.value=prev;
+  ta.addEventListener('input',()=>{ta.style.borderColor='';$('write-warn').textContent='';});body.appendChild(ta);
+  const warn=document.createElement('div');warn.id='write-warn';body.appendChild(warn);
+  const cl=document.createElement('div');cl.className='choose-label';cl.textContent=u.choose;body.appendChild(cl);
+  const cw=document.createElement('div');cw.className='choices';
+  d.choices.forEach((c,idx)=>{const b=document.createElement('button');b.className='choice';b.innerHTML=`${c.t}<span class="tag">✦ ${c.w}</span>`;b.onclick=()=>choose(idx);cw.appendChild(b);});
+  body.appendChild(cw);body.scrollTop=0;
+}
+function choose(idx){
+  const p=PH[G.i],d=p[L()],c=d.choices[idx];
+  const ta=$('answer'),ans=(ta?.value||'').trim();
+  if(!ans){$('write-warn').textContent=UI[LANG].needWrite;if(ta){ta.style.borderColor='#e0503a';ta.focus();ta.scrollIntoView({behavior:'smooth',block:'center'});}return;}
+  G.answers[G.i]=ans;G.traits[G.i]=c.w;
+  for(const k in c.a)G.attrs[k]=clamp(G.attrs[k]+c.a[k]);
+  updateHUD();
+  G.i++;
+  if(G.i>=PH.length)finish();else renderPhase();
+}
+
+function archetype(){
+  const {courage:c,wisdom:w,heart:h}=G.attrs,mx=Math.max(c,w,h),spread=mx-Math.min(c,w,h);
+  if(spread<=2)return{zh:'完整的自己',en:'The Whole Self',dz:'勇氣、智慧與心在你之內達成了平衡。你不再與自己為敵——你成為了完整的自己。',de:'Courage, wisdom and heart found balance within you. You are at war with yourself no longer — you have become whole.'};
+  if(c===mx)return{zh:'內在的勇者',en:'The Inner Warrior',dz:'你敢於走進自己最怕的黑暗，也敢於再走出來。你的勇氣，是向內的。',de:'You dared to walk into your own darkest places — and to walk back out. Your courage turns inward.'};
+  if(w===mx)return{zh:'覺醒的智者',en:'The Awakened',dz:'你在未知裡看清了自己。真正的智慧，是認得自己的心。',de:'In the unknown you saw yourself clearly. True wisdom is to know your own heart.'};
+  return{zh:'慈悲的守護者',en:'The Compassionate',dz:'你穿過內在的風暴，仍選擇溫柔——先溫柔待己，再溫柔待人。',de:'You crossed the inner storm and still chose tenderness — first for yourself, then for others.'};
+}
+function forgeEpic(){
+  const a=G.answers,zh=LANG==='zh',t=s=>{s=(s||'').trim();return s.length>30?s.slice(0,28)+'…':s;};
+  const arch=archetype();const L2=[];
+  if(zh){
+    L2.push('這是一趟向內的旅程。');L2.push('');
+    if(a[0])L2.push(`你聽見了召喚：「${t(a[0])}」`);
+    if(a[1])L2.push(`你放下了「${t(a[1])}」，跨過了門檻。`);
+    if(a[2])L2.push(`在未知裡，你遇見了「${t(a[2])}」。`);
+    if(a[3])L2.push(`在最深處，你「${t(a[3])}」。`);
+    if(a[4])L2.push(`然後你帶著它，「${t(a[4])}」回到日常。`);
+    L2.push('');L2.push('於是你認出了自己——');L2.push(`「${arch.zh}」。`);L2.push(arch.dz);
+  }else{
+    L2.push('This was a journey inward.');L2.push('');
+    if(a[0])L2.push(`You heard the call: "${t(a[0])}"`);
+    if(a[1])L2.push(`You released "${t(a[1])}" and crossed the threshold.`);
+    if(a[2])L2.push(`In the unknown, you met "${t(a[2])}".`);
+    if(a[3])L2.push(`At the deepest point, you "${t(a[3])}".`);
+    if(a[4])L2.push(`Then you carried it home: "${t(a[4])}".`);
+    L2.push('');L2.push('And so you recognized yourself —');L2.push(`"${arch.en}".`);L2.push(arch.de);
+  }
+  return{arch,text:L2.join('\n')};
+}
+function buildAdvice(){
+  const a=G.answers,zh=LANG==='zh',out=[],t=s=>{s=(s||'').trim();return s.length>30?s.slice(0,28)+'…':s;};
+  if(a[0])out.push(zh?`你聽見的「${t(a[0])}」，值得你認真回應——從最小的一步開始。`:`The "${t(a[0])}" you heard deserves a real answer — begin with the smallest step.`);
+  if(a[2])out.push(zh?`你在未知裡遇見的「${t(a[2])}」，不是敵人，而是你的一部分。`:`The "${t(a[2])}" you met in the unknown is not an enemy — it is part of you.`);
+  if(a[4])out.push(zh?`把「${t(a[4])}」活進日常，這趟旅程才真正完成。`:`Live out "${t(a[4])}" day by day — that is how this journey completes.`);
+  const {courage:c,wisdom:w,heart:h}=G.attrs,mx=Math.max(c,w,h),mn=Math.min(c,w,h);
+  const nm=v=>zh?(v===c?'勇氣':v===w?'智慧':'心'):(v===c?'courage':v===w?'wisdom':'heart');
+  if(out.length>3)out.length=3;
+  out.push(zh?`你的「${nm(mx)}」是你的天賦；也記得溫柔地餵養你的「${nm(mn)}」。`:`Your ${nm(mx)} is your gift — remember to nourish your ${nm(mn)} too.`);
+  return out;
+}
+function finish(){
+  const {arch,text}=forgeEpic();
+  $('e-arch').textContent=arch.zh;$('e-arch-en').textContent=arch.en;$('e-epic').textContent=text;
+  $('e-adv-label').textContent=UI[LANG].advLabel;
+  $('e-advice').innerHTML=buildAdvice().map(l=>`<div class="line">✦ ${l}</div>`).join('');
+  $('e-label').textContent=UI[LANG].endLabel;
+  $('hud').classList.remove('on');show('ending');
+}
+
+// ═══ music (shared engine) ═══
+const Music = (function(){
+  let ctx=null, master=null, bus=null, timer=null;
+  let muted=false, nextBarTime=0, barIx=0;
+  let current='epic', pending='epic';
+  const NOTE={A:0,'A#':1,B:2,C:3,'C#':4,D:5,'D#':6,E:7,F:8,'F#':9,G:10,'G#':11};
+  const hz=(root,s)=>root*Math.pow(2,s/12);
+  const triad=(name,type)=>{const r=NOTE[name],t=type==='min'?3:4;return [r,r+t,r+7];};
+
+  function impulse(sec,decay){
+    const rate=ctx.sampleRate,len=Math.floor(rate*sec),buf=ctx.createBuffer(2,len,rate);
+    for(let c=0;c<2;c++){const d=buf.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay);}
+    return buf;
+  }
+  function ensure(){
+    if(ctx) return true;
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC) return false;
+    ctx=new AC();
+    master=ctx.createGain(); master.gain.value=muted?0:0.30;
+    const comp=ctx.createDynamicsCompressor();
+    comp.threshold.value=-16; comp.ratio.value=3; comp.attack.value=0.006; comp.release.value=0.3;
+    const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=6200;
+    master.connect(comp); comp.connect(lp); lp.connect(ctx.destination);
+    // instrument bus -> dry + reverb (lush hall for an epic, less "raw" sound)
+    bus=ctx.createGain(); bus.connect(master);
+    const rev=ctx.createConvolver(); rev.buffer=impulse(2.8,2.2);
+    const wet=ctx.createGain(); wet.gain.value=0.85;
+    bus.connect(rev); rev.connect(wet); wet.connect(master);
+    return true;
+  }
+
+  // ── warm layered voice: two slightly-detuned oscillators through a lowpass,
+  //    smooth ADSR, optional gentle vibrato — far softer than a bare sawtooth ──
+  function voice(t,freq,dur,o){
+    o=o||{};
+    const peak=o.peak!=null?o.peak:0.14,a=o.a!=null?o.a:0.04,r=o.r!=null?o.r:0.25;
+    const cut=o.cut||2600,type=o.type||'sawtooth';
+    const g=ctx.createGain();
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(peak,t+a);
+    g.gain.setValueAtTime(peak,t+Math.max(a+0.005,dur-r));
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    const f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=cut;
+    f.connect(g); g.connect(bus);
+    const base=o.detune||0;
+    const mk=(det)=>{const os=ctx.createOscillator();os.type=type;os.frequency.value=freq;os.detune.value=det;os.connect(f);os.start(t);os.stop(t+dur+0.06);return os;};
+    const o1=mk(base-6),o2=mk(base+6);
+    if(o.vib){const vo=ctx.createOscillator();vo.type='sine';vo.frequency.value=5.2;const vg=ctx.createGain();vg.gain.value=o.vib;vo.connect(vg);vg.connect(o1.detune);vg.connect(o2.detune);vo.start(t);vo.stop(t+dur+0.06);}
+  }
+  const strings=(t,tri,dur,gain)=>tri.concat([tri[0]+12]).forEach(s=>voice(t,hz(110,s),dur,{peak:gain||0.05,a:0.55,r:0.75,cut:1300,type:'sawtooth'}));
+  const brass=(t,tri,dur,gain)=>tri.concat([tri[0]+12]).forEach((s,i)=>voice(t,hz(110,s),dur,{peak:(gain||0.08)/(1+i*0.2),a:0.05,r:0.18,cut:2000,type:'sawtooth',detune:i%2?5:-5}));
+  const melo=(t,semi,dur,gain,base)=>voice(t,hz(base||220,semi),dur,{peak:gain||0.16,a:0.06,r:0.2,cut:3000,type:'triangle',vib:6});
+  const harp=(t,semi,dur,base)=>voice(t,hz(base||220,semi),dur||0.5,{peak:0.1,a:0.006,r:0.45,cut:3200,type:'triangle'});
+  function bassv(t,semi,dur,gain){
+    voice(t,hz(55,semi),dur,{peak:gain||0.24,a:0.02,r:0.14,cut:1300,type:'triangle'});
+    const o=ctx.createOscillator();o.type='sine';o.frequency.value=hz(55,semi);
+    const g=ctx.createGain();g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime((gain||0.24)*0.7,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g);g.connect(bus);o.start(t);o.stop(t+dur+0.05);
+  }
+  function thump(t,gain){const o=ctx.createOscillator();o.type='sine';const g=ctx.createGain();o.frequency.setValueAtTime(160,t);o.frequency.exponentialRampToValueAtTime(45,t+0.18);g.gain.setValueAtTime(gain||0.6,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.34);o.connect(g);g.connect(master);o.start(t);o.stop(t+0.4);}
+  function crash(t,gain,dur,hp){const len=Math.floor(ctx.sampleRate*(dur||0.4));const buf=ctx.createBuffer(1,len,ctx.sampleRate);const d=buf.getChannelData(0);for(let k=0;k<len;k++)d[k]=(Math.random()*2-1)*Math.pow(1-k/len,1.4);const n=ctx.createBufferSource();n.buffer=buf;const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=hp||3000;const g=ctx.createGain();g.gain.value=gain||0.1;n.connect(f);f.connect(g);g.connect(bus);n.start(t);}
+
+  // ── melodies as bars of [semitone(from base), beatOffset, durBeats] ──
+  // Ode to Joy (Beethoven, public domain) — semitones relative to A(220), key of C
+  const ODE=[
+    [[7,0,1],[7,1,1],[8,2,1],[10,3,1]],
+    [[10,0,1],[8,1,1],[7,2,1],[5,3,1]],
+    [[3,0,1],[3,1,1],[5,2,1],[7,3,1]],
+    [[7,0,1.5],[5,1.5,0.5],[5,2,2]],
+    [[7,0,1],[7,1,1],[8,2,1],[10,3,1]],
+    [[10,0,1],[8,1,1],[7,2,1],[5,3,1]],
+    [[3,0,1],[3,1,1],[5,2,1],[7,3,1]],
+    [[5,0,1.5],[3,1.5,0.5],[3,2,2]]
+  ];
+  // Original heroic line in A minor over Am–F–C–G
+  const HERO=[
+    [[12,0,2],[15,2,1],[12,3,1]],
+    [[17,0,2],[15,2,1],[12,3,1]],
+    [[15,0,1],[14,1,1],[12,2,2]],
+    [[14,0,1],[12,1,1],[10,2,1],[7,3,1]]
+  ];
+  const playMel=(t,i,bars,base,gain,spb)=>{const bar=bars[i%bars.length];for(const [s,off,dur] of bar)melo(t+off*spb,s,dur*spb*0.96,gain,base);};
+
+  // ── themes: schedule one full 4/4 bar given start time t and bar index i ──
+  const THEMES={
+    epic:{bpm:120,beats:4,prog:[['A','min'],['F','maj'],['C','maj'],['G','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.05); brass(t,tri,spb*1.9,0.08); brass(t+spb*2,tri,spb*1.9,0.07);
+        for(let e=0;e<8;e++)bassv(t+e*spb/2,rs+(e%2?12:0),spb*0.46,0.24);
+        thump(t,0.7);thump(t+spb*2,0.58);thump(t+spb*1.5,0.28);thump(t+spb*3.5,0.32);
+        if(i%4===0)crash(t,0.1,0.4,3400);
+        playMel(t,i,HERO,220,0.17,spb);}},
+    triumph:{bpm:104,beats:4,prog:[['C','maj'],['G','maj'],['C','maj'],['G','maj'],['C','maj'],['G','maj'],['A','min'],['G','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%this.prog.length],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.055); brass(t,tri,spb*3.8,0.055);
+        for(let e=0;e<4;e++)bassv(t+e*spb,rs+(e%2?12:0),spb*0.9,0.22);
+        thump(t,0.62);thump(t+spb*2,0.5);
+        if(i%4===0)crash(t,0.09,0.45,3200);
+        playMel(t,i,ODE,220,0.2,spb);}},
+    drive:{bpm:148,beats:4,prog:[['A','min'],['G','maj'],['F','maj'],['G','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.04); brass(t,tri,spb*0.9,0.07); brass(t+spb*2,tri,spb*0.9,0.06);
+        for(let e=0;e<8;e++)bassv(t+e*spb/2,rs,spb*0.44,0.24);
+        for(let b=0;b<4;b++)thump(t+b*spb,b%2?0.4:0.6);
+        const m=[12,10,8,7,8,10,12,14];for(let e=0;e<8;e++)melo(t+e*spb/2,m[e],spb*0.42,0.11,220);}},
+    ambient:{bpm:60,beats:4,prog:[['A','min'],['A','min'],['F','maj'],['C','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.055); bassv(t,rs,spb*4,0.15);
+        const sc=[0,3,7,10,12];if(Math.random()<0.7)harp(t+spb*(1+Math.floor(Math.random()*3)),sc[Math.floor(Math.random()*sc.length)],1.2,220);}},
+    calm:{bpm:72,beats:4,prog:[['A','min'],['E','min'],['F','maj'],['C','maj']],
+      mel:[7,12,10,8, 7,5,7,null, 8,10,12,null, 7,5,3,null],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.05); bassv(t,rs,spb*4,0.16); thump(t,0.24);
+        for(let b=0;b<4;b++){const n=this.mel[(i%4)*4+b];if(n!=null)harp(t+b*spb,n,spb*0.9,220);}}},
+    mystic:{bpm:76,beats:4,prog:[['F','maj'],['C','maj'],['G','maj'],['A','min']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.05); bassv(t,rs,spb*4,0.15);
+        const arp=[tri[0],tri[1],tri[2],tri[1]+12,tri[2],tri[1],tri[0]+12,tri[1]];
+        for(let e=0;e<8;e++)harp(t+e*spb/2,arp[e],spb*0.55,220);
+        if(i%2===0)melo(t,tri[0]+12,spb*3,0.1,220);}},
+    tense:{bpm:80,beats:4,prog:[['A','min'],['A','min'],['A','min'],['A','min']],
+      bar(t,i){const spb=60/this.bpm;
+        [0,6,7].forEach(s=>voice(t,hz(110,s),spb*4,{peak:0.04,a:0.7,r:0.9,cut:900,type:'sawtooth',detune:6}));
+        bassv(t,0,spb*4,0.2); if(i%2===0)thump(t,0.36);
+        if(i%4===3)crash(t+spb*3,0.05,0.6,2400);
+        if(Math.random()<0.4)melo(t+spb*(1+Math.floor(Math.random()*2)),[1,6,8][Math.floor(Math.random()*3)],spb,0.06,220);}}
+  };
+
+  function scheduler(){
+    if(!ctx) return;
+    while(nextBarTime < ctx.currentTime + 0.25){
+      const th=THEMES[current]||THEMES.epic;
+      try{ th.bar(nextBarTime, barIx); }catch(e){}
+      nextBarTime += (60/th.bpm)*th.beats;
+      barIx++;
+      if(pending!==current){ current=pending; barIx=0; }   // switch on bar boundary
+    }
+  }
+
+  return {
+    start(){
+      if(!ensure()) return;
+      if(ctx.state==='suspended') ctx.resume();
+      if(!timer){ nextBarTime=ctx.currentTime+0.1; barIx=0; timer=setInterval(scheduler,25); }
+    },
+    set(name){ if(THEMES[name]){ pending=name; if(!timer) current=name; } },
+    toggle(){ muted=!muted; if(master) master.gain.setTargetAtTime(muted?0:0.30, ctx.currentTime, 0.05); if(!muted) this.start(); return muted; },
+    isMuted(){ return muted; },
+    running(){ return !!(ctx && ctx.state==='running'); }
+  };
+})();
+window.Music=Music;
+function toggleMusic(){const m=Music.toggle();const b=$('music-btn');b.textContent=m?'🔇':'🔊';b.classList.toggle('muted',m);}
+let silentEl=null;
+function unlockAudio(){
+  if(!silentEl){silentEl=document.createElement('audio');silentEl.setAttribute('playsinline','');silentEl.loop=true;silentEl.volume=0.001;silentEl.src='data:audio/wav;base64,UklGRqQHAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YYAHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';}
+  silentEl.play().catch(()=>{});
+  Music.set('mystic');Music.start();
+  if(Music.running()){['pointerdown','touchstart','touchend','mousedown','click','keydown'].forEach(ev=>document.removeEventListener(ev,unlockAudio));}
+}
+['pointerdown','touchstart','touchend','mousedown','click','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio));
+
+const MYTH=[
+ {ez:'英雄，都始於一座困住自己的家。',ee:'Every hero begins in a home that traps them.',qz:'沒有比故鄉更甜美的東西。',qe:'Nothing is sweeter than home.',sz:'荷馬《奧德賽》',se:'Homer, Odyssey'},
+ {ez:'召喚從不喧嘩，只是不肯離去。',ee:'The call is never loud—it just won’t leave.',qz:'千里之行，始於足下。',qe:'A thousand miles begins with one step.',sz:'老子',se:'Laozi'},
+ {ez:'連奧德修斯都曾裝瘋逃避。',ee:'Even Odysseus once fled the call.',qz:'怯懦者死過許多次。',qe:'Cowards die many times.',sz:'莎士比亞',se:'Shakespeare'},
+ {ez:'導師不替你走路，只給你劍。',ee:'A mentor hands you a sword, not the road.',qz:'智慧始於承認無知。',qe:'Wisdom begins in admitting ignorance.',sz:'蘇格拉底',se:'Socrates'},
+ {ez:'跨過門檻，世界從此不同。',ee:'Cross the threshold; the world changes.',qz:'我在人生中途，迷失於幽暗森林。',qe:'Midway in life, I found a dark wood.',sz:'但丁《神曲》',se:'Dante'},
+ {ez:'最難的敵人，戴著你的臉。',ee:'The fiercest enemy wears your face.',qz:'烈火試真金，逆境試強者。',qe:'Fire tests gold; adversity, the brave.',sz:'塞內卡',se:'Seneca'},
+ {ez:'最深的洞，藏著你最怕的真相。',ee:'The deepest cave holds your deepest fear.',qz:'你凝視深淵，深淵也凝視你。',qe:'Gaze into the abyss, it gazes back.',sz:'尼采',se:'Nietzsche'},
+ {ez:'舊的你，死在這裡。',ee:'Here, the old you dies.',qz:'殺不死我的，使我更強。',qe:'What doesn’t kill me makes me stronger.',sz:'尼采',se:'Nietzsche'},
+ {ez:'真正的寶物，是奪不走的清明。',ee:'The true treasure: clarity none can steal.',qz:'認識你自己。',qe:'Know thyself.',sz:'德爾斐神諭',se:'Delphi'},
+ {ez:'帶著收穫回家，比出發更難。',ee:'Carrying the gift home is the harder road.',qz:'人不能兩次踏進同一條河。',qe:'No one steps in the same river twice.',sz:'赫拉克利特',se:'Heraclitus'},
+ {ez:'從灰燼裡，站起新的你。',ee:'From the ashes rises a new you.',qz:'置之死地而後生。',qe:'Cast where there’s no retreat—and live.',sz:'《孫子兵法》',se:'Sun Tzu'},
+ {ez:'英雄的圓滿，是成為他人的燈。',ee:'A hero’s end is to be a lamp for others.',qz:'登上烏魯克的城牆，細看它的根基。',qe:'Climb Uruk’s wall; inspect its base.',sz:'《吉爾伽美什史詩》',se:'Gilgamesh'},
+];
+const mythEcho=i=>MYTH[((i%12)+12)%12];
+applyLang();
+</script>

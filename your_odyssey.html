@@ -154,11 +154,11 @@ let LANG='zh';
 const UI={
   zh:{titleSub:'這一次，英雄不是別人——是你。\n走過坎伯的十二道門檻，把神話寫成你自己的故事。',
       begin:'啟程 · BEGIN', courage:'勇氣', wisdom:'智慧', heart:'心',
-      write:'（寫下你的答案，或留白也可以）', next:'繼續 ▶', choose:'然後，選擇你面對它的方式：',
+      write:'（在這裡寫下你的答案）', needWrite:'請先寫下你的答案，再選擇 ✍️', next:'繼續 ▶', choose:'然後，選擇你面對它的方式：',
       endLabel:'你的英雄稱號', again:'再走一次 · AGAIN', skip:'我還沒有答案，繼續 ▶'},
   en:{titleSub:'This time the hero is not someone else — it is you.\nWalk Campbell’s twelve thresholds and write the myth as your own.',
       begin:'BEGIN', courage:'Courage', wisdom:'Wisdom', heart:'Heart',
-      write:'(write your answer, or leave it blank)', next:'Continue ▶', choose:'Then choose how you meet it:',
+      write:'(write your answer here)', needWrite:'Write your answer first, then choose ✍️', next:'Continue ▶', choose:'Then choose how you meet it:',
       endLabel:'Your Hero Title', again:'WALK AGAIN', skip:'No answer yet — continue ▶'}
 };
 
@@ -389,7 +389,11 @@ function renderStage(keepInput){
   body.innerHTML='';
   const narr=document.createElement('div'); narr.className='narr fadein'; narr.textContent=d.narr; body.appendChild(narr);
   const pr=document.createElement('div'); pr.className='prompt'; pr.textContent=d.prompt; body.appendChild(pr);
-  const ta=document.createElement('textarea'); ta.id='answer'; ta.placeholder=u.write; ta.value=prev; body.appendChild(ta);
+  const ta=document.createElement('textarea'); ta.id='answer'; ta.placeholder=u.write; ta.value=prev;
+  ta.addEventListener('input',()=>{ta.style.borderColor='';const w=document.getElementById('write-warn');if(w)w.textContent='';});
+  body.appendChild(ta);
+  const warn=document.createElement('div'); warn.id='write-warn';
+  warn.style.cssText='color:#ff8a72;font-size:12px;margin-top:6px;min-height:16px;letter-spacing:.5px'; body.appendChild(warn);
   const ch=document.createElement('div'); ch.className='prompt'; ch.style.marginTop='16px'; ch.textContent=u.choose; body.appendChild(ch);
   const cw=document.createElement('div'); cw.className='choices';
   d.choices.forEach((c,idx)=>{
@@ -404,7 +408,13 @@ function renderStage(keepInput){
 
 function choose(idx){
   const st=STAGES[G.i], d=st[L()], c=d.choices[idx];
-  const ans=(document.querySelector('#answer')?.value||'').trim();
+  const ta=document.querySelector('#answer');
+  const ans=(ta?.value||'').trim();
+  if(!ans){ // free-write is required before choosing
+    const w=document.getElementById('write-warn'); if(w)w.textContent=UI[LANG].needWrite;
+    if(ta){ ta.style.borderColor='#e0503a'; ta.focus(); ta.scrollIntoView({behavior:'smooth',block:'center'}); }
+    return;
+  }
   G.answers[G.i]=ans;
   G.traits[G.i]=c.w;
   for(const k in c.a){ G.attrs[k]=clamp(G.attrs[k]+c.a[k]); }

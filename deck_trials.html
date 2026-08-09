@@ -1,0 +1,672 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>英雄牌旅 · The Deckbound Hero</title>
+<style>
+:root{--gold:#c9a84c;--gold-light:#e8d48a;--red:#e0503a;--green:#5ac878;--blue:#5a8cff;--text:#e7e0d0;--muted:rgba(200,180,140,0.62);--panel:#141024;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{background:#07050f;color:var(--text);overflow:hidden;-webkit-tap-highlight-color:transparent;font-family:"Noto Serif TC","Songti TC",Georgia,serif;}
+#app{position:fixed;inset:0;overflow:hidden;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;}
+.screen.active{display:flex;}
+#lang-btn,#music-btn,#home-btn{position:fixed;top:12px;z-index:1000;background:rgba(0,0,0,.55);border:1px solid var(--gold);color:var(--gold);cursor:pointer;border-radius:3px;font-family:inherit;letter-spacing:1px;text-decoration:none;}
+#home-btn{left:12px;padding:6px 12px;font-size:12px;}
+#lang-btn{right:12px;padding:6px 12px;font-size:12px;} #music-btn{right:70px;padding:6px 9px;font-size:14px;line-height:1;} #music-btn.muted{opacity:.5;}
+.btn{padding:13px 34px;background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(120,80,200,.2));border:1px solid var(--gold);color:var(--gold-light);font-size:16px;letter-spacing:2px;cursor:pointer;border-radius:3px;font-family:inherit;transition:all .25s;}
+.btn:hover{background:linear-gradient(135deg,rgba(201,168,76,.4),rgba(120,80,200,.35));box-shadow:0 0 20px rgba(201,168,76,.3);}
+.btn-sm{padding:8px 18px;font-size:13px;letter-spacing:1px;}
+.center{align-items:center;justify-content:center;text-align:center;padding:24px;}
+
+/* title */
+#title{background:radial-gradient(ellipse at 50% 28%,#221641 0,#0a0820 55%,#06040e 100%);}
+.t-zh{font-size:clamp(30px,8vw,46px);color:var(--gold-light);letter-spacing:8px;text-shadow:0 0 24px rgba(201,168,76,.5);}
+.t-en{font-size:13px;letter-spacing:5px;color:var(--muted);margin:10px 0 22px;}
+.t-sub{font-size:13px;color:var(--muted);line-height:1.9;max-width:520px;margin-bottom:30px;}
+
+/* map */
+#map{background:radial-gradient(ellipse at 50% 20%,#1a1233 0,#0a0820 60%,#06040e 100%);overflow-y:auto;}
+.map-head{padding:52px 20px 6px;text-align:center;}
+.map-floor{font-size:13px;letter-spacing:3px;color:var(--gold);}
+.map-hp{font-size:12px;color:var(--muted);margin-top:4px;}
+.map-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;}
+.map-q{font-size:15px;color:var(--gold-light);letter-spacing:1px;margin-bottom:4px;}
+.node{width:min(420px,92vw);background:rgba(20,16,36,.8);border:1px solid rgba(201,168,76,.35);border-radius:10px;padding:16px 18px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px;}
+.node:hover{border-color:var(--gold);background:rgba(40,32,64,.85);transform:translateY(-2px);}
+.node .ic{font-size:30px;flex-shrink:0;}
+.node .nz{font-size:16px;color:var(--gold-light);letter-spacing:1px;} .node .nd{font-size:12px;color:var(--muted);margin-top:3px;}
+.relic-bar{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:0 20px 14px;}
+.relic{font-size:20px;filter:drop-shadow(0 0 6px rgba(201,168,76,.4));cursor:default;}
+
+/* battle */
+#battle{background:#0a0713;}
+#b-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.28;}
+#b-veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,4,14,.55),rgba(6,4,14,.8) 55%,rgba(6,4,14,.97));}
+.b-top{position:relative;z-index:2;padding:46px 16px 6px;display:flex;justify-content:space-between;align-items:flex-start;}
+.enemy-box{position:relative;z-index:2;text-align:center;margin-top:2px;}
+.enemy-art{width:min(150px,34vw);height:min(150px,34vw);margin:0 auto;position:relative;}
+.enemy-art img{width:100%;height:100%;object-fit:cover;border-radius:12px;border:1px solid rgba(224,80,58,.4);}
+.enemy-emoji{display:none;width:100%;height:100%;border-radius:12px;border:1px dashed rgba(201,168,76,.5);background:rgba(20,10,20,.6);align-items:center;justify-content:center;font-size:60px;}
+.enemy-art.hit{animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translate(0,0)}25%{transform:translate(-7px,2px)}50%{transform:translate(6px,-2px)}75%{transform:translate(-4px,1px)}}
+.intent{font-size:13px;color:#ffce9a;letter-spacing:1px;margin-top:6px;min-height:18px;}
+.ename{font-size:16px;color:#ffb9a6;letter-spacing:2px;margin-top:4px;}
+.hpwrap{width:min(240px,66vw);margin:4px auto 0;}
+.hpbar{height:12px;background:rgba(255,255,255,.1);border-radius:6px;overflow:hidden;position:relative;}
+.hpbar>.fill{height:100%;transition:width .3s;}
+.ehp>.fill{background:linear-gradient(90deg,#7a1e14,#e0503a);}
+.php>.fill{background:linear-gradient(90deg,#2f7a3a,#5ac878);}
+.hpbar>.blk{position:absolute;right:4px;top:-1px;font-size:11px;color:#bfe0ff;}
+.hp-num{font-size:11px;color:var(--muted);text-align:center;margin-top:2px;}
+.status-row{display:flex;gap:8px;justify-content:center;margin-top:4px;font-size:11px;color:#ffce9a;min-height:14px;}
+
+.player-zone{position:relative;z-index:2;margin-top:auto;}
+.p-info{display:flex;justify-content:space-between;align-items:center;padding:2px 16px 4px;}
+.energy{font-size:14px;color:var(--gold-light);letter-spacing:1px;}
+.energy b{font-size:18px;color:#ffe9a8;}
+#end-turn{padding:8px 16px;font-size:13px;}
+.php-wrap{padding:0 16px 4px;}
+.hand{display:flex;gap:8px;justify-content:center;align-items:flex-end;padding:6px 8px 12px;overflow-x:auto;min-height:150px;}
+.card{flex:0 0 auto;width:104px;min-height:140px;background:linear-gradient(160deg,#2a2340,#171029);border:1px solid var(--gold);border-radius:9px;padding:8px 8px 10px;cursor:pointer;transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column;position:relative;}
+.card:hover{transform:translateY(-10px);box-shadow:0 8px 24px rgba(0,0,0,.5);}
+.card.attack{border-color:#e0714a;} .card.skill{border-color:#5a9cff;} .card.power{border-color:#c69cff;}
+.card.unafford{opacity:.45;filter:grayscale(.4);}
+.card .cost{position:absolute;top:-8px;left:-8px;width:26px;height:26px;border-radius:50%;background:#1a1030;border:2px solid var(--gold);color:#ffe9a8;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.card .cn{font-size:13px;color:var(--gold-light);text-align:center;margin-top:8px;letter-spacing:1px;}
+.card .ct{font-size:9px;color:var(--muted);text-align:center;margin:1px 0 5px;}
+.card .cd{font-size:10.5px;color:var(--text);line-height:1.45;text-align:center;flex:1;display:flex;align-items:center;justify-content:center;}
+
+/* overlays */
+.overlay{position:absolute;inset:0;z-index:30;background:rgba(6,4,14,.94);display:none;flex-direction:column;align-items:center;justify-content:center;padding:26px;text-align:center;overflow-y:auto;}
+.overlay.on{display:flex;}
+.ov-t{font-size:26px;letter-spacing:3px;color:var(--gold-light);margin-bottom:8px;text-shadow:0 0 18px rgba(201,168,76,.5);}
+.ov-x{font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.8;max-width:460px;}
+.reward-cards{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:18px;}
+.gameover .ov-t{color:#ff8a72;}
+</style>
+
+<div id="app">
+  <a id="home-btn" href="./index.html" title="選單 / Menu">⌂</a>
+  <button id="music-btn" onclick="toggleMusic()" title="音樂 / Music">🔊</button>
+  <button id="lang-btn" onclick="toggleLang()">EN</button>
+
+  <section id="title" class="screen center active">
+    <div class="t-zh" id="tt-zh">英雄牌旅</div>
+    <div class="t-en">THE DECKBOUND HERO</div>
+    <div class="t-sub" id="tt-sub"></div>
+    <button class="btn" onclick="newRun()" id="tt-btn">構築牌組 · BEGIN</button>
+  </section>
+
+  <section id="map" class="screen">
+    <div class="map-head">
+      <div class="map-floor" id="m-floor"></div>
+      <div class="map-hp" id="m-hp"></div>
+    </div>
+    <div class="relic-bar" id="m-relics"></div>
+    <div class="map-body" id="m-body"></div>
+  </section>
+
+  <section id="battle" class="screen">
+    <img id="b-bg" src="" alt=""><div id="b-veil"></div>
+    <div class="b-top">
+      <div style="font-size:12px;color:var(--muted)" id="b-deckinfo"></div>
+    </div>
+    <div class="enemy-box">
+      <div class="enemy-art" id="enemy-art">
+        <img id="enemy-img" src="" alt="" onerror="enemyImgFail()">
+        <div class="enemy-emoji" id="enemy-emoji">👹</div>
+      </div>
+      <div class="intent" id="enemy-intent"></div>
+      <div class="ename" id="enemy-name"></div>
+      <div class="hpwrap"><div class="hpbar ehp"><div class="fill" id="enemy-hp-fill"></div><span class="blk" id="enemy-blk"></span></div><div class="hp-num" id="enemy-hp-num"></div></div>
+      <div class="status-row" id="enemy-status"></div>
+    </div>
+
+    <div class="player-zone">
+      <div class="status-row" id="player-status"></div>
+      <div class="php-wrap"><div class="hpbar php"><div class="fill" id="player-hp-fill"></div><span class="blk" id="player-blk"></span></div><div class="hp-num" id="player-hp-num"></div></div>
+      <div class="p-info">
+        <div class="energy">⚡ <b id="energy">3</b>/<span id="maxenergy">3</span></div>
+        <button class="btn btn-sm" id="end-turn" onclick="endTurn()">結束回合 ▶</button>
+      </div>
+      <div class="hand" id="hand"></div>
+    </div>
+
+    <div class="overlay" id="ov-reward">
+      <div class="ov-t" id="rw-t">戰利品</div>
+      <div class="ov-x" id="rw-x"></div>
+      <div class="reward-cards" id="rw-cards"></div>
+      <button class="btn btn-sm" onclick="skipReward()" id="rw-skip">略過 · 前進 ▶</button>
+    </div>
+    <div class="overlay gameover" id="ov-over">
+      <div class="ov-t" id="go-t">英雄倒下了</div>
+      <div class="ov-x" id="go-x"></div>
+      <button class="btn btn-sm" onclick="toTitle()" id="go-btn">重新構築 · RESTART</button>
+    </div>
+  </section>
+
+  <section id="event" class="screen center">
+    <div class="ov-t" id="ev-t" style="margin-bottom:14px"></div>
+    <div class="ov-x" id="ev-x"></div>
+    <div id="ev-choices" style="display:flex;flex-direction:column;gap:12px;width:min(420px,92vw)"></div>
+  </section>
+
+  <section id="win" class="screen center" style="background:radial-gradient(ellipse at 50% 25%,#2a1030 0,#0a0820 55%,#06040e 100%)">
+    <div class="t-zh" id="w-zh">英雄鑄成</div>
+    <div class="t-en">A HERO IS FORGED</div>
+    <div class="ov-x" id="w-x" style="margin-top:18px"></div>
+    <button class="btn btn-sm" onclick="toTitle()" id="w-btn">再走一輪 · AGAIN</button>
+  </section>
+</div>
+
+<script>
+// ═══════════════ i18n ═══════════════
+let LANG='zh';
+const UI={
+ zh:{sub:'以你的牌組為劍，斬過十二頭心魔。\n打怪、拿牌、鑄神器——每一次死亡，都讓你更強。',begin:'構築牌組 · BEGIN',
+   floor:'第 %n 層 / 12',hp:'❤️ %h/%m 生命　💰 %g 金幣',choose:'選擇你的下一步',
+   endturn:'結束回合 ▶',loot:'戰利品 · 選一張加入牌組',skip:'略過 · 前進 ▶',
+   over:'英雄倒下了',overx:'但英雄的定義，是每一次都重新站起。',restart:'重新構築 · RESTART',
+   winx:'十二頭心魔皆已伏於你的牌下。\n你以自己鑄成的牌組，成為了真正的英雄。',again:'再走一輪 · AGAIN',
+   deckinfo:'抽牌堆 %d · 棄牌堆 %x',
+   n_battle:'⚔️',n_elite:'🔥',n_event:'❓',n_rest:'🛏️',n_treasure:'💰',n_boss:'💀',
+   battle:'心魔戰',battled:'一頭心魔擋在路上',elite:'精英心魔',elited:'更強的心魔，報酬更豐',
+   event:'際遇',eventd:'未知的相逢',rest:'休息',restd:'恢復 30% 生命',treasure:'寶藏',treasured:'神器與金幣',boss:'最終心魔',bossd:'心魔·你自己',
+   restHeal:'你在火邊休息，恢復了生命。',},
+ en:{sub:'Your deck is your sword — cut through the twelve demons.\nFight, draft cards, forge relics. Every death makes you stronger.',begin:'BUILD YOUR DECK',
+   floor:'Floor %n / 12',hp:'❤️ %h/%m HP   💰 %g gold',choose:'Choose your next step',
+   endturn:'End Turn ▶',loot:'Loot · add one card to your deck',skip:'Skip · Move On ▶',
+   over:'The Hero Has Fallen',overx:'But a hero is one who rises every time.',restart:'REBUILD',
+   winx:'All twelve demons have fallen beneath your deck.\nWith a deck forged by your own hand, you became a true hero.',again:'RUN AGAIN',
+   deckinfo:'Draw %d · Discard %x',
+   n_battle:'⚔️',n_elite:'🔥',n_event:'❓',n_rest:'🛏️',n_treasure:'💰',n_boss:'💀',
+   battle:'Demon Battle',battled:'A demon blocks the road',elite:'Elite Demon',elited:'Stronger, richer rewards',
+   event:'Encounter',eventd:'An unknown meeting',rest:'Rest',restd:'Heal 30% HP',treasure:'Treasure',treasured:'A relic and gold',boss:'Final Demon',bossd:'The Shadow — Yourself',
+   restHeal:'You rest by the fire and recover.'}
+};
+const L=()=>LANG, $=id=>document.getElementById(id), rint=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+// ═══════════════ cards ═══════════════
+// type: attack/skill/power ; effects are data fields
+const CARDS={
+ strike:{zh:'打擊',en:'Strike',cost:1,type:'attack',dmg:6,dz:'造成 6 傷害',de:'Deal 6'},
+ defend:{zh:'防禦',en:'Defend',cost:1,type:'skill',block:5,dz:'獲得 5 格擋',de:'Gain 5 Block'},
+ bash:{zh:'破防',en:'Bash',cost:2,type:'attack',dmg:8,vuln:2,dz:'造成 8，施加 2 易傷',de:'Deal 8, apply 2 Vulnerable'},
+ heavy:{zh:'重斬',en:'Cleave',cost:2,type:'attack',dmg:16,dz:'造成 16 傷害',de:'Deal 16'},
+ flurry:{zh:'連刺',en:'Flurry',cost:1,type:'attack',dmg:4,hits:3,dz:'造成 4 傷害 ×3',de:'Deal 4 ×3'},
+ twin:{zh:'雙擊',en:'Twin Strike',cost:1,type:'attack',dmg:5,hits:2,dz:'造成 5 傷害 ×2',de:'Deal 5 ×2'},
+ execute:{zh:'斬殺',en:'Execute',cost:2,type:'attack',dmg:10,execVuln:10,dz:'造成 10；若敵易傷則 +10',de:'Deal 10; +10 if enemy Vulnerable'},
+ ironwall:{zh:'鐵壁',en:'Iron Wall',cost:2,type:'skill',block:14,dz:'獲得 14 格擋',de:'Gain 14 Block'},
+ nimble:{zh:'閃避',en:'Nimble',cost:1,type:'skill',block:8,draw:1,dz:'獲得 8 格擋，抽 1',de:'Gain 8 Block, draw 1'},
+ insight:{zh:'洞察',en:'Insight',cost:0,type:'skill',draw:2,exhaust:1,dz:'抽 2，消耗',de:'Draw 2. Exhaust'},
+ intimidate:{zh:'威嚇',en:'Intimidate',cost:1,type:'skill',weak:2,dz:'施加 2 虛弱',de:'Apply 2 Weak'},
+ focus:{zh:'集氣',en:'Focus',cost:1,type:'skill',strGain:2,dz:'獲得 2 力量',de:'Gain 2 Strength'},
+ firstaid:{zh:'急救',en:'First Aid',cost:1,type:'skill',heal:8,exhaust:1,dz:'回復 8 生命，消耗',de:'Heal 8. Exhaust'},
+ adrenaline:{zh:'腎上腺素',en:'Adrenaline',cost:0,type:'skill',energy:1,draw:1,exhaust:1,dz:'+1 能量，抽 1，消耗',de:'+1 Energy, draw 1. Exhaust'},
+ cleanse:{zh:'淨化',en:'Cleanse',cost:1,type:'skill',block:5,cleanse:1,exhaust:1,dz:'獲得 5 格擋，清除自身減益，消耗',de:'Gain 5 Block, clear your debuffs. Exhaust'},
+ thorns:{zh:'荊棘',en:'Thorns',cost:1,type:'power',thorns:3,dz:'力量：受擊時反傷 3',de:'Power: when hit, deal 3'},
+ temper:{zh:'淬鍊',en:'Temper',cost:2,type:'power',perTurnStr:1,dz:'力量：每回合 +1 力量',de:'Power: +1 Strength each turn'},
+};
+const POOL=['heavy','flurry','twin','execute','ironwall','nimble','insight','intimidate','focus','firstaid','adrenaline','cleanse','thorns','temper','bash'];
+
+// ═══════════════ enemies (reuse the twelve demons) ═══════════════
+// pattern entries: {t:'atk'|'def'|'buff'|'weak', v:n}
+const S=['./images/img3.jpg','./images/img4.jpg','./images/img5.png','./images/img6.jpg','./images/img7.png','./images/img8.jpg','./images/img9.jpg','./images/img10.jpg','./images/img11.png','./images/img12.jpg','./images/img13.jpg','./images/img14.png'];
+const DEMONS=[
+ {img:'./images/beast1.png',e:'😴',zh:'惰影',en:'Sloth',bg:S[0],hp:30,pat:[{t:'atk',v:8},{t:'def',v:8},{t:'atk',v:6}]},
+ {img:'./images/beast2.png',e:'😱',zh:'懼魔',en:'Dread',bg:S[1],hp:32,pat:[{t:'weak',v:1},{t:'atk',v:10},{t:'atk',v:7}]},
+ {img:'./images/beast3.png',e:'🐍',zh:'惑蛇',en:'Doubt',bg:S[2],hp:34,pat:[{t:'atk',v:7},{t:'atk',v:7},{t:'weak',v:1}]},
+ {img:'./images/beast5.png',e:'👺',zh:'妒獸',en:'Envy',bg:S[4],hp:36,pat:[{t:'atk',v:9},{t:'def',v:6},{t:'atk',v:9}]},
+ {img:'./images/beast7.png',e:'🐲',zh:'貪淵龍',en:'Greed',bg:S[6],hp:40,pat:[{t:'atk',v:8},{t:'atk',v:8},{t:'def',v:8}]},
+ {img:'./images/beast8.png',e:'👻',zh:'悔靈',en:'Regret',bg:S[7],hp:42,pat:[{t:'atk',v:10},{t:'weak',v:1},{t:'atk',v:10}]},
+ {img:'./images/beast9.png',e:'🕸️',zh:'孤魘',en:'Lonely',bg:S[8],hp:44,pat:[{t:'atk',v:11},{t:'atk',v:11}]},
+ {img:'./images/beast11.png',e:'⚫',zh:'虛無',en:'Void',bg:S[10],hp:48,pat:[{t:'atk',v:12},{t:'weak',v:1},{t:'atk',v:12}]},
+];
+const ELITES=[
+ {img:'./images/beast4.png',e:'🗿',zh:'傲魔巨像',en:'Pride',bg:S[3],hp:60,elite:1,pat:[{t:'def',v:10},{t:'atk',v:15},{t:'buff',v:2}]},
+ {img:'./images/beast6.png',e:'🔥',zh:'怒炎',en:'Wrath',bg:S[5],hp:62,elite:1,pat:[{t:'buff',v:2},{t:'atk',v:12},{t:'atk',v:17}]},
+ {img:'./images/beast10.png',e:'🌑',zh:'絕望巨影',en:'Despair',bg:S[9],hp:78,elite:1,pat:[{t:'def',v:12},{t:'atk',v:14},{t:'atk',v:18}]},
+];
+const BOSS={img:'./images/beast12.png',e:'🌓',zh:'心魔·你自己',en:'The Shadow',bg:S[11],hp:120,boss:1,pat:[{t:'buff',v:2},{t:'atk',v:11},{t:'def',v:14},{t:'atk',v:17},{t:'atk',v:24}]};
+
+// ═══════════════ relics ═══════════════
+const RELICS={
+ heart:{e:'❤️‍🔥',zh:'勇者之心',en:"Hero's Heart",dz:'每場戰鬥開始 +1 力量',de:'Start each combat with +1 Strength'},
+ charm:{e:'🛡️',zh:'鐵護符',en:'Iron Charm',dz:'每場戰鬥開始 +5 格擋',de:'Start each combat with 5 Block'},
+ book:{e:'📖',zh:'智慧之書',en:'Book of Wisdom',dz:'每場戰鬥第一回合多抽 2',de:'Draw 2 extra on turn 1'},
+ amulet:{e:'💚',zh:'生命護符',en:'Life Amulet',dz:'每場戰鬥後回復 8 生命',de:'Heal 8 after each combat'},
+ gem:{e:'💎',zh:'力量寶石',en:'Power Gem',dz:'（拾取時）生命上限 +10',de:'(on pickup) Max HP +10'},
+ crown:{e:'👑',zh:'荊棘冠',en:'Thorn Crown',dz:'每場戰鬥開始 +3 荊棘',de:'Start each combat with 3 Thorns'},
+};
+
+// ═══════════════ run state ═══════════════
+let G=null;
+function freshRun(){
+  return {maxHP:72,hp:72,gold:0,floor:0,relics:[],
+    deck:['strike','strike','strike','strike','strike','defend','defend','defend','defend','bash'],
+    demonIx:0,eliteIx:0,
+    // combat
+    energy:0,maxEnergy:3,block:0,str:0,weak:0,vuln:0,thorns:0,perTurnStr:0,
+    draw:[],hand:[],discard:[],exhaust:[],enemy:null,turn:0,busy:false};
+}
+
+function applyLang(){
+  const u=UI[LANG];
+  $('lang-btn').textContent=LANG==='zh'?'EN':'中';
+  $('tt-zh').textContent=LANG==='zh'?'英雄牌旅':'The Deckbound Hero';
+  $('tt-sub').textContent=u.sub; $('tt-btn').textContent=u.begin;
+  $('end-turn').textContent=u.endturn; $('rw-skip').textContent=u.skip;
+  $('go-t').textContent=u.over; $('go-x').textContent=u.overx; $('go-btn').textContent=u.restart;
+  $('w-zh').textContent=LANG==='zh'?'英雄鑄成':'A Hero Is Forged'; $('w-x').textContent=u.winx; $('w-btn').textContent=u.again;
+  $('rw-t').textContent=u.loot;
+}
+function toggleLang(){LANG=LANG==='zh'?'en':'zh';applyLang();
+  if($('map').classList.contains('active'))renderMap();
+  if($('battle').classList.contains('active'))renderBattle();}
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');
+  const th={title:'epic',map:'ambient',win:'triumph'};if(th[id]&&window.Music)Music.set(th[id]);}
+function toTitle(){$('ov-over').classList.remove('on');$('ov-reward').classList.remove('on');show('title');if(window.Music)Music.set('epic');}
+function newRun(){G=freshRun();show('map');renderMap();}
+
+// ═══════════════ map ═══════════════
+function renderMap(){
+  const u=UI[LANG];
+  $('m-floor').textContent=u.floor.replace('%n',G.floor+ (G.floor>=12?0:1));
+  $('m-hp').textContent=u.hp.replace('%h',G.hp).replace('%m',G.maxHP).replace('%g',G.gold);
+  $('m-relics').innerHTML=G.relics.map(r=>`<span class="relic" title="${RELICS[r][L()==='zh'?'zh':'en']}">${RELICS[r].e}</span>`).join('');
+  const body=$('m-body'); body.innerHTML='';
+  const q=document.createElement('div'); q.className='map-q'; q.textContent=u.choose; body.appendChild(q);
+  if(G.floor>=11){ // final boss floor
+    body.appendChild(makeNode('boss')); return;
+  }
+  // offer two node choices
+  const types=rollNodes();
+  types.forEach(t=>body.appendChild(makeNode(t)));
+}
+function rollNodes(){
+  const bag=['battle','battle','battle','event','rest','treasure','elite'];
+  let a=pick(bag), b=pick(bag); let g=0;
+  while(b===a && g++<10) b=pick(bag);
+  return [a,b];
+}
+function makeNode(t){
+  const u=UI[LANG];
+  const d=document.createElement('div'); d.className='node';
+  d.innerHTML=`<span class="ic">${u['n_'+t]}</span><div><div class="nz">${u[t]}</div><div class="nd">${u[t+'d']}</div></div>`;
+  d.onclick=()=>chooseNode(t);
+  return d;
+}
+function chooseNode(t){
+  if(t==='battle') startCombat(nextDemon(),false);
+  else if(t==='elite') startCombat(nextElite(),false);
+  else if(t==='boss') startCombat(JSON.parse(JSON.stringify(BOSS)),true);
+  else if(t==='rest'){ G.hp=Math.min(G.maxHP,G.hp+Math.round(G.maxHP*0.3)); notifyEvent(UI[LANG].restHeal,()=>advance()); }
+  else if(t==='treasure'){ grantRelic(); G.gold+=rint(15,30); notifyEvent(L()==='zh'?'你打開寶箱，獲得了神器與金幣。':'You open the chest — a relic and gold.',()=>advance()); }
+  else if(t==='event') runEvent();
+}
+function nextDemon(){const d=JSON.parse(JSON.stringify(DEMONS[G.demonIx%DEMONS.length]));G.demonIx++;
+  const t=Math.floor(G.floor/4); d.hp+=t*6; return d;}
+function nextElite(){const d=JSON.parse(JSON.stringify(ELITES[G.eliteIx%ELITES.length]));G.eliteIx++;
+  d.hp+=Math.floor(G.floor/3)*6; return d;}
+function advance(){G.floor++; if(G.floor>=12){/* handled by boss node at 11 */} show('map'); renderMap();}
+
+// ═══════════════ events ═══════════════
+function notifyEvent(text,then){
+  show('event'); $('ev-t').textContent=L()==='zh'?'…':'…'; $('ev-x').textContent=text;
+  const c=$('ev-choices'); c.innerHTML='';
+  const b=document.createElement('button'); b.className='btn btn-sm'; b.textContent=L()==='zh'?'繼續 ▶':'Continue ▶';
+  b.onclick=then; c.appendChild(b);
+}
+const EVENTS=[
+ {zh:'岔路旁的老者',en:'The Old One at the Crossroads',
+  tz:'一位老者遞來一枚溫熱的護符。「拿去，孩子。」',te:'An old one offers a warm amulet. "Take it, child."',
+  opts:[{z:'收下（獲得神器）',e:'Accept (gain a relic)',fn:()=>{grantRelic();}},
+        {z:'婉拒（回復 10 生命）',e:'Decline (heal 10)',fn:()=>{G.hp=Math.min(G.maxHP,G.hp+10);}}]},
+ {zh:'受詛咒的祭壇',en:'The Cursed Altar',
+  tz:'祭壇低語：「以血換力。」',te:'The altar whispers: "Power, for blood."',
+  opts:[{z:'獻血（-8 生命，獲得一張強力牌）',e:'Bleed (-8 HP, gain a card)',fn:()=>{G.hp=Math.max(1,G.hp-8);G.deck.push(pick(POOL));}},
+        {z:'離開',e:'Leave',fn:()=>{}}]},
+ {zh:'遺落的寶箱',en:'A Forgotten Chest',
+  tz:'箱裡有金幣的微光。',te:'Coins glimmer inside.',
+  opts:[{z:'拿取金幣（+30）',e:'Take gold (+30)',fn:()=>{G.gold+=30;}},
+        {z:'更仔細地找（一半機率獲得神器）',e:'Search deeper (50% relic)',fn:()=>{if(Math.random()<0.5)grantRelic();else G.gold+=10;}}]},
+ {zh:'靜謐的清泉',en:'A Quiet Spring',
+  tz:'泉水映著你疲憊的臉。',te:'The spring reflects your weary face.',
+  opts:[{z:'飲水（回復 30% 生命）',e:'Drink (heal 30%)',fn:()=>{G.hp=Math.min(G.maxHP,G.hp+Math.round(G.maxHP*0.3));}},
+        {z:'淬鍊心志（生命上限 +6）',e:'Temper (max HP +6)',fn:()=>{G.maxHP+=6;G.hp+=6;}}]},
+];
+function runEvent(){
+  const ev=pick(EVENTS); show('event');
+  $('ev-t').textContent=ev[L()==='zh'?'zh':'en']; $('ev-x').textContent=ev[L()==='zh'?'tz':'te'];
+  const c=$('ev-choices'); c.innerHTML='';
+  ev.opts.forEach(o=>{const b=document.createElement('button');b.className='btn btn-sm';
+    b.textContent=L()==='zh'?o.z:o.e; b.onclick=()=>{o.fn();advance();}; c.appendChild(b);});
+}
+function grantRelic(){
+  const have=new Set(G.relics); const avail=Object.keys(RELICS).filter(r=>!have.has(r));
+  if(!avail.length) { G.gold+=25; return; }
+  const r=pick(avail); G.relics.push(r);
+  if(r==='gem'){ G.maxHP+=10; G.hp+=10; }
+}
+
+// ═══════════════ combat ═══════════════
+function enemyImgFail(){$('enemy-img').style.display='none';$('enemy-emoji').style.display='flex';}
+function startCombat(enemy,isBoss){
+  G.enemy={...enemy,maxHP:enemy.hp,block:0,str:0,weak:0,vuln:0,ix:0};
+  G.block=0;G.str=0;G.weak=0;G.vuln=0;G.thorns=0;G.perTurnStr=0;G.turn=0;G.busy=false;
+  G.draw=shuffle([...G.deck]); G.hand=[]; G.discard=[]; G.exhaust=[];
+  // combat-start relics
+  if(G.relics.includes('heart'))G.str+=1;
+  if(G.relics.includes('crown'))G.thorns+=3;
+  if(window.Music)Music.set(isBoss?'epic':(enemy.elite?'epic':'drive'));
+  show('battle');
+  $('b-bg').src=enemy.bg; $('b-bg').onerror=function(){this.style.opacity=0;};
+  const img=$('enemy-img'); $('enemy-emoji').style.display='none'; img.style.display='block'; img.src=enemy.img;
+  $('enemy-emoji').textContent=enemy.e;
+  startTurn();
+}
+function startTurn(){
+  G.turn++; G.block=0; // block resets
+  if(G.relics.includes('charm'))G.block+=5;
+  G.energy=G.maxEnergy;
+  if(G.perTurnStr)G.str+=G.perTurnStr;
+  let d=5; if(G.turn===1 && G.relics.includes('book'))d+=2;
+  drawCards(d);
+  computeIntent();
+  G.busy=false;
+  renderBattle();
+}
+function drawCards(n){
+  for(let i=0;i<n;i++){
+    if(!G.draw.length){ if(!G.discard.length)break; G.draw=shuffle(G.discard); G.discard=[]; }
+    G.hand.push(G.draw.pop());
+  }
+}
+function computeIntent(){ const e=G.enemy; e.intent=e.pat[e.ix%e.pat.length]; }
+function intentText(){
+  const e=G.enemy, it=e.intent; if(!it)return'';
+  if(it.t==='atk'){let dmg=it.v+e.str; if(e.weak>0)dmg=Math.floor(dmg*0.75); if(G.vuln>0)dmg=Math.ceil(dmg*1.5); return (L()==='zh'?'⚔️ 攻擊 ':'⚔️ Attack ')+dmg;}
+  if(it.t==='def')return L()==='zh'?'🛡️ 防禦':'🛡️ Defend';
+  if(it.t==='buff')return L()==='zh'?'💪 蓄力':'💪 Buff';
+  if(it.t==='weak')return L()==='zh'?'🌀 削弱':'🌀 Weaken';
+  return '';
+}
+function statusChips(o,isEnemy){
+  const t=[]; if(o.block>0&&isEnemy)t.push('🛡️'+o.block);
+  if(o.str>0)t.push((L()==='zh'?'力量':'Str')+' '+o.str);
+  if(o.vuln>0)t.push((L()==='zh'?'易傷':'Vuln')+' '+o.vuln);
+  if(o.weak>0)t.push((L()==='zh'?'虛弱':'Weak')+' '+o.weak);
+  if(!isEnemy&&o.thorns>0)t.push('🌵'+o.thorns);
+  return t.join('　');
+}
+function renderBattle(){
+  const e=G.enemy,u=UI[LANG];
+  $('enemy-name').textContent=e[L()==='zh'?'zh':'en'];
+  $('enemy-intent').textContent=intentText();
+  $('enemy-hp-fill').style.width=(Math.max(0,e.hp)/e.maxHP*100)+'%';
+  $('enemy-hp-num').textContent=Math.max(0,e.hp)+' / '+e.maxHP;
+  $('enemy-blk').textContent=e.block>0?('🛡️'+e.block):'';
+  $('enemy-status').textContent=statusChips(e,true);
+  $('player-hp-fill').style.width=(Math.max(0,G.hp)/G.maxHP*100)+'%';
+  $('player-hp-num').textContent=Math.max(0,G.hp)+' / '+G.maxHP;
+  $('player-blk').textContent=G.block>0?('🛡️'+G.block):'';
+  $('player-status').textContent=statusChips(G,false);
+  $('energy').textContent=G.energy; $('maxenergy').textContent=G.maxEnergy;
+  $('b-deckinfo').textContent=u.deckinfo.replace('%d',G.draw.length).replace('%x',G.discard.length);
+  const hand=$('hand'); hand.innerHTML='';
+  G.hand.forEach((cid,i)=>{
+    const c=CARDS[cid]; const el=document.createElement('div');
+    el.className='card '+c.type+(c.cost>G.energy?' unafford':'');
+    el.innerHTML=`<div class="cost">${c.cost}</div><div class="cn">${c[L()==='zh'?'zh':'en']}</div>
+      <div class="ct">${c.type==='attack'?(L()==='zh'?'攻擊':'Attack'):c.type==='power'?(L()==='zh'?'能力':'Power'):(L()==='zh'?'技能':'Skill')}</div>
+      <div class="cd">${c[L()==='zh'?'dz':'de']}</div>`;
+    el.onclick=()=>playCard(i);
+    hand.appendChild(el);
+  });
+}
+function enemyHit(){const a=$('enemy-art');a.classList.remove('hit');void a.offsetWidth;a.classList.add('hit');}
+function dealToEnemy(base){
+  let dmg=base+G.str; if(G.weak>0)dmg=Math.floor(dmg*0.75); if(G.enemy.vuln>0)dmg=Math.ceil(dmg*1.5);
+  dmg=Math.max(0,dmg);
+  if(G.enemy.block>0){const a=Math.min(G.enemy.block,dmg);G.enemy.block-=a;dmg-=a;}
+  G.enemy.hp-=dmg; enemyHit();
+}
+function playCard(i){
+  if(G.busy)return; const cid=G.hand[i]; const c=CARDS[cid]; if(!c||c.cost>G.energy)return;
+  G.energy-=c.cost;
+  if(c.dmg){ const hits=c.hits||1; for(let h=0;h<hits;h++) dealToEnemy(c.dmg);
+    if(c.execVuln&&G.enemy.vuln>0) dealToEnemy(c.execVuln); }
+  if(c.block)G.block+=c.block;
+  if(c.vuln)G.enemy.vuln+=c.vuln;
+  if(c.weak)G.enemy.weak+=c.weak;
+  if(c.strGain)G.str+=c.strGain;
+  if(c.thorns)G.thorns+=c.thorns;
+  if(c.perTurnStr)G.perTurnStr+=c.perTurnStr;
+  if(c.heal)G.hp=Math.min(G.maxHP,G.hp+c.heal);
+  if(c.energy)G.energy+=c.energy;
+  if(c.cleanse){G.weak=0;G.vuln=0;}
+  if(c.draw)drawCards(c.draw);
+  // move card out of hand
+  G.hand.splice(i,1);
+  if(c.exhaust)G.exhaust.push(cid); else G.discard.push(cid);
+  if(G.enemy.hp<=0){ renderBattle(); setTimeout(winCombat,500); return; }
+  renderBattle();
+}
+function endTurn(){
+  if(G.busy)return; G.busy=true;
+  // move hand to discard
+  G.discard.push(...G.hand); G.hand=[];
+  renderBattle();
+  setTimeout(enemyTurn,350);
+}
+function enemyTurn(){
+  const e=G.enemy, it=e.intent;
+  if(it.t==='atk'){
+    let dmg=it.v+e.str; if(e.weak>0)dmg=Math.floor(dmg*0.75); if(G.vuln>0)dmg=Math.ceil(dmg*1.5); dmg=Math.max(0,dmg);
+    if(G.block>0){const a=Math.min(G.block,dmg);G.block-=a;dmg-=a;}
+    G.hp-=dmg;
+    if(G.thorns>0){ e.hp-=G.thorns; enemyHit(); }
+  } else if(it.t==='def'){ e.block+=it.v; }
+  else if(it.t==='buff'){ e.str+=it.v; }
+  else if(it.t==='weak'){ G.weak+=it.v; }
+  e.ix++;
+  // decrement debuffs (both)
+  if(e.vuln>0)e.vuln--; if(e.weak>0)e.weak--;
+  if(G.vuln>0)G.vuln--; if(G.weak>0)G.weak--;
+  renderBattle();
+  if(e.hp<=0){ setTimeout(winCombat,400); return; }
+  if(G.hp<=0){ setTimeout(gameOver,400); return; }
+  setTimeout(startTurn,300);
+}
+function winCombat(){
+  const boss=G.enemy.boss;
+  if(G.relics.includes('amulet'))G.hp=Math.min(G.maxHP,G.hp+8);
+  G.gold+=rint(10,20);
+  if(G.enemy.elite||boss)grantRelic();
+  if(boss){ show('win'); if(window.Music)Music.set('triumph'); return; }
+  // card reward
+  show('battle'); // stay, open overlay
+  const u=UI[LANG]; $('rw-x').textContent='';
+  const cards=shuffle([...POOL]).slice(0,3);
+  const wrap=$('rw-cards'); wrap.innerHTML='';
+  cards.forEach(cid=>{
+    const c=CARDS[cid]; const el=document.createElement('div'); el.className='card '+c.type;
+    el.innerHTML=`<div class="cost">${c.cost}</div><div class="cn">${c[L()==='zh'?'zh':'en']}</div>
+      <div class="ct">${c.type==='attack'?(L()==='zh'?'攻擊':'Attack'):c.type==='power'?(L()==='zh'?'能力':'Power'):(L()==='zh'?'技能':'Skill')}</div>
+      <div class="cd">${c[L()==='zh'?'dz':'de']}</div>`;
+    el.onclick=()=>{G.deck.push(cid);skipReward();};
+    wrap.appendChild(el);
+  });
+  if(window.Music)Music.set('triumph');
+  $('ov-reward').classList.add('on');
+}
+function skipReward(){ $('ov-reward').classList.remove('on'); advance(); }
+function gameOver(){ show('battle'); $('ov-over').classList.add('on'); }
+
+// ═══════════════ music (shared engine) ═══════════════
+const Music = (function(){
+  let ctx=null, master=null, bus=null, timer=null;
+  let muted=false, nextBarTime=0, barIx=0;
+  let current='epic', pending='epic';
+  const NOTE={A:0,'A#':1,B:2,C:3,'C#':4,D:5,'D#':6,E:7,F:8,'F#':9,G:10,'G#':11};
+  const hz=(root,s)=>root*Math.pow(2,s/12);
+  const triad=(name,type)=>{const r=NOTE[name],t=type==='min'?3:4;return [r,r+t,r+7];};
+
+  function impulse(sec,decay){
+    const rate=ctx.sampleRate,len=Math.floor(rate*sec),buf=ctx.createBuffer(2,len,rate);
+    for(let c=0;c<2;c++){const d=buf.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay);}
+    return buf;
+  }
+  function ensure(){
+    if(ctx) return true;
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC) return false;
+    ctx=new AC();
+    master=ctx.createGain(); master.gain.value=muted?0:0.30;
+    const comp=ctx.createDynamicsCompressor();
+    comp.threshold.value=-16; comp.ratio.value=3; comp.attack.value=0.006; comp.release.value=0.3;
+    const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=6200;
+    master.connect(comp); comp.connect(lp); lp.connect(ctx.destination);
+    // instrument bus -> dry + reverb (lush hall for an epic, less "raw" sound)
+    bus=ctx.createGain(); bus.connect(master);
+    const rev=ctx.createConvolver(); rev.buffer=impulse(2.8,2.2);
+    const wet=ctx.createGain(); wet.gain.value=0.85;
+    bus.connect(rev); rev.connect(wet); wet.connect(master);
+    return true;
+  }
+
+  // ── warm layered voice: two slightly-detuned oscillators through a lowpass,
+  //    smooth ADSR, optional gentle vibrato — far softer than a bare sawtooth ──
+  function voice(t,freq,dur,o){
+    o=o||{};
+    const peak=o.peak!=null?o.peak:0.14,a=o.a!=null?o.a:0.04,r=o.r!=null?o.r:0.25;
+    const cut=o.cut||2600,type=o.type||'sawtooth';
+    const g=ctx.createGain();
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(peak,t+a);
+    g.gain.setValueAtTime(peak,t+Math.max(a+0.005,dur-r));
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    const f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=cut;
+    f.connect(g); g.connect(bus);
+    const base=o.detune||0;
+    const mk=(det)=>{const os=ctx.createOscillator();os.type=type;os.frequency.value=freq;os.detune.value=det;os.connect(f);os.start(t);os.stop(t+dur+0.06);return os;};
+    const o1=mk(base-6),o2=mk(base+6);
+    if(o.vib){const vo=ctx.createOscillator();vo.type='sine';vo.frequency.value=5.2;const vg=ctx.createGain();vg.gain.value=o.vib;vo.connect(vg);vg.connect(o1.detune);vg.connect(o2.detune);vo.start(t);vo.stop(t+dur+0.06);}
+  }
+  const strings=(t,tri,dur,gain)=>tri.concat([tri[0]+12]).forEach(s=>voice(t,hz(110,s),dur,{peak:gain||0.05,a:0.55,r:0.75,cut:1300,type:'sawtooth'}));
+  const brass=(t,tri,dur,gain)=>tri.concat([tri[0]+12]).forEach((s,i)=>voice(t,hz(110,s),dur,{peak:(gain||0.08)/(1+i*0.2),a:0.05,r:0.18,cut:2000,type:'sawtooth',detune:i%2?5:-5}));
+  const melo=(t,semi,dur,gain,base)=>voice(t,hz(base||220,semi),dur,{peak:gain||0.16,a:0.06,r:0.2,cut:3000,type:'triangle',vib:6});
+  const harp=(t,semi,dur,base)=>voice(t,hz(base||220,semi),dur||0.5,{peak:0.1,a:0.006,r:0.45,cut:3200,type:'triangle'});
+  function bassv(t,semi,dur,gain){
+    voice(t,hz(55,semi),dur,{peak:gain||0.24,a:0.02,r:0.14,cut:1300,type:'triangle'});
+    const o=ctx.createOscillator();o.type='sine';o.frequency.value=hz(55,semi);
+    const g=ctx.createGain();g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime((gain||0.24)*0.7,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g);g.connect(bus);o.start(t);o.stop(t+dur+0.05);
+  }
+  function thump(t,gain){const o=ctx.createOscillator();o.type='sine';const g=ctx.createGain();o.frequency.setValueAtTime(160,t);o.frequency.exponentialRampToValueAtTime(45,t+0.18);g.gain.setValueAtTime(gain||0.6,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.34);o.connect(g);g.connect(master);o.start(t);o.stop(t+0.4);}
+  function crash(t,gain,dur,hp){const len=Math.floor(ctx.sampleRate*(dur||0.4));const buf=ctx.createBuffer(1,len,ctx.sampleRate);const d=buf.getChannelData(0);for(let k=0;k<len;k++)d[k]=(Math.random()*2-1)*Math.pow(1-k/len,1.4);const n=ctx.createBufferSource();n.buffer=buf;const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=hp||3000;const g=ctx.createGain();g.gain.value=gain||0.1;n.connect(f);f.connect(g);g.connect(bus);n.start(t);}
+
+  // ── melodies as bars of [semitone(from base), beatOffset, durBeats] ──
+  // Ode to Joy (Beethoven, public domain) — semitones relative to A(220), key of C
+  const ODE=[
+    [[7,0,1],[7,1,1],[8,2,1],[10,3,1]],
+    [[10,0,1],[8,1,1],[7,2,1],[5,3,1]],
+    [[3,0,1],[3,1,1],[5,2,1],[7,3,1]],
+    [[7,0,1.5],[5,1.5,0.5],[5,2,2]],
+    [[7,0,1],[7,1,1],[8,2,1],[10,3,1]],
+    [[10,0,1],[8,1,1],[7,2,1],[5,3,1]],
+    [[3,0,1],[3,1,1],[5,2,1],[7,3,1]],
+    [[5,0,1.5],[3,1.5,0.5],[3,2,2]]
+  ];
+  // Original heroic line in A minor over Am–F–C–G
+  const HERO=[
+    [[12,0,2],[15,2,1],[12,3,1]],
+    [[17,0,2],[15,2,1],[12,3,1]],
+    [[15,0,1],[14,1,1],[12,2,2]],
+    [[14,0,1],[12,1,1],[10,2,1],[7,3,1]]
+  ];
+  const playMel=(t,i,bars,base,gain,spb)=>{const bar=bars[i%bars.length];for(const [s,off,dur] of bar)melo(t+off*spb,s,dur*spb*0.96,gain,base);};
+
+  // ── themes: schedule one full 4/4 bar given start time t and bar index i ──
+  const THEMES={
+    epic:{bpm:120,beats:4,prog:[['A','min'],['F','maj'],['C','maj'],['G','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.05); brass(t,tri,spb*1.9,0.08); brass(t+spb*2,tri,spb*1.9,0.07);
+        for(let e=0;e<8;e++)bassv(t+e*spb/2,rs+(e%2?12:0),spb*0.46,0.24);
+        thump(t,0.7);thump(t+spb*2,0.58);thump(t+spb*1.5,0.28);thump(t+spb*3.5,0.32);
+        if(i%4===0)crash(t,0.1,0.4,3400);
+        playMel(t,i,HERO,220,0.17,spb);}},
+    triumph:{bpm:104,beats:4,prog:[['C','maj'],['G','maj'],['C','maj'],['G','maj'],['C','maj'],['G','maj'],['A','min'],['G','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%this.prog.length],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.055); brass(t,tri,spb*3.8,0.055);
+        for(let e=0;e<4;e++)bassv(t+e*spb,rs+(e%2?12:0),spb*0.9,0.22);
+        thump(t,0.62);thump(t+spb*2,0.5);
+        if(i%4===0)crash(t,0.09,0.45,3200);
+        playMel(t,i,ODE,220,0.2,spb);}},
+    drive:{bpm:148,beats:4,prog:[['A','min'],['G','maj'],['F','maj'],['G','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.04); brass(t,tri,spb*0.9,0.07); brass(t+spb*2,tri,spb*0.9,0.06);
+        for(let e=0;e<8;e++)bassv(t+e*spb/2,rs,spb*0.44,0.24);
+        for(let b=0;b<4;b++)thump(t+b*spb,b%2?0.4:0.6);
+        const m=[12,10,8,7,8,10,12,14];for(let e=0;e<8;e++)melo(t+e*spb/2,m[e],spb*0.42,0.11,220);}},
+    ambient:{bpm:60,beats:4,prog:[['A','min'],['A','min'],['F','maj'],['C','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.055); bassv(t,rs,spb*4,0.15);
+        const sc=[0,3,7,10,12];if(Math.random()<0.7)harp(t+spb*(1+Math.floor(Math.random()*3)),sc[Math.floor(Math.random()*sc.length)],1.2,220);}},
+    calm:{bpm:72,beats:4,prog:[['A','min'],['E','min'],['F','maj'],['C','maj']],
+      mel:[7,12,10,8, 7,5,7,null, 8,10,12,null, 7,5,3,null],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.05); bassv(t,rs,spb*4,0.16); thump(t,0.24);
+        for(let b=0;b<4;b++){const n=this.mel[(i%4)*4+b];if(n!=null)harp(t+b*spb,n,spb*0.9,220);}}},
+    mystic:{bpm:76,beats:4,prog:[['F','maj'],['C','maj'],['G','maj'],['A','min']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.05); bassv(t,rs,spb*4,0.15);
+        const arp=[tri[0],tri[1],tri[2],tri[1]+12,tri[2],tri[1],tri[0]+12,tri[1]];
+        for(let e=0;e<8;e++)harp(t+e*spb/2,arp[e],spb*0.55,220);
+        if(i%2===0)melo(t,tri[0]+12,spb*3,0.1,220);}},
+    tense:{bpm:80,beats:4,prog:[['A','min'],['A','min'],['A','min'],['A','min']],
+      bar(t,i){const spb=60/this.bpm;
+        [0,6,7].forEach(s=>voice(t,hz(110,s),spb*4,{peak:0.04,a:0.7,r:0.9,cut:900,type:'sawtooth',detune:6}));
+        bassv(t,0,spb*4,0.2); if(i%2===0)thump(t,0.36);
+        if(i%4===3)crash(t+spb*3,0.05,0.6,2400);
+        if(Math.random()<0.4)melo(t+spb*(1+Math.floor(Math.random()*2)),[1,6,8][Math.floor(Math.random()*3)],spb,0.06,220);}}
+  };
+
+  function scheduler(){
+    if(!ctx) return;
+    while(nextBarTime < ctx.currentTime + 0.25){
+      const th=THEMES[current]||THEMES.epic;
+      try{ th.bar(nextBarTime, barIx); }catch(e){}
+      nextBarTime += (60/th.bpm)*th.beats;
+      barIx++;
+      if(pending!==current){ current=pending; barIx=0; }   // switch on bar boundary
+    }
+  }
+
+  return {
+    start(){
+      if(!ensure()) return;
+      if(ctx.state==='suspended') ctx.resume();
+      if(!timer){ nextBarTime=ctx.currentTime+0.1; barIx=0; timer=setInterval(scheduler,25); }
+    },
+    set(name){ if(THEMES[name]){ pending=name; if(!timer) current=name; } },
+    toggle(){ muted=!muted; if(master) master.gain.setTargetAtTime(muted?0:0.30, ctx.currentTime, 0.05); if(!muted) this.start(); return muted; },
+    isMuted(){ return muted; },
+    running(){ return !!(ctx && ctx.state==='running'); }
+  };
+})();
+window.Music=Music;
+function toggleMusic(){const m=Music.toggle();const b=$('music-btn');b.textContent=m?'🔇':'🔊';b.classList.toggle('muted',m);}
+let silentEl=null;
+function unlockAudio(){
+  if(!silentEl){silentEl=document.createElement('audio');silentEl.setAttribute('playsinline','');silentEl.loop=true;silentEl.volume=0.001;silentEl.src='data:audio/wav;base64,UklGRqQHAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YYAHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';}
+  silentEl.play().catch(()=>{});
+  Music.set('epic'); Music.start();
+  if(Music.running()){['pointerdown','touchstart','touchend','mousedown','click','keydown'].forEach(ev=>document.removeEventListener(ev,unlockAudio));}
+}
+['pointerdown','touchstart','touchend','mousedown','click','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio));
+
+applyLang();
+</script>

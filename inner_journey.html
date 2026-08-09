@@ -173,8 +173,9 @@ const PH=[
       choices:[{t:'Treat those around me more gently.',a:{heart:2},w:'gentler with others'},{t:'Live the insight as small daily acts.',a:{wisdom:1,courage:1},w:'made daily'},{t:'Be a lamp in someone’s darkness.',a:{heart:1,wisdom:1},w:'lighting others'}]}}
 ];
 const ANGLES=[50,90,180,270,310];
-// per-station background illustrations (reuse the twelve scene images)
-const BG=['./images/img4.jpg','./images/img7.png','./images/img8.jpg','./images/img13.jpg','./images/img14.png'];
+// per-station background illustrations: dedicated art, falling back to existing scene images
+const BG=['./images/inner1_call.png','./images/inner2_depart.png','./images/inner3_wander.png','./images/inner4_transform.png','./images/inner5_return.png'];
+const BGFB=['./images/img4.jpg','./images/img7.png','./images/img8.jpg','./images/img13.jpg','./images/img14.png'];
 
 const G={i:0,attrs:{courage:10,wisdom:10,heart:10},answers:[],traits:[]};
 const L=()=>LANG,$=id=>document.getElementById(id),clamp=v=>Math.max(0,Math.min(20,v));
@@ -206,7 +207,7 @@ function moveMarker(i){
 }
 function renderPhase(keep){
   const p=PH[G.i],d=p[L()],u=UI[LANG];
-  const bg=$('bg'); bg.src=BG[G.i]; bg.onerror=function(){this.style.opacity=0;}; bg.onload=function(){this.style.opacity=0.5;};
+  const bg=$('bg'); bg.onload=function(){this.style.opacity=0.5;}; bg.onerror=function(){this.onerror=function(){this.onerror=null;this.style.opacity=0;};this.src=BGFB[G.i];}; bg.src=BG[G.i];
   moveMarker(G.i);updateHUD();
   const prev=keep?($('answer')?$('answer').value:''):'';
   const body=$('body');body.innerHTML='';

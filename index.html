@@ -78,6 +78,12 @@ body{background:#07050f;color:var(--text);font-family:"Noto Serif TC","Songti TC
         <div class="zh" id="c5-zh">內在英雄之旅</div><div class="en">THE INNER JOURNEY</div></div></div>
       <div class="desc" id="c5-d"></div>
     </a>
+    <a class="card" href="./odyssey_voyage.html">
+      <span class="go">▶</span>
+      <div class="row"><span class="ic">⛵</span><div>
+        <div class="zh" id="c6-zh">奧德賽 · 內在航程</div><div class="en">THE ODYSSEY WITHIN</div></div></div>
+      <div class="desc" id="c6-d"></div>
+    </a>
   </div>
 
   <div class="foot" id="foot"></div>
@@ -86,19 +92,21 @@ body{background:#07050f;color:var(--text);font-family:"Noto Serif TC","Songti TC
 <script>
 let LANG='zh';
 const T={
-  zh:{lead:'坎伯的十二階段，三種走法。\n選一種方式，踏上屬於你的英雄之路。',
+  zh:{lead:'坎伯的十二階段，六種走法。\n選一種方式，踏上屬於你的英雄之路。',
     c1:'扮演吉爾伽美什，穿越世界神話，走過坎伯十二階段的史詩敘事與抉擇。',
     c2:'這一次英雄是你——用你自己的人生走完十二道門檻，結局生成你的專屬史詩。',
     c3:'回合制斬妖之旅：擊敗惰、懼、傲、絕望……十二頭心魔，真正成為英雄。',
     c4:'Roguelite 卡牌構築：以你的牌組為劍，斬過十二頭心魔，死亡重來，越戰越強。',
     c5:'向內的旅程：沿英雄之旅的圓環（召喚→離開→流浪→轉化→返回），跨越已知與未知，遇見並超越自己。',
+    c6:'把奧德修斯的十二段冒險，走成一趟向內的航程——每一關一道反思門檻，結局編成你的歸鄉史詩。',
     foot:'坎伯（Joseph Campbell）十二階段視覺化專案 · 建議用手機或全螢幕遊玩',lang:'EN'},
-  en:{lead:'Campbell’s twelve stages, three ways to walk them.\nChoose your path to the hero’s road.',
+  en:{lead:'Campbell’s twelve stages, six ways to walk them.\nChoose your path to the hero’s road.',
     c1:'Play Gilgamesh across world myths — the full story mode of choices through Campbell’s twelve stages.',
     c2:'This time the hero is you — walk the twelve thresholds as yourself, and forge your own epic at the end.',
     c3:'A turn-based road of slaying: defeat Sloth, Fear, Pride, Despair… twelve inner demons, and truly become a hero.',
     c4:'A roguelite deckbuilder: your deck is your sword. Cut through the twelve demons; die, rebuild, grow stronger.',
     c5:'The journey inward: follow the Hero’s Journey circle (Call → Depart → Wander → Transform → Return), crossing the Known and Unknown to meet and surpass yourself.',
+    c6:'Walk Odysseus’ twelve adventures as a journey inward — each stage a reflective threshold, the ending forging your own homecoming epic.',
     foot:'A visualization of Joseph Campbell’s twelve stages · best played fullscreen on mobile or browser',lang:'中'}
 };
 function apply(){
@@ -110,11 +118,13 @@ function apply(){
   document.getElementById('c3-zh').textContent=LANG==='zh'?'弒魔英雄旅':'Trials of the Beasts';
   document.getElementById('c4-zh').textContent=LANG==='zh'?'英雄牌旅':'The Deckbound Hero';
   document.getElementById('c5-zh').textContent=LANG==='zh'?'內在英雄之旅':'The Inner Journey';
+  document.getElementById('c6-zh').textContent=LANG==='zh'?'奧德賽 · 內在航程':'The Odyssey Within';
   document.getElementById('c1-d').textContent=t.c1;
   document.getElementById('c2-d').textContent=t.c2;
   document.getElementById('c3-d').textContent=t.c3;
   document.getElementById('c4-d').textContent=t.c4;
   document.getElementById('c5-d').textContent=t.c5;
+  document.getElementById('c6-d').textContent=t.c6;
   document.getElementById('foot').textContent=t.foot;
   document.getElementById('lang-btn').textContent=t.lang;
   document.documentElement.lang = LANG==='zh'?'zh-TW':'en';

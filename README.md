@@ -1,8 +1,8 @@
 # 英雄旅程 · The Hero's Journey
 
-坎伯（Joseph Campbell）／佛格勒十二階段的視覺化專案：**一個入口，五種玩法**，共享同一套水彩美術、史詩音樂，以及跨文化的神話隱喻（奧德賽、吉爾伽美什、西遊記、北歐…皆公有領域）。
+坎伯（Joseph Campbell）／佛格勒十二階段的視覺化專案：**一個入口，六種玩法**，共享同一套水彩美術、史詩音樂，以及跨文化的神話隱喻（奧德賽、吉爾伽美什、西遊記、北歐…皆公有領域）。
 
-A visualization of Campbell / Vogler's twelve stages of the Hero's Journey: **one entrance, five ways to play**, sharing one set of watercolor art, an epic synth score, and cross-cultural mythic echoes (Odyssey, Gilgamesh, Journey to the West, Norse… all public domain).
+A visualization of Campbell / Vogler's twelve stages of the Hero's Journey: **one entrance, six ways to play**, sharing one set of watercolor art, an epic synth score, and cross-cultural mythic echoes (Odyssey, Gilgamesh, Journey to the West, Norse… all public domain).
 
 ▶ **Play online / 線上遊玩：https://cyysongyy.github.io/heros-journey/**
 
@@ -15,7 +15,7 @@ A visualization of Campbell / Vogler's twelve stages of the Hero's Journey: **on
 
 ---
 
-## 五種玩法怎麼玩 · How to Play
+## 六種玩法怎麼玩 · How to Play
 
 ### 📖 故事模式 · Story Mode — `heros_journey_game.html`
 
@@ -67,18 +67,28 @@ A visualization of Campbell / Vogler's twelve stages of the Hero's Journey: **on
 
 <br clear="all">
 
+### ⛵ 奧德賽 · 內在航程 · The Odyssey Within — `odyssey_voyage.html`
+
+<img src="screenshots/odyssey_within.png" width="240" align="right" alt="The Odyssey Within">
+
+**中文**：把荷馬《奧德賽》的**十二段冒險**走成一趟**向內的航程**——特洛伊的餘燼、洛托斯、獨眼巨人、風神皮袋、女巫瑟茜、冥府、賽蓮、斯庫拉、太陽神之牛、卡呂普索、費阿克斯人、重返伊薩卡。畫面上一個**十二點圓環**隨進度轉動。每一關給你旁白＋神話回聲＋《奧德賽》引言，再一題**反思提問**（**必填**書寫）與抉擇（養成 ⚔️勇氣／🌙智慧／❤️心）。結局依屬性給你歸鄉稱號（不屈的航者／足智的奧德修斯／思鄉的歸人／完整的歸鄉者），用你的話編成**歸鄉史詩**，並附一段**正向建議**。
+
+**EN**: Walk the **twelve adventures** of Homer's *Odyssey* as a **journey inward** — the ashes of Troy, the Lotus-Eaters, the Cyclops, Aeolus' winds, Circe, the Underworld, the Sirens, Scylla & Charybdis, the Cattle of Helios, Calypso, the Phaeacians, and the return to Ithaca. A **twelve-dot ring** turns as you progress. Each stage gives narration + a mythic echo + an *Odyssey* quote, then a **reflective question** (**required** free-write) and a choice (raising **⚔️Courage / 🌙Wisdom / ❤️Heart**). The ending names your homecoming title (Unyielding Voyager / Cunning One / Homeward Heart / Whole Returner), forges a **homecoming epic** from your words, and adds a positive **word for the voyager**.
+
+<br clear="all">
+
 ---
 
 ## 檔案 · Files
 
-- `index.html` — 入口選單 / menu hub (links the five modes, with music)
-- `heros_journey_game.html` · `your_odyssey.html` · `beast_trials.html` · `deck_trials.html` · `inner_journey.html` — 五種玩法 / the five modes (each a standalone offline file)
+- `index.html` — 入口選單 / menu hub (links the six modes, with music)
+- `heros_journey_game.html` · `your_odyssey.html` · `beast_trials.html` · `deck_trials.html` · `inner_journey.html` · `odyssey_voyage.html` — 六種玩法 / the six modes (each a standalone offline file)
 - `images/` — 圖像資源 / art (12 scene backgrounds, portraits `img15…img37`, twelve demons `beast1…beast12`, medal)
-- `BEASTS.md` — 十二心魔美術清單／生圖說明 / beast art manifest & prompts
+- `BEASTS.md` · `ODYSSEY.md` — 美術清單／生圖說明 / art manifests & prompts (beasts; Odyssey Within scenes)
 - `gen_all.mjs` · `gen_portraits.mjs` · `gen_beasts.mjs` · `gen_image.mjs` — 產生美術的腳本 / art-generation scripts
 
-> 五種玩法各自獨立、無共用存檔；共用的是 `images/` 與世界觀。缺圖時以佔位（emoji／隱藏）處理，仍可正常遊玩。
-> The five modes are independent (no shared save); they share only `images/` and the theme. Missing art falls back to placeholders (emoji/hidden) and the game still plays.
+> 六種玩法各自獨立、無共用存檔；共用的是 `images/` 與世界觀。缺圖時以佔位（emoji／隱藏／退回既有圖）處理，仍可正常遊玩。
+> The six modes are independent (no shared save); they share only `images/` and the theme. Missing art falls back to placeholders (emoji/hidden/existing images) and the game still plays.
 
 ## 重新生成 / 產生新圖 · Regenerating Art
 

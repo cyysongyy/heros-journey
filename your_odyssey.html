@@ -18,7 +18,7 @@ body{
 .screen.active{display:flex;}
 
 /* top buttons */
-#lang-btn,#music-btn{
+#lang-btn,#music-btn,#fs-btn{
   position:fixed;top:14px;z-index:1000;background:rgba(0,0,0,0.55);
   border:1px solid var(--gold);color:var(--gold);cursor:pointer;border-radius:3px;
   font-family:inherit;letter-spacing:1px;
@@ -26,6 +26,7 @@ body{
 #lang-btn{right:14px;padding:6px 14px;font-size:12px;}
 #music-btn{right:74px;padding:6px 9px;font-size:14px;line-height:1;}
 #music-btn.muted{opacity:0.5;}
+#fs-btn{right:114px;padding:6px 9px;font-size:13px;font-weight:700;line-height:1;}
 #home-btn{position:fixed;top:14px;left:14px;z-index:1000;background:rgba(0,0,0,.55);border:1px solid var(--gold);
   color:var(--gold);text-decoration:none;border-radius:3px;padding:6px 12px;font-size:12px;letter-spacing:1px;}
 
@@ -109,6 +110,7 @@ textarea:focus{outline:none;border-color:var(--gold);}
 
 <div id="app">
   <a id="home-btn" href="./index.html" title="選單 / Menu">⌂</a>
+  <button id="fs-btn" onclick="cycleFS()" title="文字大小 / Text size">A</button>
   <button id="lang-btn" onclick="toggleLang()">EN</button>
   <button id="music-btn" onclick="toggleMusic()" title="音樂 / Music">🔊</button>
 
@@ -364,6 +366,10 @@ function applyLang(){
 function toggleLang(){ LANG = LANG==='zh'?'en':'zh'; applyLang();
   if(document.getElementById('journey').classList.contains('active')) renderStage(true);
 }
+let FS=+(localStorage.getItem('hj_fs')||1);if(![1,2,3].includes(FS))FS=1;
+const FS_Z={1:1,2:1.18,3:1.36},FS_L={1:'A',2:'A+',3:'A++'};
+function applyFS(){['top','stage-body','ending'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.zoom=FS_Z[FS];});const btn=document.getElementById('fs-btn');if(btn)btn.textContent=FS_L[FS];}
+function cycleFS(){FS=FS>=3?1:FS+1;try{localStorage.setItem('hj_fs',FS);}catch(e){}applyFS();}
 
 function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -727,5 +733,5 @@ function unlockAudio(){
 ['pointerdown','touchstart','touchend','mousedown','click','keydown']
   .forEach(ev=>document.addEventListener(ev,unlockAudio));
 
-applyLang();
+applyLang();applyFS();
 </script>

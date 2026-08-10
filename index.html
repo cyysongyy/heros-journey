@@ -16,6 +16,8 @@ body{background:#07050f;color:var(--text);font-family:"Noto Serif TC","Songti TC
 #music-btn{position:fixed;top:14px;right:74px;z-index:10;background:rgba(0,0,0,.55);border:1px solid var(--gold);
   color:var(--gold);cursor:pointer;border-radius:3px;font-family:inherit;padding:6px 9px;font-size:14px;line-height:1;}
 #music-btn.muted{opacity:.5;}
+#fs-btn{position:fixed;top:14px;right:114px;z-index:10;background:rgba(0,0,0,.55);border:1px solid var(--gold);
+  color:var(--gold);cursor:pointer;border-radius:3px;font-family:inherit;padding:6px 9px;font-size:13px;font-weight:700;line-height:1;letter-spacing:1px;}
 .wrap{position:relative;z-index:2;max-width:640px;margin:0 auto;padding:56px 22px 48px;
   display:flex;flex-direction:column;align-items:center;min-height:100vh;}
 .hero{width:min(180px,44vw);height:min(180px,44vw);border-radius:50%;object-fit:cover;border:3px solid var(--gold);
@@ -45,6 +47,7 @@ body{background:#07050f;color:var(--text);font-family:"Noto Serif TC","Songti TC
 </style>
 
 <div id="bg"><img src="./images/img0.png" alt="" onerror="this.style.display='none'"></div>
+<button id="fs-btn" onclick="cycleFS()" title="文字大小 / Text size">A</button>
 <button id="music-btn" onclick="toggleMusic()" title="音樂 / Music">🔊</button>
 <button id="lang-btn" onclick="toggleLang()">EN</button>
 
@@ -146,7 +149,11 @@ function apply(){
   document.documentElement.lang = LANG==='zh'?'zh-TW':'en';
 }
 function toggleLang(){ LANG = LANG==='zh'?'en':'zh'; apply(); }
-apply();
+let FS=+(localStorage.getItem('hj_fs')||1);if(![1,2,3].includes(FS))FS=1;
+const FS_Z={1:1,2:1.18,3:1.36},FS_L={1:'A',2:'A+',3:'A++'};
+function applyFS(){document.querySelectorAll('.lead,.cards,.foot').forEach(el=>el.style.zoom=FS_Z[FS]);const btn=document.getElementById('fs-btn');if(btn)btn.textContent=FS_L[FS];}
+function cycleFS(){FS=FS>=3?1:FS+1;try{localStorage.setItem('hj_fs',FS);}catch(e){}applyFS();}
+apply();applyFS();
 
 // ── menu background music (shared engine) ──
 const Music = (function(){

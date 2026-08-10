@@ -7,7 +7,7 @@
 html,body{min-height:100%;}
 body{background:#07050f;color:var(--text);font-family:"Noto Serif TC","Songti TC",Georgia,serif;min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;}
 #bg{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse at 50% 18%,#1b1240 0%,#0a0820 55%,#06040e 100%);}
-#bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.10;}
+#bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.34;transition:opacity .6s;}
 #home-btn,#lang-btn,#music-btn,#fs-btn{position:fixed;top:14px;z-index:1000;background:rgba(0,0,0,.55);border:1px solid var(--gold);color:var(--gold);cursor:pointer;border-radius:3px;font-family:inherit;letter-spacing:1px;text-decoration:none;}
 #home-btn{left:14px;padding:6px 12px;font-size:12px;}
 #lang-btn{right:14px;padding:6px 14px;font-size:12px;} #music-btn{right:74px;padding:6px 9px;font-size:14px;line-height:1;} #music-btn.muted{opacity:.5;}
@@ -99,7 +99,7 @@ textarea:focus{outline:none;border-color:var(--gold);}
 .all-links{text-align:center;line-height:2.4;}
 </style>
 
-<div id="bg"><img src="./images/img0.png" alt="" onerror="this.style.display='none'"></div>
+<div id="bg"><img src="./images/hall_bg.png" alt="" onerror="this.onerror=function(){this.style.display='none';};this.src='./images/img0.png';"></div>
 <a id="home-btn" href="./index.html" title="選單 / Menu">⌂</a>
 <button id="fs-btn" onclick="cycleFS()" title="文字大小 / Text size">A</button>
 <button id="music-btn" onclick="toggleMusic()" title="音樂 / Music">🔊</button>

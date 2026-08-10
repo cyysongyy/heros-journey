@@ -1,8 +1,8 @@
 # 英雄旅程 · The Hero's Journey
 
-坎伯（Joseph Campbell）／佛格勒十二階段的視覺化專案：**一個入口，六種玩法**，共享同一套水彩美術、史詩音樂，以及跨文化的神話隱喻（奧德賽、吉爾伽美什、西遊記、北歐…皆公有領域）。
+坎伯（Joseph Campbell）／佛格勒十二階段的視覺化專案：**一個入口，六種玩法＋一座殿堂**，共享同一套水彩美術、史詩音樂，以及跨文化的神話隱喻（奧德賽、吉爾伽美什、西遊記、北歐…皆公有領域）。六種玩法互相交叉連結，並由第七個作品**英雄殿堂**串成一體。
 
-A visualization of Campbell / Vogler's twelve stages of the Hero's Journey: **one entrance, six ways to play**, sharing one set of watercolor art, an epic synth score, and cross-cultural mythic echoes (Odyssey, Gilgamesh, Journey to the West, Norse… all public domain).
+A visualization of Campbell / Vogler's twelve stages of the Hero's Journey: **one entrance, six ways to play, and one Hall**, sharing one set of watercolor art, an epic synth score, and cross-cultural mythic echoes (Odyssey, Gilgamesh, Journey to the West, Norse… all public domain). The six modes cross-link to one another and are woven together by a seventh piece — the **Hall of Heroes**.
 
 ▶ **Play online / 線上遊玩：https://cyysongyy.github.io/heros-journey/**
 
@@ -77,12 +77,23 @@ A visualization of Campbell / Vogler's twelve stages of the Hero's Journey: **on
 
 <br clear="all">
 
+### 🏛️ 英雄殿堂 · Hall of Heroes — `hall.html` ✨
+
+<img src="screenshots/hall.png" width="240" align="right" alt="Hall of Heroes">
+
+**中文**：把六種玩法**串成一體**的第七個作品。殿堂裡有**六道門**，各對應一種模式，各進行一段**濃縮試煉**——📖神話抉擇、🧭反思書寫、⚔️三回合微戰鬥、🃏抽牌構築、🌀內在自問、⛵航程抉擇。每道門養成 **⚔️勇氣／🌙智慧／❤️心**，並提供「▶ 玩這道門的完整版」直接連結。六門全點亮後進行**第七道試煉·封印英雄**：依屬性給你稱號（圓滿的英雄／不屈的勇者／洞察的智者／慈悲的守護者），用你寫下的話編成史詩、附正向建議，並**推薦最適合你的完整旅程**＋連到全部六種。此外，每個模式的結局都新增「繼續旅程」列，互相交叉連結、也連回殿堂。
+
+**EN**: The seventh piece that **weaves the six modes into one**. The Hall has **six gates**, one per mode, each a **condensed trial** — 📖 myth choice, 🧭 reflective write, ⚔️ 3-round micro-combat, 🃏 card draft, 🌀 inward question, ⛵ voyage choice. Each gate raises **⚔️Courage / 🌙Wisdom / ❤️Heart** and offers a "▶ play the full mode" link. Light all six for the **seventh trial — claim your hero**: a title from your virtues (Whole Hero / Unyielding / Discerning / Compassionate), an epic forged from your words, a positive word, and a **recommendation of the full journey that fits you** plus links to all six. Every mode's ending also gains a "Continue" row that cross-links to sibling modes and back to the Hall.
+
+<br clear="all">
+
 ---
 
 ## 檔案 · Files
 
-- `index.html` — 入口選單 / menu hub (links the six modes, with music)
+- `index.html` — 入口選單 / menu hub (links every mode + the Hall, with music, QR, text-size)
 - `heros_journey_game.html` · `your_odyssey.html` · `beast_trials.html` · `deck_trials.html` · `inner_journey.html` · `odyssey_voyage.html` — 六種玩法 / the six modes (each a standalone offline file)
+- `hall.html` — 🏛️ 英雄殿堂 / Hall of Heroes (the seventh piece; samples all six, cross-links to each)
 - `images/` — 圖像資源 / art (12 scene backgrounds, portraits `img15…img37`, twelve demons `beast1…beast12`, medal)
 - `BEASTS.md` · `ODYSSEY.md` · `INNER.md` — 美術清單／生圖說明 / art manifests & prompts (beasts; Odyssey Within scenes; Inner Journey stations)
 - `gen_all.mjs` · `gen_portraits.mjs` · `gen_beasts.mjs` · `gen_image.mjs` — 產生美術的腳本 / art-generation scripts

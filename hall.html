@@ -1,0 +1,579 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>英雄殿堂 · Hall of Heroes</title>
+<style>
+:root{--gold:#c9a84c;--gold-light:#e8d48a;--green:#5ac878;--text:#e7e0d0;--muted:rgba(200,180,140,0.62);}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{min-height:100%;}
+body{background:#07050f;color:var(--text);font-family:"Noto Serif TC","Songti TC",Georgia,serif;min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;}
+#bg{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse at 50% 18%,#1b1240 0%,#0a0820 55%,#06040e 100%);}
+#bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.10;}
+#home-btn,#lang-btn,#music-btn,#fs-btn{position:fixed;top:14px;z-index:1000;background:rgba(0,0,0,.55);border:1px solid var(--gold);color:var(--gold);cursor:pointer;border-radius:3px;font-family:inherit;letter-spacing:1px;text-decoration:none;}
+#home-btn{left:14px;padding:6px 12px;font-size:12px;}
+#lang-btn{right:14px;padding:6px 14px;font-size:12px;} #music-btn{right:74px;padding:6px 9px;font-size:14px;line-height:1;} #music-btn.muted{opacity:.5;}
+#fs-btn{right:114px;padding:6px 9px;font-size:13px;font-weight:700;line-height:1;}
+.screen{display:none;position:relative;z-index:2;}
+.screen.active{display:block;}
+.wrap{max-width:640px;margin:0 auto;padding:56px 22px 60px;}
+.center{text-align:center;}
+.btn{padding:14px 40px;background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(120,90,200,.2));border:1px solid var(--gold);color:var(--gold-light);font-size:16px;letter-spacing:3px;cursor:pointer;border-radius:3px;font-family:inherit;transition:all .3s;}
+.btn:hover{background:linear-gradient(135deg,rgba(201,168,76,.4),rgba(120,90,200,.35));box-shadow:0 0 22px rgba(201,168,76,.3);}
+.btn-sm{padding:9px 22px;font-size:13px;letter-spacing:1px;}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+/* title */
+#title .wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.hero{width:min(150px,40vw);height:min(150px,40vw);border-radius:50%;object-fit:cover;border:3px solid var(--gold);box-shadow:0 0 44px rgba(201,168,76,.35);margin-bottom:20px;}
+.t-zh{font-size:clamp(30px,8vw,46px);color:var(--gold-light);letter-spacing:8px;text-shadow:0 0 24px rgba(201,168,76,.5);}
+.t-en{font-size:13px;letter-spacing:5px;color:var(--muted);margin:10px 0 20px;}
+.t-sub{font-size:13.5px;color:var(--muted);line-height:1.9;max-width:460px;margin-bottom:28px;white-space:pre-line;}
+/* hall */
+.hall-head{text-align:center;margin-bottom:8px;}
+.hall-title{font-size:clamp(22px,6vw,30px);color:var(--gold-light);letter-spacing:3px;}
+.hall-prog{font-size:12.5px;color:var(--muted);letter-spacing:2px;margin:8px 0 22px;text-align:center;}
+.gates{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.gate{position:relative;background:rgba(20,16,36,.72);border:1px solid rgba(201,168,76,.3);border-radius:12px;padding:18px 16px;cursor:pointer;transition:all .22s;text-align:center;overflow:hidden;}
+.gate:hover{border-color:var(--gold);background:rgba(44,34,70,.85);transform:translateY(-2px);}
+.gate.done{border-color:var(--green);box-shadow:0 0 22px rgba(90,200,120,.22);}
+.gate .ic{font-size:34px;line-height:1;filter:drop-shadow(0 0 10px rgba(201,168,76,.4));}
+.gate .gn{font-size:16px;color:var(--gold-light);letter-spacing:1px;margin-top:8px;}
+.gate .gs{font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:1px;}
+.gate .mark{position:absolute;top:8px;right:10px;font-size:15px;}
+.gate.done .gn{color:var(--green);}
+.claim-wrap{text-align:center;margin-top:26px;}
+/* trial */
+.tr-zone{font-size:11px;letter-spacing:3px;color:var(--gold);text-align:center;}
+.tr-title{font-size:clamp(19px,5vw,24px);color:var(--gold-light);letter-spacing:1px;text-align:center;margin:3px 0 14px;}
+.narr{font-size:clamp(14px,4vw,16px);line-height:1.95;color:#efe8d6;margin-bottom:12px;text-align:center;}
+.myth-echo{font-size:12.5px;line-height:1.8;color:#cbb98a;background:rgba(201,168,76,.07);border-left:2px solid var(--gold);padding:9px 13px;border-radius:0 4px 4px 0;margin-bottom:10px;}
+.myth-echo .mlabel{display:block;font-size:10px;letter-spacing:2px;color:var(--gold);margin-bottom:3px;}
+.myth-quote{font-style:italic;font-size:13px;color:#e8dcc0;text-align:center;margin-bottom:16px;line-height:1.7;}
+.myth-quote .msrc{display:block;font-style:normal;font-size:11px;color:var(--muted);margin-top:4px;}
+.prompt{font-size:14px;color:var(--gold-light);letter-spacing:.5px;margin:6px 0 10px;line-height:1.7;text-align:center;}
+textarea{width:100%;min-height:84px;background:rgba(0,0,0,.4);border:1px solid rgba(201,168,76,.4);color:var(--text);font-family:inherit;font-size:15px;line-height:1.7;padding:12px 14px;border-radius:4px;resize:vertical;}
+textarea:focus{outline:none;border-color:var(--gold);}
+#write-warn{color:#ff8a72;font-size:12px;margin-top:6px;min-height:16px;letter-spacing:.5px;text-align:center;}
+.choose-label{font-size:13px;color:var(--muted);margin:16px 0 8px;text-align:center;}
+.choices{display:flex;flex-direction:column;gap:10px;}
+.choice{text-align:left;padding:13px 16px;background:rgba(20,16,36,.72);border:1px solid rgba(201,168,76,.32);color:var(--text);border-radius:4px;cursor:pointer;font-family:inherit;font-size:14.5px;line-height:1.6;transition:all .2s;}
+.choice:hover{border-color:var(--gold);background:rgba(44,34,70,.85);transform:translateX(3px);}
+.choice .tag{display:block;font-size:11px;color:var(--gold);opacity:.85;margin-top:6px;letter-spacing:1px;}
+/* combat */
+.foe{text-align:center;margin-bottom:6px;}
+.foe .fic{font-size:44px;}
+.bar{height:12px;background:rgba(0,0,0,.5);border:1px solid rgba(201,168,76,.35);border-radius:7px;overflow:hidden;margin:8px auto;max-width:280px;}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,#c0433a,#e0705a);transition:width .3s;}
+.hpnum{font-size:12px;color:var(--muted);text-align:center;}
+.intent{font-size:13px;color:#e8c07a;text-align:center;margin:10px 0;letter-spacing:.5px;}
+.cbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px;}
+.cbtn{padding:12px 16px;background:rgba(20,16,36,.8);border:1px solid rgba(201,168,76,.4);color:var(--text);border-radius:6px;cursor:pointer;font-family:inherit;font-size:14px;min-width:96px;transition:all .2s;}
+.cbtn:hover{border-color:var(--gold);background:rgba(44,34,70,.9);}
+.clog{font-size:13px;color:#d8cba6;text-align:center;line-height:1.8;margin-top:14px;min-height:24px;}
+/* cards */
+.cards3{display:flex;flex-direction:column;gap:10px;}
+.tcard{text-align:left;padding:13px 16px;background:rgba(20,16,36,.78);border:1px solid rgba(201,168,76,.4);border-radius:8px;cursor:pointer;font-family:inherit;color:var(--text);transition:all .2s;}
+.tcard:hover{border-color:var(--gold);transform:translateY(-2px);background:rgba(44,34,70,.9);}
+.tcard .cn{font-size:15px;color:var(--gold-light);letter-spacing:1px;}
+.tcard .cd{font-size:12.5px;color:var(--muted);margin-top:5px;line-height:1.6;}
+/* result */
+.result{text-align:center;}
+.result .rlead{font-size:15px;color:#efe8d6;line-height:1.9;margin:10px 0 16px;}
+.gainrow{font-size:13px;color:var(--gold-light);letter-spacing:1px;margin-bottom:18px;}
+.link-full{display:inline-block;margin:4px 6px;padding:9px 18px;border:1px solid var(--gold);border-radius:4px;color:var(--gold-light);text-decoration:none;font-size:13px;letter-spacing:1px;transition:all .2s;}
+.link-full:hover{background:rgba(201,168,76,.18);}
+/* hud */
+#hud{position:fixed;left:0;right:0;bottom:0;z-index:3;background:linear-gradient(180deg,transparent,rgba(6,4,14,.92) 45%);padding:12px 18px 14px;display:none;}
+#hud.on{display:block;}
+.hud-inner{max-width:640px;margin:0 auto;display:flex;gap:16px;justify-content:center;font-size:12px;color:var(--muted);}
+.hud-inner b{color:var(--gold-light);}
+/* ending */
+.arch{font-size:clamp(24px,6.5vw,34px);color:var(--gold-light);letter-spacing:2px;text-align:center;text-shadow:0 0 24px rgba(201,168,76,.5);margin-bottom:2px;}
+.arch-en{font-size:13px;letter-spacing:4px;color:var(--muted);text-align:center;margin-bottom:18px;}
+.medal{width:120px;height:120px;object-fit:cover;border-radius:50%;border:3px solid var(--gold);box-shadow:0 0 40px rgba(201,168,76,.4);margin:0 auto 18px;display:block;}
+.epic{max-width:600px;font-size:15px;line-height:2.05;color:#efe8d6;white-space:pre-wrap;text-align:center;border-top:1px solid rgba(201,168,76,.25);border-bottom:1px solid rgba(201,168,76,.25);padding:22px 6px;margin:0 auto 20px;}
+.adv-label{font-size:12px;letter-spacing:4px;color:var(--gold);text-align:center;margin:6px 0 12px;}
+.advice{max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:10px;margin-bottom:22px;}
+.advice .line{font-size:14px;line-height:1.7;color:#efe8d6;background:rgba(201,168,76,.07);border-left:2px solid var(--gold);padding:9px 14px;border-radius:0 4px 4px 0;}
+.rec{max-width:600px;margin:0 auto 20px;text-align:center;}
+.rec .rec-primary{font-size:15px;color:#efe8d6;line-height:1.8;margin-bottom:12px;}
+.rec .rec-primary b{color:var(--gold-light);}
+.all-links{text-align:center;line-height:2.4;}
+</style>
+
+<div id="bg"><img src="./images/img0.png" alt="" onerror="this.style.display='none'"></div>
+<a id="home-btn" href="./index.html" title="選單 / Menu">⌂</a>
+<button id="fs-btn" onclick="cycleFS()" title="文字大小 / Text size">A</button>
+<button id="music-btn" onclick="toggleMusic()" title="音樂 / Music">🔊</button>
+<button id="lang-btn" onclick="toggleLang()">EN</button>
+
+<!-- TITLE -->
+<section id="title" class="screen active center">
+  <div class="wrap">
+    <img class="hero" src="./images/img15.png" alt="" onerror="this.style.display='none'">
+    <div class="t-zh" id="tt-zh">英雄殿堂</div>
+    <div class="t-en">HALL OF HEROES</div>
+    <div class="t-sub" id="tt-sub"></div>
+    <button class="btn" onclick="enter()" id="tt-btn">進入殿堂 · ENTER</button>
+  </div>
+</section>
+
+<!-- HALL -->
+<section id="hall" class="screen">
+  <div class="wrap">
+    <div class="hall-head"><div class="hall-title" id="hall-title">六道門</div></div>
+    <div class="hall-prog" id="hall-prog"></div>
+    <div class="gates" id="gates"></div>
+    <div class="claim-wrap"><button class="btn" id="claim-btn" onclick="claim()" disabled></button></div>
+  </div>
+</section>
+
+<!-- TRIAL -->
+<section id="trial" class="screen"><div class="wrap" id="trial-body"></div></section>
+
+<!-- HUD -->
+<div id="hud"><div class="hud-inner">
+  <span>⚔️ <span id="l-c">勇氣</span> <b id="v-c">10</b></span>
+  <span>🌙 <span id="l-w">智慧</span> <b id="v-w">10</b></span>
+  <span>❤️ <span id="l-h">心</span> <b id="v-h">10</b></span>
+</div></div>
+
+<!-- ENDING -->
+<section id="ending" class="screen">
+  <div class="wrap">
+    <img class="medal" src="./images/img37.png" alt="" onerror="this.style.display='none'">
+    <div class="adv-label" id="e-label">你的英雄稱號</div>
+    <div class="arch" id="e-arch"></div>
+    <div class="arch-en" id="e-arch-en"></div>
+    <div class="epic" id="e-epic"></div>
+    <div class="adv-label" id="e-adv-label"></div>
+    <div class="advice" id="e-advice"></div>
+    <div class="adv-label" id="e-rec-label"></div>
+    <div class="rec" id="e-rec"></div>
+    <div class="adv-label" id="e-all-label"></div>
+    <div class="all-links" id="e-all"></div>
+    <div class="center" style="margin-top:24px"><button class="btn btn-sm" onclick="restart()" id="e-btn">再進殿堂 · AGAIN</button></div>
+  </div>
+</section>
+
+<script>
+let LANG='zh';
+const $=id=>document.getElementById(id),L=()=>LANG,clamp=v=>Math.max(0,Math.min(30,v));
+const UI={
+ zh:{sub:'六道門，通向同一個英雄——你。\n每道門一段試煉，全部點亮，封印你的英雄。',enter:'進入殿堂 · ENTER',
+   hall:'六道門',prog:(n)=>`已點亮 ${n} / 6　${n<6?'（點一道門開始）':'（可以封印英雄了）'}`,
+   c:'勇氣',w:'智慧',h:'心',choose:'選擇你面對它的方式：',write:'（在這裡寫下你的答案）',needWrite:'請先寫下你的答案 ✍️',
+   back:'← 回到殿堂',playFull:'▶ 玩這道門的完整版',claim:'封印英雄 · CLAIM',claimWait:'先點亮六道門',
+   endLabel:'你的英雄稱號',advLabel:'給英雄的建議',recLabel:'你的路',allLabel:'六種完整旅程',again:'再進殿堂 · AGAIN',
+   gained:'獲得',done:'已點亮'},
+ en:{sub:'Six gates, one hero — you.\nA trial at each gate; light them all to claim your hero.',enter:'ENTER',
+   hall:'Six Gates',prog:(n)=>`Lit ${n} / 6　${n<6?'(tap a gate to begin)':'(ready to claim)'}`,
+   c:'Courage',w:'Wisdom',h:'Heart',choose:'Choose how you meet it:',write:'(write your answer here)',needWrite:'Write your answer first ✍️',
+   back:'← Back to the Hall',playFull:'▶ Play the full mode',claim:'CLAIM YOUR HERO',claimWait:'Light all six gates first',
+   endLabel:'Your Hero Title',advLabel:'A Word for You',recLabel:'Your Path',allLabel:'Six Full Journeys',again:'ENTER AGAIN',
+   gained:'Gained',done:'lit'}
+};
+// six gates -> six modes
+const GATES=[
+ {id:'story',icon:'📖',file:'heros_journey_game.html',type:'myth',mood:'epic',
+  zh:{name:'故事之門',gs:'神話 · 抉擇',full:'故事模式'},en:{name:'Gate of Story',gs:'Myth · Choice',full:'Story Mode'},
+  t:{zh:{title:'故事之門',n:'門後迴響著一則古老的神話。每個英雄的故事，其實是同一個故事。',e:'凡人因害怕死亡而出發，因此成為英雄。',q:'「我，吉爾伽美什，曾懼怕死亡——於是我出發。」',s:'吉爾伽美什史詩',
+    pr:'你為了什麼，願意踏上「出發」？',ch:[{t:'為了不再逃避。',a:{courage:2},w:'面對'},{t:'為了看清自己。',a:{wisdom:2},w:'求真'},{t:'為了我所愛的人。',a:{heart:2},w:'愛'}]},
+   en:{title:'Gate of Story',n:'An ancient myth echoes beyond the gate. Every hero’s tale is, at heart, one tale.',e:'The mortal sets out for fear of death, and so becomes a hero.',q:'"I, Gilgamesh, feared death — and so I set out."',s:'Epic of Gilgamesh',
+    pr:'For what would you willingly "set out"?',ch:[{t:'To stop running away.',a:{courage:2},w:'facing it'},{t:'To see myself clearly.',a:{wisdom:2},w:'seeking truth'},{t:'For those I love.',a:{heart:2},w:'love'}]}}},
+ {id:'own',icon:'🧭',file:'your_odyssey.html',type:'reflect',mood:'mystic',
+  zh:{name:'旅程之門',gs:'反思 · 書寫',full:'你的英雄旅程'},en:{name:'Gate of the Journey',gs:'Reflect · Write',full:'Your Own Odyssey'},
+  t:{zh:{title:'旅程之門',n:'這一次，英雄是你。門檻上刻著一個問題。',e:'認識你自己。',q:'「認識你自己。」',s:'德爾菲神諭',
+    pr:'此刻，你的人生正站在哪一道「門檻」前？',ch:[{t:'我決定跨過去。',a:{courage:2},w:'啟程'},{t:'我先看清它。',a:{wisdom:2},w:'洞察'},{t:'我帶著愛前行。',a:{heart:2},w:'溫柔'}]},
+   en:{title:'Gate of the Journey',n:'This time, you are the hero. A question is carved on the threshold.',e:'Know thyself.',q:'"Know thyself."',s:'Oracle of Delphi',
+    pr:'Right now, before which "threshold" does your life stand?',ch:[{t:'I choose to cross it.',a:{courage:2},w:'setting out'},{t:'I see it clearly first.',a:{wisdom:2},w:'insight'},{t:'I go forward with love.',a:{heart:2},w:'tenderness'}]}}},
+ {id:'beast',icon:'⚔️',file:'beast_trials.html',type:'combat',mood:'drive',
+  zh:{name:'試煉之門',gs:'戰鬥 · 三回合',full:'弒魔英雄旅'},en:{name:'Gate of Trial',gs:'Combat · 3 rounds',full:'Trials of the Beasts'},
+  t:{zh:{title:'試煉之門',foe:'心魔·懼',fic:'😱',n:'門後，一頭心魔擋路。三回合內，戰勝它。'},
+   en:{title:'Gate of Trial',foe:'The Dread',fic:'😱',n:'A demon blocks the way. Overcome it within three rounds.'}}},
+ {id:'deck',icon:'🃏',file:'deck_trials.html',type:'deck',mood:'tense',
+  zh:{name:'牌局之門',gs:'抽牌 · 構築',full:'英雄牌旅'},en:{name:'Gate of Cards',gs:'Draft · Build',full:'The Deckbound Hero'},
+  t:{zh:{title:'牌局之門',n:'命運發給你三張牌。你只能選一張，帶著它前行。',pr:'你選擇哪一張？',
+    cards:[{cn:'⚔️ 破釜',cd:'孤注一擲的勇氣。',a:{courage:2},w:'決斷'},{cn:'🌙 洞察',cd:'看穿局勢的智慧。',a:{wisdom:2},w:'看破'},{cn:'❤️ 守護',cd:'護住所愛的心。',a:{heart:2},w:'守護'}]},
+   en:{title:'Gate of Cards',n:'Fate deals you three cards. Choose one, and carry it onward.',pr:'Which do you choose?',
+    cards:[{cn:'⚔️ All-In',cd:'The courage to risk everything.',a:{courage:2},w:'resolve'},{cn:'🌙 Insight',cd:'The wisdom to see through.',a:{wisdom:2},w:'clarity'},{cn:'❤️ Guard',cd:'The heart to protect what matters.',a:{heart:2},w:'protection'}]}}},
+ {id:'inner',icon:'🌀',file:'inner_journey.html',type:'reflect',mood:'calm',
+  zh:{name:'內在之門',gs:'內省 · 書寫',full:'內在英雄之旅'},en:{name:'Inner Gate',gs:'Inward · Write',full:'The Inner Journey'},
+  t:{zh:{title:'內在之門',n:'門後沒有敵人，只有一面鏡子——照見你自己。',e:'向外張望的人在做夢，向內凝視的人才清醒。',q:'「向內看。」',s:'榮格',
+    pr:'在這片安靜裡，你想對自己說一句什麼話？',ch:[{t:'我值得被我自己善待。',a:{heart:2},w:'自我慈悲'},{t:'我看清了什麼重要。',a:{wisdom:2},w:'清明'},{t:'我不再向恐懼低頭。',a:{courage:2},w:'無畏'}]},
+   en:{title:'Inner Gate',n:'No enemy waits beyond — only a mirror, showing you yourself.',e:'Who looks outside dreams; who looks inside awakens.',q:'"Look within."',s:'C. G. Jung',
+    pr:'In this stillness, what one thing do you want to say to yourself?',ch:[{t:'I deserve my own kindness.',a:{heart:2},w:'self-compassion'},{t:'I see what matters.',a:{wisdom:2},w:'clarity'},{t:'I bow to fear no more.',a:{courage:2},w:'fearlessness'}]}}},
+ {id:'odyssey',icon:'⛵',file:'odyssey_voyage.html',type:'reflect',mood:'triumph',
+  zh:{name:'航程之門',gs:'冒險 · 反思',full:'奧德賽 · 內在航程'},en:{name:'Gate of the Voyage',gs:'Voyage · Reflect',full:'The Odyssey Within'},
+  t:{zh:{title:'航程之門',n:'奧德修斯用十年回家——那也是一趟向內的航程。',e:'放下永生與安逸，才是真正的英雄。',q:'「我仍日夜盼望，回到我的故土。」',s:'荷馬《奧德賽》',
+    pr:'你願意為了「真正重要的東西」，放下哪一份安逸？',ch:[{t:'放下安全但空洞的舒適。',a:{courage:2},w:'選擇真實'},{t:'認清什麼才是我的家。',a:{wisdom:2},w:'認得歸屬'},{t:'為所愛，甘冒風險。',a:{heart:2},w:'為愛啟程'}]},
+   en:{title:'Gate of the Voyage',n:'Odysseus took ten years to come home — that too was a journey inward.',e:'To lay down immortality and ease — that is the true hero.',q:'"Still, night and day, I long to return to my own land."',s:'Homer, Odyssey',
+    pr:'For what truly matters, which comfort would you lay down?',ch:[{t:'A safe but hollow comfort.',a:{courage:2},w:'choosing the real'},{t:'I see clearly what my home is.',a:{wisdom:2},w:'knowing home'},{t:'For love, I’ll risk it.',a:{heart:2},w:'setting out for love'}]}}}
+];
+const gate=id=>GATES.find(g=>g.id===id);
+
+const G={attrs:{courage:10,wisdom:10,heart:10},done:{},answers:[],traits:[]};
+
+function applyLang(){
+ const u=UI[LANG];
+ $('lang-btn').textContent=LANG==='zh'?'EN':'中';
+ $('tt-zh').textContent=LANG==='zh'?'英雄殿堂':'Hall of Heroes';
+ $('tt-sub').textContent=u.sub;$('tt-btn').textContent=u.enter;
+ $('hall-title').textContent=u.hall;
+ $('l-c').textContent=u.c;$('l-w').textContent=u.w;$('l-h').textContent=u.h;
+ $('e-label').textContent=u.endLabel;$('e-btn').textContent=u.again;
+ if($('hall').classList.contains('active'))renderHall();
+ if($('trial').classList.contains('active')){const id=$('trial').dataset.gate;if(id)openGate(id,true);}
+}
+function toggleLang(){LANG=LANG==='zh'?'en':'zh';applyLang();}
+let FS=+(localStorage.getItem('hj_fs')||1);if(![1,2,3].includes(FS))FS=1;
+const FS_Z={1:1,2:1.18,3:1.36},FS_L={1:'A',2:'A+',3:'A++'};
+function applyFS(){document.querySelectorAll('.wrap').forEach(el=>el.style.zoom=FS_Z[FS]);const b=$('fs-btn');if(b)b.textContent=FS_L[FS];}
+function cycleFS(){FS=FS>=3?1:FS+1;try{localStorage.setItem('hj_fs',FS);}catch(e){}applyFS();}
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');window.scrollTo(0,0);
+ const th={title:'epic',hall:'mystic',ending:'triumph'};if(th[id]&&window.Music)Music.set(th[id]);}
+function updateHUD(){$('v-c').textContent=G.attrs.courage;$('v-w').textContent=G.attrs.wisdom;$('v-h').textContent=G.attrs.heart;}
+function enter(){G.attrs={courage:10,wisdom:10,heart:10};G.done={};G.answers=[];G.traits=[];$('hud').classList.add('on');updateHUD();show('hall');renderHall();}
+function restart(){$('hud').classList.remove('on');show('title');}
+
+function renderHall(){
+ const u=UI[LANG],g=$('gates');g.innerHTML='';
+ GATES.forEach(gt=>{const d=gt[LANG],done=!!G.done[gt.id];
+  const el=document.createElement('div');el.className='gate'+(done?' done':'');
+  el.innerHTML=`<span class="mark">${done?'✅':'✦'}</span><div class="ic">${gt.icon}</div><div class="gn">${d.name}</div><div class="gs">${done?u.done:d.gs}</div>`;
+  el.onclick=()=>openGate(gt.id);g.appendChild(el);});
+ const n=Object.keys(G.done).length;
+ $('hall-prog').textContent=u.prog(n);
+ const cb=$('claim-btn');cb.disabled=n<6;cb.textContent=n<6?u.claimWait:u.claim;
+ if($('hall')&&window.Music)Music.set('mystic');
+}
+
+function openGate(id,keep){
+ const gt=gate(id);if(window.Music)Music.set(gt.mood);
+ $('trial').dataset.gate=id;show('trial');$('hud').classList.add('on');
+ const body=$('trial-body');const prev=keep?($('answer')?$('answer').value:''):'';
+ body.innerHTML='';
+ const t=gt.t[LANG];
+ const zone=document.createElement('div');zone.className='tr-zone';zone.textContent=gt.icon+' '+gt[LANG].name;body.appendChild(zone);
+ const tt=document.createElement('div');tt.className='tr-title';tt.textContent=t.title;body.appendChild(tt);
+ if(gt.type==='combat'){renderCombat(gt,body);return;}
+ if(gt.type==='deck'){renderDeck(gt,body);return;}
+ // myth / reflect
+ const narr=document.createElement('div');narr.className='narr';narr.textContent=t.n;body.appendChild(narr);
+ if(t.e){const echo=document.createElement('div');echo.className='myth-echo';echo.innerHTML=`<span class="mlabel">🏛️ ${LANG==='zh'?'神話回聲':'MYTHIC ECHO'}</span>${t.e}`;body.appendChild(echo);}
+ if(t.q){const mq=document.createElement('div');mq.className='myth-quote';mq.innerHTML=`${t.q}<span class="msrc">— ${t.s}</span>`;body.appendChild(mq);}
+ const pr=document.createElement('div');pr.className='prompt';pr.textContent=t.pr;body.appendChild(pr);
+ let ta=null;
+ if(gt.type==='reflect'){
+  ta=document.createElement('textarea');ta.id='answer';ta.placeholder=UI[LANG].write;ta.value=prev;
+  ta.addEventListener('input',()=>{ta.style.borderColor='';$('write-warn').textContent='';});body.appendChild(ta);
+  const warn=document.createElement('div');warn.id='write-warn';body.appendChild(warn);
+ }
+ const cl=document.createElement('div');cl.className='choose-label';cl.textContent=UI[LANG].choose;body.appendChild(cl);
+ const cw=document.createElement('div');cw.className='choices';
+ t.ch.forEach((c,idx)=>{const b=document.createElement('button');b.className='choice';b.innerHTML=`${c.t}<span class="tag">✦ ${c.w}</span>`;
+  b.onclick=()=>{if(gt.type==='reflect'){const ans=(ta.value||'').trim();if(!ans){$('write-warn').textContent=UI[LANG].needWrite;ta.style.borderColor='#e0503a';ta.focus();return;}G.answers.push(ans);}
+   G.traits.push(c.w);applyGain(c.a);completeGate(gt,c.a);};cw.appendChild(b);});
+ body.appendChild(cw);
+ backBtn(body);
+}
+
+function renderCombat(gt,body){
+ const t=gt.t[LANG];
+ const narr=document.createElement('div');narr.className='narr';narr.textContent=t.n;body.appendChild(narr);
+ const foe=document.createElement('div');foe.className='foe';foe.innerHTML=`<div class="fic">${t.fic}</div><div style="color:var(--gold-light);letter-spacing:1px">${t.foe}</div>`;body.appendChild(foe);
+ const barwrap=document.createElement('div');barwrap.className='bar';barwrap.innerHTML='<i id="foe-hp" style="width:100%"></i>';body.appendChild(barwrap);
+ const hpn=document.createElement('div');hpn.className='hpnum';hpn.id='foe-hpn';body.appendChild(hpn);
+ const intent=document.createElement('div');intent.className='intent';intent.id='intent';body.appendChild(intent);
+ const cb=document.createElement('div');cb.className='cbtns';
+ const opts=LANG==='zh'?[['strike','⚔️ 斬擊'],['insight','🌙 洞見'],['ward','❤️ 守心']]:[['strike','⚔️ Strike'],['insight','🌙 Insight'],['ward','❤️ Ward']];
+ opts.forEach(([k,label])=>{const b=document.createElement('button');b.className='cbtn';b.textContent=label;b.onclick=()=>combatTurn(gt,k);cb.appendChild(b);});
+ body.appendChild(cb);
+ const log=document.createElement('div');log.className='clog';log.id='clog';body.appendChild(log);
+ backBtn(body);
+ CB={hp:26,max:26,round:0,intents:LANG==='zh'?['蓄力重擊','低語惑心','猛撲']:['a heavy blow','a whisper of doubt','a lunge']};
+ nextIntent();renderFoe();
+}
+let CB=null;
+function renderFoe(){const p=Math.max(0,CB.hp/CB.max*100);$('foe-hp').style.width=p+'%';$('foe-hpn').textContent=`HP ${Math.max(0,CB.hp)} / ${CB.max}`;}
+function nextIntent(){CB.curIntent=CB.intents[CB.round%CB.intents.length];$('intent').textContent=(LANG==='zh'?'敵人意圖：':'Intent: ')+CB.curIntent;}
+function combatTurn(gt,k){
+ if(!CB||CB.over)return;
+ let dmg=0,gain={},msg='';
+ if(k==='strike'){dmg=9;gain={courage:2};msg=LANG==='zh'?'你斬出勇氣的一擊！':'You strike with courage!';}
+ else if(k==='insight'){dmg=13;gain={wisdom:2};msg=LANG==='zh'?'你看破弱點，重創心魔！':'You pierce its weakness!';}
+ else{dmg=5;gain={heart:2};msg=LANG==='zh'?'你守住了心，穩住陣腳。':'You guard your heart and hold firm.';}
+ CB.hp-=dmg;applyGain(gain);renderFoe();
+ $('clog').textContent=msg;
+ CB.round++;
+ if(CB.hp<=0){
+  CB.over=true;
+  $('clog').textContent=(LANG==='zh'?'心魔潰散——這道門，點亮了。':'The demon scatters — the gate is lit.');
+  G.traits.push(LANG==='zh'?'戰勝':'triumph');
+  setTimeout(()=>{if(G.done[gt.id])return;completeGate(gt,{},true);},650);return;
+ }
+ if(CB.round>=4){ // safety: after some rounds, resolve
+  CB.over=true;
+  $('clog').textContent=(LANG==='zh'?'你撐過了它的猛攻，心魔退散。':'You endure its assault; the demon retreats.');
+  setTimeout(()=>{if(G.done[gt.id])return;completeGate(gt,{heart:1},true);},650);return;
+ }
+ nextIntent();
+}
+
+function renderDeck(gt,body){
+ const t=gt.t[LANG];
+ const narr=document.createElement('div');narr.className='narr';narr.textContent=t.n;body.appendChild(narr);
+ const pr=document.createElement('div');pr.className='prompt';pr.textContent=t.pr;body.appendChild(pr);
+ const wrap=document.createElement('div');wrap.className='cards3';
+ t.cards.forEach(c=>{const b=document.createElement('button');b.className='tcard';b.innerHTML=`<div class="cn">${c.cn}</div><div class="cd">${c.cd}</div>`;
+  b.onclick=()=>{G.traits.push(c.w);applyGain(c.a);completeGate(gt,c.a);};wrap.appendChild(b);});
+ body.appendChild(wrap);backBtn(body);
+}
+
+function backBtn(body){const bb=document.createElement('button');bb.className='btn btn-sm';bb.style.marginTop='20px';bb.textContent=UI[LANG].back;bb.onclick=()=>{show('hall');renderHall();};
+ const wrap=document.createElement('div');wrap.className='center';wrap.appendChild(bb);body.appendChild(wrap);}
+
+function applyGain(a){for(const k in a)G.attrs[k]=clamp(G.attrs[k]+a[k]);updateHUD();}
+
+function completeGate(gt,a,silent){
+ G.done[gt.id]=true;
+ const body=$('trial-body');body.innerHTML='';
+ const u=UI[LANG];
+ const zone=document.createElement('div');zone.className='tr-zone';zone.textContent=gt.icon+' '+gt[LANG].name;body.appendChild(zone);
+ const res=document.createElement('div');res.className='result';
+ const gains=Object.keys(a||{}).length?Object.entries(a).map(([k,v])=>`${k==='courage'?'⚔️':k==='wisdom'?'🌙':'❤️'}+${v}`).join('　'):'';
+ res.innerHTML=`<div class="tr-title">✅ ${gt[LANG].name} ${u.done}</div>`+
+   (gains?`<div class="gainrow">${u.gained}：${gains}</div>`:'')+
+   `<a class="link-full" href="./${gt.file}">${u.playFull}：${gt[LANG].full}</a>`;
+ body.appendChild(res);
+ backBtn(body);
+ if(window.Music)Music.set('triumph');
+}
+
+// ── final synthesis ──
+function archetype(){
+ const {courage:c,wisdom:w,heart:h}=G.attrs,mx=Math.max(c,w,h),spread=mx-Math.min(c,w,h);
+ if(spread<=2)return{zh:'圓滿的英雄',en:'The Whole Hero',dz:'勇氣、智慧與心在你之內合而為一。你走過了每一道門，也走成了完整的自己。',de:'Courage, wisdom and heart made one within you. You passed every gate — and became whole.'};
+ if(c===mx)return{zh:'不屈的勇者',en:'The Unyielding',dz:'你以勇氣點亮每一道門。真正的英雄，是明知會痛仍向前的人。',de:'You lit every gate with courage. The true hero moves forward knowing it will hurt.'};
+ if(w===mx)return{zh:'洞察的智者',en:'The Discerning',dz:'你以智慧看穿每一道門後的真相。看清，本身就是一種勇敢。',de:'You saw the truth behind every gate. To see clearly is itself a kind of courage.'};
+ return{zh:'慈悲的守護者',en:'The Compassionate',dz:'你以心走過每一道門。最強的英雄，往往最溫柔。',de:'You walked every gate with heart. The strongest hero is often the gentlest.'};
+}
+function forgeEpic(){
+ const a=G.answers,zh=LANG==='zh',t=s=>{s=(s||'').trim();return s.length>30?s.slice(0,28)+'…':s;};
+ const arch=archetype(),o=[];
+ if(zh){
+  o.push('你走進殿堂，點亮了六道門。');o.push('');
+  if(a[0])o.push(`門檻前，你說：「${t(a[0])}」`);
+  if(a[1])o.push(`鏡中，你對自己說：「${t(a[1])}」`);
+  if(a[2])o.push(`為了所重視的，你願意：「${t(a[2])}」`);
+  if(G.traits.length)o.push(`你留下的印記：${G.traits.slice(0,5).join('、')}。`);
+  o.push('');o.push('於是殿堂為你命名——');o.push(`「${arch.zh}」。`);o.push(arch.dz);
+ }else{
+  o.push('You entered the Hall and lit all six gates.');o.push('');
+  if(a[0])o.push(`At the threshold you said: "${t(a[0])}"`);
+  if(a[1])o.push(`To the mirror you said: "${t(a[1])}"`);
+  if(a[2])o.push(`For what mattered, you chose: "${t(a[2])}"`);
+  if(G.traits.length)o.push(`Marks you left: ${G.traits.slice(0,5).join(', ')}.`);
+  o.push('');o.push('And so the Hall names you —');o.push(`"${arch.en}".`);o.push(arch.de);
+ }
+ return{arch,text:o.join('\n')};
+}
+function buildAdvice(){
+ const zh=LANG==='zh',out=[],{courage:c,wisdom:w,heart:h}=G.attrs;
+ const mx=Math.max(c,w,h),mn=Math.min(c,w,h);
+ const nm=v=>zh?(v===c?'勇氣':v===w?'智慧':'心'):(v===c?'courage':v===w?'wisdom':'heart');
+ if(G.answers[0])out.push(zh?`你在門檻前說的話，就是你此刻真正的召喚——別讓它只停在心裡。`:`What you said at the threshold is your real call right now — don’t leave it only in your head.`);
+ out.push(zh?`你的「${nm(mx)}」帶你點亮了殿堂；也記得溫柔地餵養你的「${nm(mn)}」。`:`Your ${nm(mx)} lit the Hall — remember to nourish your ${nm(mn)} too.`);
+ out.push(zh?`六道門是同一個英雄的六個面向。走完一種，再走下一種，你會越來越完整。`:`The six gates are six faces of one hero. Finish one path, then the next — you grow more whole each time.`);
+ return out;
+}
+function recommend(){
+ const {courage:c,wisdom:w,heart:h}=G.attrs,mx=Math.max(c,w,h);
+ let ids;
+ if(c===mx)ids=['beast','deck'];
+ else if(w===mx)ids=['story','odyssey'];
+ else ids=['inner','own'];
+ return ids.map(gate);
+}
+function claim(){
+ if(Object.keys(G.done).length<6)return;
+ const {arch,text}=forgeEpic(),u=UI[LANG];
+ $('e-arch').textContent=arch.zh;$('e-arch-en').textContent=arch.en;$('e-epic').textContent=text;
+ $('e-label').textContent=u.endLabel;
+ $('e-adv-label').textContent=u.advLabel;
+ $('e-advice').innerHTML=buildAdvice().map(l=>`<div class="line">✦ ${l}</div>`).join('');
+ // recommendation
+ $('e-rec-label').textContent=u.recLabel;
+ const recs=recommend();
+ $('e-rec').innerHTML=`<div class="rec-primary">${LANG==='zh'?'依你這一趟的樣子，最適合你深入的是：':'Based on this journey, the path that fits you most:'}</div>`+
+   recs.map(g=>`<a class="link-full" href="./${g.file}">${g.icon} ${g[LANG].full}</a>`).join('');
+ // all six links
+ $('e-all-label').textContent=u.allLabel;
+ $('e-all').innerHTML=GATES.map(g=>`<a class="link-full" href="./${g.file}">${g.icon} ${g[LANG].full}</a>`).join('');
+ $('hud').classList.remove('on');show('ending');
+}
+
+// ═══ music (shared engine) ═══
+const Music = (function(){
+  let ctx=null, master=null, bus=null, timer=null;
+  let muted=false, nextBarTime=0, barIx=0;
+  let current='epic', pending='epic';
+  const NOTE={A:0,'A#':1,B:2,C:3,'C#':4,D:5,'D#':6,E:7,F:8,'F#':9,G:10,'G#':11};
+  const hz=(root,s)=>root*Math.pow(2,s/12);
+  const triad=(name,type)=>{const r=NOTE[name],t=type==='min'?3:4;return [r,r+t,r+7];};
+
+  function impulse(sec,decay){
+    const rate=ctx.sampleRate,len=Math.floor(rate*sec),buf=ctx.createBuffer(2,len,rate);
+    for(let c=0;c<2;c++){const d=buf.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay);}
+    return buf;
+  }
+  function ensure(){
+    if(ctx) return true;
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC) return false;
+    ctx=new AC();
+    master=ctx.createGain(); master.gain.value=muted?0:0.30;
+    const comp=ctx.createDynamicsCompressor();
+    comp.threshold.value=-16; comp.ratio.value=3; comp.attack.value=0.006; comp.release.value=0.3;
+    const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=6200;
+    master.connect(comp); comp.connect(lp); lp.connect(ctx.destination);
+    // instrument bus -> dry + reverb (lush hall for an epic, less "raw" sound)
+    bus=ctx.createGain(); bus.connect(master);
+    const rev=ctx.createConvolver(); rev.buffer=impulse(2.8,2.2);
+    const wet=ctx.createGain(); wet.gain.value=0.85;
+    bus.connect(rev); rev.connect(wet); wet.connect(master);
+    return true;
+  }
+
+  // ── warm layered voice: two slightly-detuned oscillators through a lowpass,
+  //    smooth ADSR, optional gentle vibrato — far softer than a bare sawtooth ──
+  function voice(t,freq,dur,o){
+    o=o||{};
+    const peak=o.peak!=null?o.peak:0.14,a=o.a!=null?o.a:0.04,r=o.r!=null?o.r:0.25;
+    const cut=o.cut||2600,type=o.type||'sawtooth';
+    const g=ctx.createGain();
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(peak,t+a);
+    g.gain.setValueAtTime(peak,t+Math.max(a+0.005,dur-r));
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    const f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=cut;
+    f.connect(g); g.connect(bus);
+    const base=o.detune||0;
+    const mk=(det)=>{const os=ctx.createOscillator();os.type=type;os.frequency.value=freq;os.detune.value=det;os.connect(f);os.start(t);os.stop(t+dur+0.06);return os;};
+    const o1=mk(base-6),o2=mk(base+6);
+    if(o.vib){const vo=ctx.createOscillator();vo.type='sine';vo.frequency.value=5.2;const vg=ctx.createGain();vg.gain.value=o.vib;vo.connect(vg);vg.connect(o1.detune);vg.connect(o2.detune);vo.start(t);vo.stop(t+dur+0.06);}
+  }
+  const strings=(t,tri,dur,gain)=>tri.concat([tri[0]+12]).forEach(s=>voice(t,hz(110,s),dur,{peak:gain||0.05,a:0.55,r:0.75,cut:1300,type:'sawtooth'}));
+  const brass=(t,tri,dur,gain)=>tri.concat([tri[0]+12]).forEach((s,i)=>voice(t,hz(110,s),dur,{peak:(gain||0.08)/(1+i*0.2),a:0.05,r:0.18,cut:2000,type:'sawtooth',detune:i%2?5:-5}));
+  const melo=(t,semi,dur,gain,base)=>voice(t,hz(base||220,semi),dur,{peak:gain||0.16,a:0.06,r:0.2,cut:3000,type:'triangle',vib:6});
+  const harp=(t,semi,dur,base)=>voice(t,hz(base||220,semi),dur||0.5,{peak:0.1,a:0.006,r:0.45,cut:3200,type:'triangle'});
+  function bassv(t,semi,dur,gain){
+    voice(t,hz(55,semi),dur,{peak:gain||0.24,a:0.02,r:0.14,cut:1300,type:'triangle'});
+    const o=ctx.createOscillator();o.type='sine';o.frequency.value=hz(55,semi);
+    const g=ctx.createGain();g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime((gain||0.24)*0.7,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g);g.connect(bus);o.start(t);o.stop(t+dur+0.05);
+  }
+  function thump(t,gain){const o=ctx.createOscillator();o.type='sine';const g=ctx.createGain();o.frequency.setValueAtTime(160,t);o.frequency.exponentialRampToValueAtTime(45,t+0.18);g.gain.setValueAtTime(gain||0.6,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.34);o.connect(g);g.connect(master);o.start(t);o.stop(t+0.4);}
+  function crash(t,gain,dur,hp){const len=Math.floor(ctx.sampleRate*(dur||0.4));const buf=ctx.createBuffer(1,len,ctx.sampleRate);const d=buf.getChannelData(0);for(let k=0;k<len;k++)d[k]=(Math.random()*2-1)*Math.pow(1-k/len,1.4);const n=ctx.createBufferSource();n.buffer=buf;const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=hp||3000;const g=ctx.createGain();g.gain.value=gain||0.1;n.connect(f);f.connect(g);g.connect(bus);n.start(t);}
+
+  // ── melodies as bars of [semitone(from base), beatOffset, durBeats] ──
+  // Ode to Joy (Beethoven, public domain) — semitones relative to A(220), key of C
+  const ODE=[
+    [[7,0,1],[7,1,1],[8,2,1],[10,3,1]],
+    [[10,0,1],[8,1,1],[7,2,1],[5,3,1]],
+    [[3,0,1],[3,1,1],[5,2,1],[7,3,1]],
+    [[7,0,1.5],[5,1.5,0.5],[5,2,2]],
+    [[7,0,1],[7,1,1],[8,2,1],[10,3,1]],
+    [[10,0,1],[8,1,1],[7,2,1],[5,3,1]],
+    [[3,0,1],[3,1,1],[5,2,1],[7,3,1]],
+    [[5,0,1.5],[3,1.5,0.5],[3,2,2]]
+  ];
+  // Original heroic line in A minor over Am–F–C–G
+  const HERO=[
+    [[12,0,2],[15,2,1],[12,3,1]],
+    [[17,0,2],[15,2,1],[12,3,1]],
+    [[15,0,1],[14,1,1],[12,2,2]],
+    [[14,0,1],[12,1,1],[10,2,1],[7,3,1]]
+  ];
+  const playMel=(t,i,bars,base,gain,spb)=>{const bar=bars[i%bars.length];for(const [s,off,dur] of bar)melo(t+off*spb,s,dur*spb*0.96,gain,base);};
+
+  // ── themes: schedule one full 4/4 bar given start time t and bar index i ──
+  const THEMES={
+    epic:{bpm:120,beats:4,prog:[['A','min'],['F','maj'],['C','maj'],['G','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.05); brass(t,tri,spb*1.9,0.08); brass(t+spb*2,tri,spb*1.9,0.07);
+        for(let e=0;e<8;e++)bassv(t+e*spb/2,rs+(e%2?12:0),spb*0.46,0.24);
+        thump(t,0.7);thump(t+spb*2,0.58);thump(t+spb*1.5,0.28);thump(t+spb*3.5,0.32);
+        if(i%4===0)crash(t,0.1,0.4,3400);
+        playMel(t,i,HERO,220,0.17,spb);}},
+    triumph:{bpm:104,beats:4,prog:[['C','maj'],['G','maj'],['C','maj'],['G','maj'],['C','maj'],['G','maj'],['A','min'],['G','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%this.prog.length],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.055); brass(t,tri,spb*3.8,0.055);
+        for(let e=0;e<4;e++)bassv(t+e*spb,rs+(e%2?12:0),spb*0.9,0.22);
+        thump(t,0.62);thump(t+spb*2,0.5);
+        if(i%4===0)crash(t,0.09,0.45,3200);
+        playMel(t,i,ODE,220,0.2,spb);}},
+    drive:{bpm:148,beats:4,prog:[['A','min'],['G','maj'],['F','maj'],['G','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.04); brass(t,tri,spb*0.9,0.07); brass(t+spb*2,tri,spb*0.9,0.06);
+        for(let e=0;e<8;e++)bassv(t+e*spb/2,rs,spb*0.44,0.24);
+        for(let b=0;b<4;b++)thump(t+b*spb,b%2?0.4:0.6);
+        const m=[12,10,8,7,8,10,12,14];for(let e=0;e<8;e++)melo(t+e*spb/2,m[e],spb*0.42,0.11,220);}},
+    ambient:{bpm:60,beats:4,prog:[['A','min'],['A','min'],['F','maj'],['C','maj']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.055); bassv(t,rs,spb*4,0.15);
+        const sc=[0,3,7,10,12];if(Math.random()<0.7)harp(t+spb*(1+Math.floor(Math.random()*3)),sc[Math.floor(Math.random()*sc.length)],1.2,220);}},
+    calm:{bpm:72,beats:4,prog:[['A','min'],['E','min'],['F','maj'],['C','maj']],
+      mel:[7,12,10,8, 7,5,7,null, 8,10,12,null, 7,5,3,null],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.05); bassv(t,rs,spb*4,0.16); thump(t,0.24);
+        for(let b=0;b<4;b++){const n=this.mel[(i%4)*4+b];if(n!=null)harp(t+b*spb,n,spb*0.9,220);}}},
+    mystic:{bpm:76,beats:4,prog:[['F','maj'],['C','maj'],['G','maj'],['A','min']],
+      bar(t,i){const spb=60/this.bpm,[rn,ty]=this.prog[i%4],tri=triad(rn,ty),rs=NOTE[rn];
+        strings(t,tri,spb*4,0.05); bassv(t,rs,spb*4,0.15);
+        const arp=[tri[0],tri[1],tri[2],tri[1]+12,tri[2],tri[1],tri[0]+12,tri[1]];
+        for(let e=0;e<8;e++)harp(t+e*spb/2,arp[e],spb*0.55,220);
+        if(i%2===0)melo(t,tri[0]+12,spb*3,0.1,220);}},
+    tense:{bpm:80,beats:4,prog:[['A','min'],['A','min'],['A','min'],['A','min']],
+      bar(t,i){const spb=60/this.bpm;
+        [0,6,7].forEach(s=>voice(t,hz(110,s),spb*4,{peak:0.04,a:0.7,r:0.9,cut:900,type:'sawtooth',detune:6}));
+        bassv(t,0,spb*4,0.2); if(i%2===0)thump(t,0.36);
+        if(i%4===3)crash(t+spb*3,0.05,0.6,2400);
+        if(Math.random()<0.4)melo(t+spb*(1+Math.floor(Math.random()*2)),[1,6,8][Math.floor(Math.random()*3)],spb,0.06,220);}}
+  };
+
+  function scheduler(){
+    if(!ctx) return;
+    while(nextBarTime < ctx.currentTime + 0.25){
+      const th=THEMES[current]||THEMES.epic;
+      try{ th.bar(nextBarTime, barIx); }catch(e){}
+      nextBarTime += (60/th.bpm)*th.beats;
+      barIx++;
+      if(pending!==current){ current=pending; barIx=0; }   // switch on bar boundary
+    }
+  }
+
+  return {
+    start(){
+      if(!ensure()) return;
+      if(ctx.state==='suspended') ctx.resume();
+      if(!timer){ nextBarTime=ctx.currentTime+0.1; barIx=0; timer=setInterval(scheduler,25); }
+    },
+    set(name){ if(THEMES[name]){ pending=name; if(!timer) current=name; } },
+    toggle(){ muted=!muted; if(master) master.gain.setTargetAtTime(muted?0:0.30, ctx.currentTime, 0.05); if(!muted) this.start(); return muted; },
+    isMuted(){ return muted; },
+    running(){ return !!(ctx && ctx.state==='running'); }
+  };
+})();
+window.Music=Music;
+function toggleMusic(){const m=Music.toggle();const b=$('music-btn');b.textContent=m?'🔇':'🔊';b.classList.toggle('muted',m);}
+let silentEl=null;
+function unlockAudio(){
+  if(!silentEl){silentEl=document.createElement('audio');silentEl.setAttribute('playsinline','');silentEl.loop=true;silentEl.volume=0.001;silentEl.src='data:audio/wav;base64,UklGRqQHAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YYAHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';}
+  silentEl.play().catch(()=>{});
+  Music.set('epic');Music.start();
+  if(Music.running()){['pointerdown','touchstart','touchend','mousedown','click','keydown'].forEach(ev=>document.removeEventListener(ev,unlockAudio));}
+}
+['pointerdown','touchstart','touchend','mousedown','click','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio));
+
+applyLang();applyFS();
+</script>

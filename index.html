@@ -18,6 +18,8 @@ body{background:#07050f;color:var(--text);font-family:"Noto Serif TC","Songti TC
 #music-btn.muted{opacity:.5;}
 #fs-btn{position:fixed;top:14px;right:114px;z-index:10;background:rgba(0,0,0,.55);border:1px solid var(--gold);
   color:var(--gold);cursor:pointer;border-radius:3px;font-family:inherit;padding:6px 9px;font-size:13px;font-weight:700;line-height:1;letter-spacing:1px;}
+#guide-btn{position:fixed;top:14px;left:14px;z-index:10;background:rgba(0,0,0,.55);border:1px solid var(--gold);
+  color:var(--gold);cursor:pointer;border-radius:3px;font-family:inherit;padding:6px 14px;font-size:12px;letter-spacing:1px;text-decoration:none;display:inline-block;}
 .wrap{position:relative;z-index:2;max-width:640px;margin:0 auto;padding:56px 22px 48px;
   display:flex;flex-direction:column;align-items:center;min-height:100vh;}
 .hero{width:min(180px,44vw);height:min(180px,44vw);border-radius:50%;object-fit:cover;border:3px solid var(--gold);
@@ -49,6 +51,7 @@ body{background:#07050f;color:var(--text);font-family:"Noto Serif TC","Songti TC
 </style>
 
 <div id="bg"><img src="./images/img0.png" alt="" onerror="this.style.display='none'"></div>
+<a id="guide-btn" href="https://github.com/cyysongyy/heros-journey#readme" target="_blank" rel="noopener" title="遊戲指南 / Guide"></a>
 <button id="fs-btn" onclick="cycleFS()" title="文字大小 / Text size">A</button>
 <button id="music-btn" onclick="toggleMusic()" title="音樂 / Music">🔊</button>
 <button id="lang-btn" onclick="toggleLang()">EN</button>
@@ -124,7 +127,7 @@ const T={
     c5:'向內的旅程：沿英雄之旅的圓環（召喚→離開→流浪→轉化→返回），跨越已知與未知，遇見並超越自己。',
     c6:'把奧德修斯的十二段冒險，走成一趟向內的航程——每一關一道反思門檻，結局編成你的歸鄉史詩。',
     c7:'總結樞紐：走過六道門的濃縮試煉（神話／反思／戰鬥／抽牌／內省／航程），封印你的英雄稱號，並推薦最適合你的完整旅程。',
-    qr:'📱 掃描 QR Code，用手機遊玩／分享',
+    qr:'📱 掃描 QR Code，用手機遊玩／分享',guide:'📘 遊戲指南',
     foot:'坎伯（Joseph Campbell）十二階段視覺化專案 · 建議用手機或全螢幕遊玩',lang:'EN'},
   en:{lead:'Campbell’s twelve stages — six ways to walk them, and one Hall.\nChoose your path to the hero’s road.',
     c1:'Play Gilgamesh across world myths — the full story mode of choices through Campbell’s twelve stages.',
@@ -134,7 +137,7 @@ const T={
     c5:'The journey inward: follow the Hero’s Journey circle (Call → Depart → Wander → Transform → Return), crossing the Known and Unknown to meet and surpass yourself.',
     c6:'Walk Odysseus’ twelve adventures as a journey inward — each stage a reflective threshold, the ending forging your own homecoming epic.',
     c7:'The capstone hub: pass condensed trials at six gates (myth / reflection / combat / cards / inner / voyage), claim your hero title, and get the full journey that fits you most.',
-    qr:'📱 Scan the QR code to play / share on your phone',
+    qr:'📱 Scan the QR code to play / share on your phone',guide:'📘 GUIDE',
     foot:'A visualization of Joseph Campbell’s twelve stages · best played fullscreen on mobile or browser',lang:'中'}
 };
 function apply(){
@@ -156,6 +159,7 @@ function apply(){
   document.getElementById('c6-d').textContent=t.c6;
   document.getElementById('c7-d').textContent=t.c7;
   document.getElementById('qr-label').textContent=t.qr;
+  document.getElementById('guide-btn').textContent=t.guide;
   document.getElementById('foot').textContent=t.foot;
   document.getElementById('lang-btn').textContent=t.lang;
   document.documentElement.lang = LANG==='zh'?'zh-TW':'en';

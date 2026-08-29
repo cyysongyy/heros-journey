@@ -10,6 +10,21 @@ Twelve adventures, one wide background each. Missing art auto-falls back to an e
 
 ---
 
+## 封面 · Cover（單獨生）→ `images/odyssey_cover.png`（正方 1024×1024 / square）
+
+> 標題畫面的圓形徽章。單獨貼這一則，一次只生這一張。
+> The circular badge on the title screen. Paste this one on its own.
+
+```
+Create a square (1024x1024) mythic watercolor illustration. Style: dark epic watercolor, warm gold and deep sea-blue palette, cinematic lighting, painterly, mythic and emotional, aged paper texture, visible brush edges. NO text, NO lettering, NO words, NO letters anywhere in the image.
+
+IMPORTANT: Output ONE single full-bleed illustration. The painting must run all the way to all four edges — NO white paper margin, NO border, NO frame. This is NOT a storyboard, NOT a comic, NOT a contact sheet — no panels, no strips, no captions, no title.
+
+Subject: the emblem of an inward Odyssey — a lone silhouetted figure stands in the prow of a small wooden ship at the exact center, sailing a vast circular sea ringed by a glowing golden horizon line. The left half of the sea is calm and lit with warm golden lamplight, a faint distant home-harbor glow (Ithaca, the longed-for); the right half is dark storm-tossed indigo water with faint monstrous shapes in the waves and constellations wheeling above (the unknown). A soft golden glow radiates from the figure's chest. Sacred, yearning, mythic — a ten-year voyage that is really a journey inward. Composition centered and balanced, works well cropped into a circle.
+```
+
+---
+
 ## 一次複製給 Gemini · One block to paste into Gemini
 
 > 貼上後可請它「逐一生成，每張 1536×1024 橫幅」/ Paste and ask it to "generate each one, 1536×1024 landscape."
@@ -48,6 +63,7 @@ A cohesive set of 12 landscape (1536x1024) mythic watercolor illustrations for a
 
 | # | 關卡 / Stage | 檔名 / Filename | 退回 / Fallback |
 |---|---|---|---|
+| — | 封面 · Cover（標題畫面圓形徽章，正方 1024×1024） | `images/odyssey_cover.png` | 無圖則自動隱藏 / hidden if missing |
 | 1 | 特洛伊的餘燼 · The Ashes of Troy | `images/ody1_troy.png` | `img4.jpg` |
 | 2 | 洛托斯食者 · The Lotus-Eaters | `images/ody2_lotus.png` | `img5.png` |
 | 3 | 獨眼巨人 · The Cyclops | `images/ody3_cyclops.png` | `img9.jpg` |

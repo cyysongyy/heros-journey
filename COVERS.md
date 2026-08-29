@@ -12,6 +12,7 @@ Each piece's title screen carries a **circular cover badge** — always **square
 
 | 模式 / Mode | 檔名 / Filename | 沒圖時 / Fallback | 狀態 |
 |---|---|---|---|
+| 🏛️ 英雄殿堂 | `images/hall_cover.png` | `img15.png` | ✅ 已完成 |
 | 🌀 內在英雄之旅 | `images/inner_cover.png` | 隱藏 | ✅ 已完成 |
 | ⛵ 奧德賽 · 內在航程 | `images/odyssey_cover.png` | 隱藏 | ✅ 已完成 |
 | 📖 故事模式 | `images/story_cover.png` | `img15.png` | ⬜ 待生成 |
@@ -21,6 +22,16 @@ Each piece's title screen carries a **circular cover badge** — always **square
 
 > 待生成的三個（故事／你的旅程／弒魔）目前先顯示共用的英雄肖像 `img15.png`，放進專屬封面就會自動換掉。
 > The three pending ones currently show the shared hero portrait; dropping in the dedicated file replaces it automatically.
+
+---
+
+## ⚠️ 常見失敗 · The failure mode to avoid
+
+一次貼多則（或在同一個對話裡連續貼），ChatGPT 會把它們**合成一張**——劍與心魔、卡牌環、門扉、羅盤全擠在同一個畫面。那張不能當任何單一模式的封面。
+Pasting several prompts at once (or in one ongoing conversation) makes ChatGPT **merge them into a single image** — sword, demons, card ring, doorways and compass all at once. That composite can't serve as any one mode's cover.
+
+**做法**：**每一則都開一個新對話**，一則一張。
+**Fix:** open a **fresh conversation for each prompt**, one image each.
 
 ---
 

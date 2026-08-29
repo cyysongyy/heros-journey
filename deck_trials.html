@@ -20,6 +20,8 @@ body{background:#07050f;color:var(--text);overflow:hidden;-webkit-tap-highlight-
 
 /* title */
 #title{background:radial-gradient(ellipse at 50% 28%,#221641 0,#0a0820 55%,#06040e 100%);}
+.t-cover{width:min(190px,46vw);height:min(190px,46vw);object-fit:cover;border-radius:50%;border:3px solid var(--gold);box-shadow:0 0 44px rgba(201,168,76,.38),inset 0 0 22px rgba(0,0,0,.6);margin-bottom:22px;animation:tfloat 4s ease-in-out infinite;}
+@keyframes tfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
 .t-zh{font-size:clamp(30px,8vw,46px);color:var(--gold-light);letter-spacing:8px;text-shadow:0 0 24px rgba(201,168,76,.5);}
 .t-en{font-size:13px;letter-spacing:5px;color:var(--muted);margin:10px 0 22px;}
 .t-sub{font-size:13px;color:var(--muted);line-height:1.9;max-width:520px;margin-bottom:30px;}
@@ -94,6 +96,7 @@ body{background:#07050f;color:var(--text);overflow:hidden;-webkit-tap-highlight-
   <button id="lang-btn" onclick="toggleLang()">EN</button>
 
   <section id="title" class="screen center active">
+    <img class="t-cover" src="./images/deck_cover.png" alt="" onerror="this.style.display='none'">
     <div class="t-zh" id="tt-zh">英雄牌旅</div>
     <div class="t-en">THE DECKBOUND HERO</div>
     <div class="t-sub" id="tt-sub"></div>

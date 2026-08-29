@@ -77,6 +77,42 @@ Subject: the emblem of a hero whose deck is their sword — a lone cloaked figur
 
 ---
 
+## 一次複製給 Gemini · One block to paste into Gemini
+
+> 整段複製貼進 Gemini，請它「逐一生成，每張 1024×1024 正方」。
+> Paste the whole block and ask Gemini to "generate each one, 1024×1024 square."
+
+```
+A set of 4 SEPARATE square (1024x1024) cover emblems for a Hero's Journey game. Generate them ONE BY ONE as four individual images — never combine them into one picture, a grid, or a contact sheet.
+
+RULES FOR EVERY IMAGE:
+- ONE single full-bleed illustration filling the whole canvas edge to edge. No white paper margin, no border, no frame, no panels, no captions.
+- NO text, NO lettering, NO words, NO letters anywhere.
+- Watercolor and ink, painterly, aged parchment feel, cinematic soft lighting.
+- The subject is centered and balanced so the image still reads when cropped into a circle.
+
+Generate them one by one:
+
+1. STORY — Palette: warm earthy muted tones with gold. The emblem of an ancient epic: a lone bearded hero in a hooded green cloak stands at the exact center, seen from behind, facing a vast horizon where twelve faint golden thresholds recede into the distance like doorways of light across a mythic landscape of ziggurats, deserts and stars. A great golden ring encircles the scene. Ancient, legendary, the weight of a story told for four thousand years.
+
+2. YOUR OWN ODYSSEY — Palette: warm gold and deep teal-blue, dreamlike and reflective. The emblem of a personal odyssey: an ordinary present-day person stands at the exact center on a road that begins at their feet and winds outward into a vast mythic landscape, passing twelve faint glowing thresholds arranged around them in a great golden ring. A warm golden compass rose glows softly beneath their feet. The hero is anyone; the road is their own life. Intimate, hopeful, mythic.
+
+3. TRIALS OF THE BEASTS — Palette: warm earthy tones with gold and deep crimson shadow, dramatic lighting. The emblem of a war against one's own demons: a lone hero in a green hooded cloak stands at the exact center with a raised glowing sword, encircled by twelve shadowy demon silhouettes looming out of dark smoke around them — a drowsy sagging shape, a many-handed grasping one, a horned flame-bull, a coiled serpent, a mirror-armored colossus, a formless void. The demons are made of shadow, not gore. A golden ring of light holds them back. Defiant, dramatic, the moment before the first strike.
+
+4. THE DECKBOUND HERO — Palette: warm gold and deep violet, arcane tarot atmosphere. No numbers, no card pips, no suit symbols. The emblem of a hero whose deck is their sword: a lone cloaked figure stands at the exact center, arms slightly raised, as a fan of glowing golden playing cards sweeps up and around them in a great spiral ring, each card blank and radiant with light, some dissolving into embers and stars. Below, a faint arcane circle glows on dark stone. Magical, strategic, the instant a hand is played.
+```
+
+**依序存成 / Save in order as:**
+
+| 生成順序 | 模式 | 存成檔名 |
+|---|---|---|
+| 1 | 📖 故事模式 | `images/story_cover.png` |
+| 2 | 🧭 你的英雄旅程 | `images/your_odyssey_cover.png` |
+| 3 | ⚔️ 弒魔英雄旅 | `images/beast_cover.png` |
+| 4 | 🃏 英雄牌旅 | `images/deck_cover.png` |
+
+---
+
 ## 用腳本一次生完 · Generate them with one command
 
 需要 Node.js 與你自己的 OpenAI 金鑰；金鑰**只透過環境變數**傳入，不要寫進檔案或 commit。

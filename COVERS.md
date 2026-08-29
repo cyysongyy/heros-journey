@@ -15,13 +15,12 @@ Each piece's title screen carries a **circular cover badge** — always **square
 | 🏛️ 英雄殿堂 | `images/hall_cover.png` | `img15.png` | ✅ 已完成 |
 | 🌀 內在英雄之旅 | `images/inner_cover.png` | 隱藏 | ✅ 已完成 |
 | ⛵ 奧德賽 · 內在航程 | `images/odyssey_cover.png` | 隱藏 | ✅ 已完成 |
-| 📖 故事模式 | `images/story_cover.png` | `img15.png` | ⬜ 待生成 |
-| 🧭 你的英雄旅程 | `images/your_odyssey_cover.png` | `img15.png` | ⬜ 待生成 |
-| ⚔️ 弒魔英雄旅 | `images/beast_cover.png` | `img15.png` | ⬜ 待生成 |
-| 🃏 英雄牌旅 | `images/deck_cover.png` | 隱藏 | ⬜ 待生成 |
+| 📖 故事模式 | `images/story_cover.png` | `img15.png` | ✅ 已完成 |
+| 🧭 你的英雄旅程 | `images/your_odyssey_cover.png` | `img15.png` | ✅ 已完成 |
+| ⚔️ 弒魔英雄旅 | `images/beast_cover.png` | `img15.png` | ✅ 已完成 |
+| 🃏 英雄牌旅 | `images/deck_cover.png` | 隱藏 | ✅ 已完成 |
 
-> 待生成的三個（故事／你的旅程／弒魔）目前先顯示共用的英雄肖像 `img15.png`，放進專屬封面就會自動換掉。
-> The three pending ones currently show the shared hero portrait; dropping in the dedicated file replaces it automatically.
+> 七張全部完成。/ All seven covers are done.
 
 ---
 

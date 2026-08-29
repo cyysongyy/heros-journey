@@ -3,7 +3,7 @@
 這個專案用到的**所有圖片**的生圖 prompt，集中在這一份。
 Every image prompt the project uses, in one place.
 
-## 🔴 目前真正缺的只有 4 張 · Only four are actually missing
+## ✅ 全部到位 · All art complete
 
 | 檔名 | 用途 | 章節 |
 |---|---|---|

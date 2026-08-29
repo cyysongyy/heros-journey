@@ -15,10 +15,15 @@ Five inward stations, one **portrait** background each. Missing art auto-falls b
 > ChatGPT 一次只生一張，所以**一則一則**貼。生完存成該則標的檔名。
 > ChatGPT makes one image per turn — paste them **one at a time**, saving each under the filename given.
 
+> ⚠️ **一次只貼一則**。若一次貼多則（或說「生五張」），ChatGPT 會把它們畫成**一張分格的分鏡稿**（五條橫向長條＋羊皮紙邊框，有時還帶亂碼文字）——那種圖**不能用**：每格只有約 800×210，放進全螢幕直式背景會被放大四倍又裁掉大半。
+> ⚠️ **Paste ONE prompt per message.** Asking for all five at once makes ChatGPT return a single *storyboard sheet* of wide panels (often with garbled text) — unusable here: each panel is only ~800×210 and would be upscaled 4× and cropped in a full-screen portrait background.
+
 ### 封面 · Cover → `images/inner_cover.png`（正方 1024×1024 / square）
 
 ```
 Create a square (1024x1024) symbolic watercolor illustration. Style: dark symbolic watercolor, warm gold and deep indigo-violet palette, dreamlike, painterly, inner and psychological, cinematic soft light, aged paper texture, visible brush edges. NO text, NO lettering, NO words, NO letters anywhere in the image.
+
+IMPORTANT: Output ONE single full-bleed illustration that fills the entire canvas edge to edge. This is NOT a storyboard, NOT a comic, NOT a contact sheet — no panels, no strips, no frames, no borders, no parchment margins, no captions, no title.
 
 Subject: the emblem of an inward hero's journey — a lone silhouetted figure standing at the exact center of a large glowing golden circle drawn on dark ground, the circle half in warm lamplight (the known) and half dissolving into deep indigo mist and stars (the unknown). The figure faces the dark half, calm and about to step forward. A soft golden glow radiates from their chest. Mysterious, sacred, intimate — a journey that happens entirely within. Composition centered and balanced, works well cropped into a circle.
 ```
@@ -28,6 +33,8 @@ Subject: the emblem of an inward hero's journey — a lone silhouetted figure st
 ```
 Create a vertical portrait (1024x1536) symbolic watercolor illustration. Style: dark symbolic watercolor, warm gold and deep indigo-violet palette, dreamlike, painterly, inner and psychological, cinematic soft light, aged paper texture. NO text, NO lettering, NO words. Keep the lower third calmer and darker so text can be overlaid.
 
+IMPORTANT: Output ONE single full-bleed illustration that fills the entire canvas edge to edge. This is NOT a storyboard, NOT a comic, NOT a contact sheet — no panels, no strips, no frames, no borders, no parchment margins, no captions, no title.
+
 Subject: A lone silhouetted figure stands in a warm, familiar lamplit room at night, turning toward a faint glowing doorway of golden light opening in the dark — a quiet, stubborn inner call. Intimate, mysterious, the first stirring of a journey.
 ```
 
@@ -35,6 +42,8 @@ Subject: A lone silhouetted figure stands in a warm, familiar lamplit room at ni
 
 ```
 Create a vertical portrait (1024x1536) symbolic watercolor illustration. Style: dark symbolic watercolor, warm gold and deep indigo-violet palette, dreamlike, painterly, inner and psychological, cinematic soft light, aged paper texture. NO text, NO lettering, NO words. Keep the lower third calmer and darker so text can be overlaid.
+
+IMPORTANT: Output ONE single full-bleed illustration that fills the entire canvas edge to edge. This is NOT a storyboard, NOT a comic, NOT a contact sheet — no panels, no strips, no frames, no borders, no parchment margins, no captions, no title.
 
 Subject: A solitary figure steps across a luminous threshold, leaving behind a warm golden shore of the familiar and walking into a vast deep-blue unknown; old masks and belongings dissolve into mist behind them. Letting go, crossing over, bittersweet courage.
 ```
@@ -44,6 +53,8 @@ Subject: A solitary figure steps across a luminous threshold, leaving behind a w
 ```
 Create a vertical portrait (1024x1536) symbolic watercolor illustration. Style: dark symbolic watercolor, warm gold and deep indigo-violet palette, dreamlike, painterly, inner and psychological, cinematic soft light, aged paper texture. NO text, NO lettering, NO words. Keep the lower third calmer and darker so text can be overlaid.
 
+IMPORTANT: Output ONE single full-bleed illustration that fills the entire canvas edge to edge. This is NOT a storyboard, NOT a comic, NOT a contact sheet — no panels, no strips, no frames, no borders, no parchment margins, no captions, no title.
+
 Subject: A small lone figure wanders a boundless, mapless dreamscape of drifting mist and floating stars, meeting a faint mirror-reflection of their own shadow-self. No path, only self facing self. Vast, uncertain, haunting yet beautiful.
 ```
 
@@ -52,6 +63,8 @@ Subject: A small lone figure wanders a boundless, mapless dreamscape of drifting
 ```
 Create a vertical portrait (1024x1536) symbolic watercolor illustration. Style: dark symbolic watercolor, warm gold and deep indigo-violet palette, dreamlike, painterly, inner and psychological, cinematic soft light, aged paper texture. NO text, NO lettering, NO words. Keep the lower third calmer and darker so text can be overlaid.
 
+IMPORTANT: Output ONE single full-bleed illustration that fills the entire canvas edge to edge. This is NOT a storyboard, NOT a comic, NOT a contact sheet — no panels, no strips, no frames, no borders, no parchment margins, no captions, no title.
+
 Subject: At the deepest point of the journey, a figure kneels as the old self dissolves into ash and dark water, while a new form rises glowing with golden light, like a seed cracking open or a phoenix quietly reborn. Death and rebirth, the sacred deep, profound stillness.
 ```
 
@@ -59,6 +72,8 @@ Subject: At the deepest point of the journey, a figure kneels as the old self di
 
 ```
 Create a vertical portrait (1024x1536) symbolic watercolor illustration. Style: dark symbolic watercolor, warm gold and deep indigo-violet palette, dreamlike, painterly, inner and psychological, cinematic soft light, aged paper texture. NO text, NO lettering, NO words. Keep the lower third calmer and darker so text can be overlaid.
+
+IMPORTANT: Output ONE single full-bleed illustration that fills the entire canvas edge to edge. This is NOT a storyboard, NOT a comic, NOT a contact sheet — no panels, no strips, no frames, no borders, no parchment margins, no captions, no title.
 
 Subject: A transformed figure walks back into the ordinary everyday world at dawn, now carrying a soft inner golden light, becoming a gentle lamp for others; the familiar streets look the same, but the traveler is changed. Homecoming, quiet radiance, integration, hope.
 ```

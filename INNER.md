@@ -10,15 +10,56 @@ Five inward stations, one **portrait** background each. Missing art auto-falls b
 
 ---
 
-## 🎨 給 ChatGPT 用：一張一張生 · One at a time (ChatGPT)
+## 🎨 給 ChatGPT 用：一次貼上，五張分開生 · One block, five separate images
 
-> ChatGPT 一次只生一張，所以**一則一則**貼。生完存成該則標的檔名。
-> ChatGPT makes one image per turn — paste them **one at a time**, saving each under the filename given.
+> 整段複製貼進 ChatGPT。它會**先只生第 1 張**；你回「next」（或「下一張」）它就生第 2 張，依序到第 5 張。
+> Paste the whole block. ChatGPT generates **image 1 only**, then reply `next` for each following image.
 
-> ⚠️ **一次只貼一則**。若一次貼多則（或說「生五張」），ChatGPT 會把它們畫成**一張分格的分鏡稿**（五條橫向長條＋羊皮紙邊框，有時還帶亂碼文字）——那種圖**不能用**：每格只有約 800×210，放進全螢幕直式背景會被放大四倍又裁掉大半。
-> ⚠️ **Paste ONE prompt per message.** Asking for all five at once makes ChatGPT return a single *storyboard sheet* of wide panels (often with garbled text) — unusable here: each panel is only ~800×210 and would be upscaled 4× and cropped in a full-screen portrait background.
+```
+I need FIVE SEPARATE illustrations for a game — five individual image files, NOT one combined picture.
 
-### 封面 · Cover → `images/inner_cover.png`（正方 1024×1024 / square）
+CRITICAL RULES — follow these exactly:
+- Generate ONE image per reply. Generate image 1 now. When I reply "next", generate image 2, and so on through image 5.
+- NEVER combine two or more scenes into the same image.
+- Each output must be ONE single full-bleed illustration filling the whole canvas edge to edge.
+- FORBIDDEN in every image: storyboards, comic strips, contact sheets, grids, collages, split screens, panels, strips, frames, borders, parchment margins, captions, titles, watermarks.
+- NO text, NO lettering, NO words, NO letters anywhere in any image.
+
+FORMAT for every image: vertical portrait, 1024x1536 (2:3 ratio).
+
+SHARED STYLE — keep identical across all five: dark symbolic watercolor, warm gold and deep indigo-violet palette, dreamlike, painterly, inner and psychological, cinematic soft light, aged paper texture, visible brush edges. Compose each so the lower third stays calmer and darker, leaving room for text to be overlaid later.
+
+THE FIVE SCENES:
+
+1. The Call — A lone silhouetted figure stands in a warm, familiar lamplit room at night, turning toward a faint glowing doorway of golden light opening in the dark — a quiet, stubborn inner call. Intimate, mysterious, the first stirring of a journey.
+
+2. Departure — A solitary figure steps across a luminous threshold, leaving behind a warm golden shore of the familiar and walking into a vast deep-blue unknown; old masks and belongings dissolve into mist behind them. Letting go, crossing over, bittersweet courage.
+
+3. Wandering the Unknown — A small lone figure wanders a boundless, mapless dreamscape of drifting mist and floating stars, meeting a faint mirror-reflection of their own shadow-self. No path, only self facing self. Vast, uncertain, haunting yet beautiful.
+
+4. Transformation — At the deepest point of the journey, a figure kneels as the old self dissolves into ash and dark water, while a new form rises glowing with golden light, like a seed cracking open or a phoenix quietly reborn. Death and rebirth, the sacred deep, profound stillness.
+
+5. Return — A transformed figure walks back into the ordinary everyday world at dawn, now carrying a soft inner golden light, becoming a gentle lamp for others; the familiar streets look the same, but the traveler is changed. Homecoming, quiet radiance, integration, hope.
+
+Now generate image 1 only.
+```
+
+**生完依序存成 / Save them in order as:**
+
+| 生成順序 | 場景 | 存成檔名 |
+|---|---|---|
+| 1 | The Call 召喚 | `images/inner1_call.png` |
+| 2 | Departure 離開原地 | `images/inner2_depart.png` |
+| 3 | Wandering 跨界流浪 | `images/inner3_wander.png` |
+| 4 | Transformation 轉化 | `images/inner4_transform.png` |
+| 5 | Return 返回 | `images/inner5_return.png` |
+
+> ⚠️ 每張生出來先確認是**一張直式滿版、沒有分格／邊框／文字**再存檔。若它又畫成分鏡稿，回覆：
+> `That is a storyboard. Regenerate as ONE single full-bleed vertical 1024x1536 image, no panels, no borders, no text.`
+
+---
+
+## 封面 · Cover（另外單獨生）→ `images/inner_cover.png`（正方 1024×1024 / square）
 
 ```
 Create a square (1024x1024) symbolic watercolor illustration. Style: dark symbolic watercolor, warm gold and deep indigo-violet palette, dreamlike, painterly, inner and psychological, cinematic soft light, aged paper texture, visible brush edges. NO text, NO lettering, NO words, NO letters anywhere in the image.
@@ -27,60 +68,6 @@ IMPORTANT: Output ONE single full-bleed illustration that fills the entire canva
 
 Subject: the emblem of an inward hero's journey — a lone silhouetted figure standing at the exact center of a large glowing golden circle drawn on dark ground, the circle half in warm lamplight (the known) and half dissolving into deep indigo mist and stars (the unknown). The figure faces the dark half, calm and about to step forward. A soft golden glow radiates from their chest. Mysterious, sacred, intimate — a journey that happens entirely within. Composition centered and balanced, works well cropped into a circle.
 ```
-
-### 一 · 召喚 The Call → `images/inner1_call.png`（直式 1024×1536 / portrait）
-
-```
-Create a vertical portrait (1024x1536) symbolic watercolor illustration. Style: dark symbolic watercolor, warm gold and deep indigo-violet palette, dreamlike, painterly, inner and psychological, cinematic soft light, aged paper texture. NO text, NO lettering, NO words. Keep the lower third calmer and darker so text can be overlaid.
-
-IMPORTANT: Output ONE single full-bleed illustration that fills the entire canvas edge to edge. This is NOT a storyboard, NOT a comic, NOT a contact sheet — no panels, no strips, no frames, no borders, no parchment margins, no captions, no title.
-
-Subject: A lone silhouetted figure stands in a warm, familiar lamplit room at night, turning toward a faint glowing doorway of golden light opening in the dark — a quiet, stubborn inner call. Intimate, mysterious, the first stirring of a journey.
-```
-
-### 二 · 離開原地 Departure → `images/inner2_depart.png`（直式 1024×1536）
-
-```
-Create a vertical portrait (1024x1536) symbolic watercolor illustration. Style: dark symbolic watercolor, warm gold and deep indigo-violet palette, dreamlike, painterly, inner and psychological, cinematic soft light, aged paper texture. NO text, NO lettering, NO words. Keep the lower third calmer and darker so text can be overlaid.
-
-IMPORTANT: Output ONE single full-bleed illustration that fills the entire canvas edge to edge. This is NOT a storyboard, NOT a comic, NOT a contact sheet — no panels, no strips, no frames, no borders, no parchment margins, no captions, no title.
-
-Subject: A solitary figure steps across a luminous threshold, leaving behind a warm golden shore of the familiar and walking into a vast deep-blue unknown; old masks and belongings dissolve into mist behind them. Letting go, crossing over, bittersweet courage.
-```
-
-### 三 · 跨界流浪 Wandering → `images/inner3_wander.png`（直式 1024×1536）
-
-```
-Create a vertical portrait (1024x1536) symbolic watercolor illustration. Style: dark symbolic watercolor, warm gold and deep indigo-violet palette, dreamlike, painterly, inner and psychological, cinematic soft light, aged paper texture. NO text, NO lettering, NO words. Keep the lower third calmer and darker so text can be overlaid.
-
-IMPORTANT: Output ONE single full-bleed illustration that fills the entire canvas edge to edge. This is NOT a storyboard, NOT a comic, NOT a contact sheet — no panels, no strips, no frames, no borders, no parchment margins, no captions, no title.
-
-Subject: A small lone figure wanders a boundless, mapless dreamscape of drifting mist and floating stars, meeting a faint mirror-reflection of their own shadow-self. No path, only self facing self. Vast, uncertain, haunting yet beautiful.
-```
-
-### 四 · 轉化 Transformation → `images/inner4_transform.png`（直式 1024×1536）
-
-```
-Create a vertical portrait (1024x1536) symbolic watercolor illustration. Style: dark symbolic watercolor, warm gold and deep indigo-violet palette, dreamlike, painterly, inner and psychological, cinematic soft light, aged paper texture. NO text, NO lettering, NO words. Keep the lower third calmer and darker so text can be overlaid.
-
-IMPORTANT: Output ONE single full-bleed illustration that fills the entire canvas edge to edge. This is NOT a storyboard, NOT a comic, NOT a contact sheet — no panels, no strips, no frames, no borders, no parchment margins, no captions, no title.
-
-Subject: At the deepest point of the journey, a figure kneels as the old self dissolves into ash and dark water, while a new form rises glowing with golden light, like a seed cracking open or a phoenix quietly reborn. Death and rebirth, the sacred deep, profound stillness.
-```
-
-### 五 · 返回 Return → `images/inner5_return.png`（直式 1024×1536）
-
-```
-Create a vertical portrait (1024x1536) symbolic watercolor illustration. Style: dark symbolic watercolor, warm gold and deep indigo-violet palette, dreamlike, painterly, inner and psychological, cinematic soft light, aged paper texture. NO text, NO lettering, NO words. Keep the lower third calmer and darker so text can be overlaid.
-
-IMPORTANT: Output ONE single full-bleed illustration that fills the entire canvas edge to edge. This is NOT a storyboard, NOT a comic, NOT a contact sheet — no panels, no strips, no frames, no borders, no parchment margins, no captions, no title.
-
-Subject: A transformed figure walks back into the ordinary everyday world at dawn, now carrying a soft inner golden light, becoming a gentle lamp for others; the familiar streets look the same, but the traveler is changed. Homecoming, quiet radiance, integration, hope.
-```
-
-> **保持風格一致的訣竅**：在**同一個 ChatGPT 對話**裡連續生這 6 張，從第 2 張起加一句
-> `Keep the exact same style, palette and brushwork as the previous image.`
-> Tip: generate all six in one conversation, adding that line from the 2nd image onward.
 
 ---
 

@@ -77,6 +77,21 @@ Subject: the emblem of a hero whose deck is their sword — a lone cloaked figur
 
 ---
 
+## 用腳本一次生完 · Generate them with one command
+
+需要 Node.js 與你自己的 OpenAI 金鑰；金鑰**只透過環境變數**傳入，不要寫進檔案或 commit。
+Needs Node.js and your own OpenAI key, passed **only via an env var** — never put it in a file or a commit.
+
+```bash
+export OPENAI_API_KEY="sk-..."
+node gen_covers.mjs ./images 1024x1024 high
+```
+
+已存在的檔案會自動跳過，所以已完成的三張（hall／inner／odyssey）不會被覆蓋。
+Existing files are skipped, so the three finished covers are never overwritten.
+
+---
+
 ## 放回來 · Installing
 
 檔名要**完全一致**放進 `images/`。若圖外圈有白色紙邊或畫成圓形獎章，先裁掉紙邊再放（或丟給 Claude 代裁）。

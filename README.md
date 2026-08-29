@@ -95,7 +95,8 @@ A visualization of Campbell / Vogler's twelve stages of the Hero's Journey: **on
 - `heros_journey_game.html` · `your_odyssey.html` · `beast_trials.html` · `deck_trials.html` · `inner_journey.html` · `odyssey_voyage.html` — 六種玩法 / the six modes (each a standalone offline file)
 - `hall.html` — 🏛️ 英雄殿堂 / Hall of Heroes (the seventh piece; samples all six, cross-links to each)
 - `images/` — 圖像資源 / art (12 scene backgrounds, portraits `img15…img37`, twelve demons `beast1…beast12`, medal)
-- `BEASTS.md` · `ODYSSEY.md` · `INNER.md` · `COVERS.md` — 美術清單／生圖說明 / art manifests & prompts (beasts; Odyssey Within scenes; Inner Journey stations; title cover badges)
+- `PROMPTS.md` — 全部圖片 prompt 總表 / master prompt sheet for every image
+- `BEASTS.md` · `ODYSSEY.md` · `INNER.md` · `COVERS.md` — 分項美術清單 / per-set art manifests (beasts; Odyssey scenes; Inner Journey stations; title covers)
 - `gen_all.mjs` · `gen_portraits.mjs` · `gen_beasts.mjs` · `gen_image.mjs` — 產生美術的腳本 / art-generation scripts
 
 > 六種玩法各自獨立、無共用存檔；共用的是 `images/` 與世界觀。缺圖時以佔位（emoji／隱藏／退回既有圖）處理，仍可正常遊玩。
